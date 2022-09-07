@@ -17,11 +17,11 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(True, True)  # add assertion here
 
     def setUp(self):
-        name_list = os.listdir('./acdc_for_test')
-        self.name_list = [filename[:10] for filename in name_list if 'patient' in filename]
+        self.name_list = os.listdir('./acdc_for_test')
+        self.name_list = [filename[:10] for filename in self.name_list if 'patient' in filename]
         self.name_list.sort()
-        self.mesh_list = [f"./acdc_for_test/{p}/colored.obj" for p in name_list]
-        self.sdt_list = [f"./acdc_for_test/{p}/sdf.npy" for p in name_list]
+        self.mesh_list = [f"./acdc_for_test/{p}/colored.obj" for p in self.name_list]
+        self.sdt_list = [f"./acdc_for_test/{p}/sdf.npy" for p in self.name_list]
 
     def test_create_tree(self):
 
@@ -62,12 +62,12 @@ class MyTestCase(unittest.TestCase):
         preload_all_possible(space)
         print(RenderTree(space))
 
-        self.assertTrue(onp.allclose(((-0.7726630401611329, -0.6723648071289062, -0.6723648071289062),
-                                      (0.7726630401611329, 0.6723648071289062, 0.6723648071289062)),
+        self.assertTrue(onp.allclose((((-0.9467665481567383, -0.9056295013427734, -0.9056295013427734),
+                                       (0.9467665481567383, 0.9056295013427734, 0.9056295013427734))),
                                     space["default/patient009/mesh/repr"]._bbox, rtol=0., atol=1.e-2
                                     ))
-        self.assertTrue(onp.allclose(((-0.7726630401611329, -0.6723648071289062, -0.6723648071289062),
-                                      (0.7726630401611329, 0.6723648071289062, 0.6723648071289062)),
+        self.assertTrue(onp.allclose(((-0.9467665481567383, -0.9056295013427734, -0.9056295013427734),
+                                      (0.9467665481567383, 0.9056295013427734, 0.9056295013427734)),
                                     space["default/patient009"]._bbox, rtol=0., atol=1.e-2
                                     ))
         self.assertTrue(onp.allclose(((-0.9522853851318359, -0.96994, -0.96994),
@@ -86,13 +86,13 @@ class MyTestCase(unittest.TestCase):
 
         sampling = space["default/patient009/mesh/repr/sampling_grid"](spacing=(2,2,2))
         self.assertEqual((2,2,2,3), sampling.shape)
-        self.assertAlmostEqual(-0.7726, float(sampling.min()), places=2)
-        self.assertAlmostEqual(0.7726, float(sampling.max()), places=2)
+        self.assertAlmostEqual(-0.9467, float(sampling.min()), places=2)
+        self.assertAlmostEqual(0.9467, float(sampling.max()), places=2)
 
         sampling = space["default/patient009/sampling_grid"](spacing=(2,2,2))
         self.assertEqual((2,2,2,3), sampling.shape)
-        self.assertAlmostEqual(-0.7726, float(sampling.min()), places=2)
-        self.assertAlmostEqual(0.7726, float(sampling.max()), places=2)
+        self.assertAlmostEqual(-0.9467, float(sampling.min()), places=2)
+        self.assertAlmostEqual(0.9467, float(sampling.max()), places=2)
 
         sampling = space["default/sampling_grid"](spacing=(2,2,2))
         self.assertEqual((2,2,2,3), sampling.shape)
