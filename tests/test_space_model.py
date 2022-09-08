@@ -127,13 +127,31 @@ class MyTestCase(unittest.TestCase):
             max_errors.append(onp.abs(onp.array(bbox1) - onp.array(bbox2)))
         print(onp.max(max_errors))
 
-    def test_test_train_split(self):
+    def test_train_test_split(self):
         space = load_data(self.name_list, self.mesh_list, self.sdt_list, test_size=0.5)
         preload_all_possible(space)
         print(space.explore())
 
         self.assertIsNotNone(space["train/"])
         self.assertIsNotNone(space["test/"])
+
+        test_list = range(len([ind ** 2 for ind in range(10)]))
+        rng_1 = random.PRNGKey(0)
+        test_size = 0.3
+
+        index_train_1, index_test_1 = train_test_split(test_list,
+                                                       rng=rng_1,
+                                                       test_size=test_size)
+
+        self.assertEqual(len(index_test_1) / len(test_list), test_size)
+        self.assertEqual(len(index_train_1) / len(test_list), (1 - test_size))
+
+        rng_2 = random.PRNGKey(1)
+        index_train_2, index_test_2 = train_test_split(test_list,
+                                                       rng=rng_2,
+                                                       test_size=test_size)
+        self.assertNotEqual(index_test_1, index_test_2)
+        self.assertNotEqual(index_train_1, index_train_2)
 
     def test_colors(self):
         space = load_data(self.name_list, self.mesh_list, self.sdt_list)

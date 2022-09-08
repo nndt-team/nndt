@@ -1,11 +1,13 @@
 import gc
 
 from anytree import PreOrderIter
-from sklearn.model_selection import train_test_split
+from space.utils import train_test_split
 
 from space.regions import *
 from space.repr_mesh import *
 from space.repr_sdt import *
+
+import jax.random as random
 
 
 def preload_all_possible(space: Space,
@@ -59,9 +61,10 @@ def load_data(name_list,
     else:
         assert (0.0 < test_size < 1.0)
         space = Space("main")
+        rng = random.PRNGKey(0)
         index_train, index_test = train_test_split(range(len(name_list)),
-                                                   test_size=test_size,
-                                                   random_state=42)
+                                                   rng=rng,
+                                                   test_size=test_size)
 
         group_train = Group("train", parent=space)
         for ind in index_train:
