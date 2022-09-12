@@ -7,7 +7,7 @@ import jax.numpy as jnp
 from jax._src.prng import PRNGKeyArray
 from vtkmodules.util.numpy_support import vtk_to_numpy, numpy_to_vtk
 
-from math_core import grid_in_cube2, take_each_n, uniform_in_cube
+from nndt.math_core import grid_in_cube2, take_each_n, uniform_in_cube
 from nndt.space.abstracts import *
 from nndt.space.sources import MeshSource
 from nndt.space.utils import downup_update_bbox
