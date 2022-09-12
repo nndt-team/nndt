@@ -19,7 +19,14 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
+
+def find_requirements(*file_path):
+    requirements = read(*file_path).split("\n")
+    return [req for req in requirements if req]
+
+
 version = find_version("nndt", "__init__.py")
+requirements = find_requirements("requirements.txt")
 readme = open("README.md").read()
 
 setup(
@@ -29,11 +36,12 @@ setup(
     author_email="k.ushenin@gmail.com",
     packages=find_packages(".", exclude=["tests"]),
     license="LICENSE",
-    description="NN for digital twin",
+    description="Neural network for human digital twin",
     long_description=readme,
     long_description_content_type="text/markdown",
     project_urls={
         "Source": "https://github.com/KonstantinUshenin/nndt",
     },
-    keywords=["implicit-geometry jax machine-learning"]
+    keywords=["pinn implicit-geometry jax machine-learning"],
+    install_requires=requirements
 )
