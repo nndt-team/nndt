@@ -1,6 +1,6 @@
 import unittest
 
-from math_core import *
+from nndt.math_core import *
 import jax.numpy as jnp
 
 
