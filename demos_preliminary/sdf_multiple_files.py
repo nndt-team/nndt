@@ -4,10 +4,10 @@ import jax
 import jax.numpy as jnp
 import optax
 
-from math_core import grid_in_cube2
-from space.loaders import load_data, preload_all_possible
-from trainable_task import ApproximateSDF
-from vizualize import BasicVizualization
+from nndt.math_core import grid_in_cube2
+from nndt.space.loaders import load_data, preload_all_possible
+from nndt.trainable_task import ApproximateSDF
+from nndt.vizualize import BasicVizualization
 
 LEARNING_RATE = 0.006
 EPOCHS = 9001

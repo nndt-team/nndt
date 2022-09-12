@@ -13,11 +13,14 @@ jobs:
         with:
           python-version: 3.9
 
-    - name: Install pytest
-      run: pip install pytest
+      - name: Install pytest
+        run: pip install pytest
 
-    - name: Install requirements
-      run: python setup.py install
+      - name: Test requirements installation
+        run: python setup.py install
 
-    - name: Run unit tests
-      run: pytest tests/*
+      - name: Prepare test data
+        run: 7z x tests/acdc_for_test.7z
+
+      - name: Run unit tests
+        run: pytest tests/*.py
