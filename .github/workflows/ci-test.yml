@@ -2,7 +2,6 @@ name: CI-test
 
 on:
   pull_request:
-  push:
 
 jobs:
   test:
@@ -14,11 +13,11 @@ jobs:
         with:
           python-version: 3.9
 
-    - name: Install pytest
-      run: pip install pytest
+      - name: Install pytest
+        run: pip install pytest
 
-    - name: Install requirements
-      run: python setup.py install
+      - name: Test requirements installation
+        run: python setup.py install
 
-    - name: Run unit tests
-      run: pytest tests/*
+      - name: Run unit tests
+        run: pytest tests/*.py
