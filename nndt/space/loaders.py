@@ -3,9 +3,9 @@ import gc
 from anytree import PreOrderIter
 from sklearn.model_selection import train_test_split
 
-from space.regions import *
-from space.repr_mesh import *
-from space.repr_sdt import *
+from nndt.space.regions import *
+from nndt.space.repr_mesh import *
+from nndt.space.repr_sdt import *
 
 
 def preload_all_possible(space: Space,

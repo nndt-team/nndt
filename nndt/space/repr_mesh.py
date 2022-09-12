@@ -8,10 +8,10 @@ from jax._src.prng import PRNGKeyArray
 from vtkmodules.util.numpy_support import vtk_to_numpy, numpy_to_vtk
 
 from math_core import grid_in_cube2, take_each_n, uniform_in_cube
-from space.abstracts import *
-from space.sources import MeshSource
-from space.utils import downup_update_bbox
-from  space.vtk_wrappers import *
+from nndt.space.abstracts import *
+from nndt.space.sources import MeshSource
+from nndt.space.utils import downup_update_bbox
+from nndt.space.vtk_wrappers import *
 
 
 class MeshRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):

@@ -1,10 +1,10 @@
 import jax.numpy as jnp
 
 from math_core import grid_in_cube
-from space.abstracts import *
-from space.sources import SDTSource
-from space.utils import downup_update_bbox
-from space.vtk_wrappers import *
+from nndt.space.abstracts import *
+from nndt.space.sources import SDTSource
+from nndt.space.utils import downup_update_bbox
+from nndt.space.vtk_wrappers import *
 
 
 class SDTRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):

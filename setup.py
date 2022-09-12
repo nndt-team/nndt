@@ -3,6 +3,18 @@ import os
 import re
 from setuptools import find_packages, setup
 
+REQUIRES = [
+    "anytree==2.8.0",
+    "colorama==0.4.5",
+    "dm-haiku",
+    "jax==0.3.17",
+    "optax",
+    "matplotlib==3.5.3",
+    "numpy==1.23.2",
+    "scikit_learn==1.1.2",
+    "scikit-image",
+    "vtk"
+]
 
 def read(*names, **kwargs):
     with io.open(
@@ -10,7 +22,6 @@ def read(*names, **kwargs):
         encoding=kwargs.get("encoding", "utf8"),
     ) as fp:
         return fp.read()
-
 
 def find_version(*file_paths):
     version_file = read(*file_paths)
@@ -29,11 +40,12 @@ setup(
     author_email="k.ushenin@gmail.com",
     packages=find_packages(".", exclude=["tests"]),
     license="LICENSE",
-    description="NN for digital twin",
+    description="Neural network for human digital twin",
     long_description=readme,
     long_description_content_type="text/markdown",
     project_urls={
         "Source": "https://github.com/KonstantinUshenin/nndt",
     },
-    keywords=["implicit-geometry jax machine-learning"]
+    install_requires=REQUIRES,
+    keywords=["pinn implicit-geometry jax machine-learning"]
 )

@@ -1,4 +1,4 @@
-from space.abstracts import AbstractSource, ExtendedNodeMixin
+from nndt.space.abstracts import AbstractSource, ExtendedNodeMixin
 
 
 class MeshSource(AbstractSource, ExtendedNodeMixin):
