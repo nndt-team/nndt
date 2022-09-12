@@ -7,7 +7,7 @@ import matplotlib.pylab as plt
 import numpy as onp
 from skimage import measure
 
-from space.repr_mesh import SaveMesh
+from nndt.space.repr_mesh import SaveMesh
 
 
 class IteratorWithTimeMeasurements:
