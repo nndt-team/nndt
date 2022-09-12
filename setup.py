@@ -10,8 +10,8 @@ REQUIRES = [
     "jax==0.3.17",
     "optax",
     "matplotlib==3.5.3",
-    "numpy==1.23.2",
-    "scikit_learn==1.1.2",
+    "numpy",
+    "scikit_learn",
     "scikit-image",
     "vtk"
 ]
