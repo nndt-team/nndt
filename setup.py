@@ -3,18 +3,6 @@ import os
 import re
 from setuptools import find_packages, setup
 
-REQUIRES = [
-    "anytree==2.8.0",
-    "colorama==0.4.5",
-    "dm-haiku",
-    "jax==0.3.17",
-    "optax",
-    "matplotlib==3.5.3",
-    "numpy",
-    "scikit_learn",
-    "scikit-image",
-    "vtk"
-]
 
 def read(*names, **kwargs):
     with io.open(
@@ -23,6 +11,7 @@ def read(*names, **kwargs):
     ) as fp:
         return fp.read()
 
+
 def find_version(*file_paths):
     version_file = read(*file_paths)
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
@@ -30,7 +19,14 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 
+
+def find_requirements(*file_path):
+    requirements = read(*file_path).split("\n")
+    return [req for req in requirements if req]
+
+
 version = find_version("nndt", "__init__.py")
+requirements = find_requirements("requirements.txt")
 readme = open("README.md").read()
 
 setup(
@@ -46,6 +42,6 @@ setup(
     project_urls={
         "Source": "https://github.com/KonstantinUshenin/nndt",
     },
-    install_requires=REQUIRES,
-    keywords=["pinn implicit-geometry jax machine-learning"]
+    keywords=["pinn implicit-geometry jax machine-learning"],
+    install_requires=requirements
 )
