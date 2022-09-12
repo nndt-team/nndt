@@ -1,6 +1,6 @@
 from colorama import Fore
 
-from space.abstracts import AbstractRegion, ExtendedNodeMixin
+from nndt.space.abstracts import AbstractRegion, ExtendedNodeMixin
 
 
 class Space(AbstractRegion, ExtendedNodeMixin):
