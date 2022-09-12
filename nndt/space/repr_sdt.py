@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 
-from math_core import grid_in_cube
+from nndt.math_core import grid_in_cube
 from nndt.space.abstracts import *
 from nndt.space.sources import SDTSource
 from nndt.space.utils import downup_update_bbox

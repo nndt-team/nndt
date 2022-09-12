@@ -1,6 +1,6 @@
 from typing import Union
 
-from space.abstracts import AbstractRegion, ExtendedNodeMixin
+from nndt.space.abstracts import AbstractRegion, ExtendedNodeMixin
 
 
 def downup_update_bbox(leaf: Union[AbstractRegion, ExtendedNodeMixin]):
