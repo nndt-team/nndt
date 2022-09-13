@@ -2,12 +2,12 @@ from abc import abstractmethod
 from collections import namedtuple
 from typing import NamedTuple
 
+import haiku as hk
 import jax
 import jax.numpy as jnp
 from jax.random import KeyArray
-import haiku as hk
 
-from haiku_modules import DescConv
+from nndt.haiku_modules import DescConv
 
 
 class AbstractTrainableTask:
@@ -102,7 +102,6 @@ class ApproximateSDF(AbstractTrainableTask):
         return init_params, functions
 
 
-
 class SurfaceSegmentation(AbstractTrainableTask):
     FUNC = namedtuple("FUNC",
                       ["nn", "main_loss", "metric_accuracy"])
@@ -121,8 +120,9 @@ class SurfaceSegmentation(AbstractTrainableTask):
         self.num_classes = num_classes
         self.batch_size = batch_size
 
-        self._init_data = SurfaceSegmentation.DATA(SDF_CUBE=jnp.zeros((self.batch_size, spacing[0], spacing[1], spacing[2], 1)),
-                                                    CLASS=jnp.zeros(self.batch_size))
+        self._init_data = SurfaceSegmentation.DATA(
+            SDF_CUBE=jnp.zeros((self.batch_size, spacing[0], spacing[1], spacing[2], 1)),
+            CLASS=jnp.zeros(self.batch_size))
 
     def init_data(self) -> namedtuple:
         return self._init_data
@@ -133,6 +133,7 @@ class SurfaceSegmentation(AbstractTrainableTask):
                                                kernel_shape=(2, 2, 2),
                                                stride=(2, 2, 2),
                                                activation=jax.nn.relu)
+
             def nn(input_):  # NDHWC
                 x = input_
                 x = descendants_convolution(x)

@@ -2,15 +2,13 @@ import os
 
 import jax
 import jax.numpy as jnp
+import numpy as onp
 import optax
+from tqdm import tqdm
 
-from nndt.math_core import grid_in_cube2
 from nndt.space.loaders import load_data, preload_all_possible, Object
 from nndt.trainable_task import SurfaceSegmentation
 from nndt.vizualize import BasicVizualization
-
-import numpy as onp
-from tqdm import tqdm
 
 LEARNING_RATE = 0.001
 EPOCHS = 1601
@@ -19,12 +17,13 @@ FLAT_SHAPE = SHAPE[0] * SHAPE[1] * SHAPE[2]
 EXP_NAME = 'mesh_segmentation'
 LOG_FOLDER = f'./{EXP_NAME}/'
 
+
 class SimpleGenerator:
 
-    def __init__(self, folder, spacing=(16,16,16),
-                            test_size=0.2,
-                            step=77, scale=1.,
-                            sample_from_each_model=33):
+    def __init__(self, folder, spacing=(16, 16, 16),
+                 test_size=0.2,
+                 step=77, scale=1.,
+                 sample_from_each_model=33):
         self.spacing = spacing
         self.test_size = test_size
         self.step = step
@@ -42,7 +41,7 @@ class SimpleGenerator:
     def __len__(self):
         return len(self.name_list)
 
-    def get_item(self, rand_key, group='train', shift=0) -> (jnp.ndarray,jnp.ndarray):
+    def get_item(self, rand_key, group='train', shift=0) -> (jnp.ndarray, jnp.ndarray):
         X = []
         Y = []
         for object in self.space[group]:
@@ -72,7 +71,6 @@ class SimpleGenerator:
 
         return X, Y
 
-
     def viz_item(self, group='test', patient='patient029') -> (jnp.ndarray, jnp.ndarray):
         X = []
         Y = []
@@ -83,11 +81,11 @@ class SimpleGenerator:
         red = object[f'mesh/repr/point_color'].red[ns_index_center]
         green = object[f'mesh/repr/point_color'].green[ns_index_center]
         blue = object[f'mesh/repr/point_color'].blue[ns_index_center]
-        color_class = jnp.argmax(jnp.array([red,green,blue]), axis=0)
+        color_class = jnp.argmax(jnp.array([red, green, blue]), axis=0)
 
         for ind, xyz in tqdm(enumerate(ns_xyz_center)):
             _, ns_sdt = object[f'sdt/repr/xyz2local_sdt'](xyz, spacing=self.spacing, scale=self.scale)
-            ns_sdt = ns_sdt[jnp.newaxis,:,:,:,:]
+            ns_sdt = ns_sdt[jnp.newaxis, :, :, :, :]
             X.append(ns_sdt)
             Y.append(color_class[ind])
 
@@ -95,17 +93,17 @@ class SimpleGenerator:
         Y = jnp.array(Y)
 
         save_mesh = object[f'mesh/repr/save_mesh']
-        return X,Y, save_mesh
+        return X, Y, save_mesh
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     # NN initialization
     task = SurfaceSegmentation(spacing=SHAPE,
-                                 conv_kernel=32,
-                                 conv_depth=4,
-                                 num_classes=3,
-                                 batch_size=128)
+                               conv_kernel=32,
+                               conv_depth=4,
+                               num_classes=3,
+                               batch_size=128)
     rng = jax.random.PRNGKey(42)
     params, F = task.init_and_functions(rng)
 
@@ -120,6 +118,7 @@ if __name__=='__main__':
 
     print(X.shape, Y.shape)
     print("Class balance: ", jnp.sum(Y == 0), jnp.sum(Y == 1), jnp.sum(Y == 2))
+
 
     @jax.jit
     def train_step(params, rng, opt_state, X, Y):
@@ -147,8 +146,8 @@ if __name__=='__main__':
         loss, accuracy, params, rng, opt_state = train_step(params, rng, opt_state, X, Y)
         val_loss, val_accuracy = eval_step(params, rng, test_X, test_Y)
 
-        viz.record({"loss":float(loss), "accuracy":float(accuracy),
-                    "val_loss":float(val_loss), "val_accuracy":float(val_accuracy)})
+        viz.record({"loss": float(loss), "accuracy": float(accuracy),
+                    "val_loss": float(val_loss), "val_accuracy": float(val_accuracy)})
 
         if viz.is_print_on_epoch(epoch):
             viz.draw_loss("TRAIN_LOSS", viz._records["loss"])
@@ -161,8 +160,5 @@ if __name__=='__main__':
             viz_Y_pred = jnp.argmax(viz_Y_pred, -1)
             viz.save_mesh('patient029', save_mesh, {"pred_class": onp.array(viz_Y_pred), "class": onp.array(viz_Y)})
 
-
-            X, Y = sg.get_item(subkey, group='train', shift=4*int(epoch/viz.print_on_each_epoch))
-            print("Class balance: ", jnp.sum(Y==0), jnp.sum(Y==1), jnp.sum(Y==2))
-
-
+            X, Y = sg.get_item(subkey, group='train', shift=4 * int(epoch / viz.print_on_each_epoch))
+            print("Class balance: ", jnp.sum(Y == 0), jnp.sum(Y == 1), jnp.sum(Y == 2))

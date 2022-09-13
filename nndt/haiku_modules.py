@@ -3,7 +3,6 @@ from typing import *
 import haiku as hk
 import jax
 import jax.numpy as jnp
-import numpy as onp
 
 
 class DescConv(hk.Module):
