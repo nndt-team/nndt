@@ -3,8 +3,11 @@ from collections import namedtuple
 from typing import NamedTuple
 
 import haiku as hk
+import jax
 import jax.numpy as jnp
 from jax.random import KeyArray
+
+from nndt.haiku_modules import DescConv
 
 
 class AbstractTrainableTask:
@@ -94,6 +97,90 @@ class ApproximateSDF(AbstractTrainableTask):
 
         init, function_tuple = hk.multi_transform(constructor)
         functions = ApproximateSDF.FUNC(*function_tuple)
+        init_params = init(rng_key, *tuple(self._init_data))
+
+        return init_params, functions
+
+
+class SurfaceSegmentation(AbstractTrainableTask):
+    FUNC = namedtuple("FUNC",
+                      ["nn", "main_loss", "metric_accuracy"])
+
+    DATA = namedtuple("DATA", ["SDF_CUBE", "CLASS"])
+
+    def __init__(self,
+                 spacing=(16, 16, 16),
+                 conv_kernel=32,
+                 conv_depth=4,
+                 num_classes=3,
+                 batch_size=128):
+        self.spacing = spacing
+        self.conv_kernel = conv_kernel
+        self.conv_depth = conv_depth
+        self.num_classes = num_classes
+        self.batch_size = batch_size
+
+        self._init_data = SurfaceSegmentation.DATA(
+            SDF_CUBE=jnp.zeros((self.batch_size, spacing[0], spacing[1], spacing[2], 1)),
+            CLASS=jnp.zeros(self.batch_size))
+
+    def init_data(self) -> namedtuple:
+        return self._init_data
+
+    def init_and_functions(self, rng_key: KeyArray) -> (namedtuple, namedtuple):
+        def constructor():
+            descendants_convolution = DescConv(n_layers=self.conv_depth, kernels_in_first_layer=self.conv_kernel,
+                                               kernel_shape=(2, 2, 2),
+                                               stride=(2, 2, 2),
+                                               activation=jax.nn.relu)
+
+            def nn(input_):  # NDHWC
+                x = input_
+                x = descendants_convolution(x)
+
+                x = hk.Conv3D(
+                    output_channels=self.conv_kernel * 4,
+                    kernel_shape=(1, 1, 1),
+                    padding="VALID",
+                    name="mlp_0")(x)
+                x = jax.nn.relu(x)
+                x = hk.Conv3D(
+                    output_channels=self.conv_kernel * 4,
+                    kernel_shape=(1, 1, 1),
+                    padding="VALID",
+                    name="mlp_1")(x)
+                x = jax.nn.relu(x)
+
+                x = hk.Conv3D(
+                    output_channels=self.num_classes,
+                    kernel_shape=(1, 1, 1),
+                    padding="VALID",
+                    name="mlp_output_0")(x)
+                x = jax.nn.softmax(x)
+
+                return jnp.squeeze(x)
+
+            def softmax_cross_entropy(logits, labels):
+                one_hot = jax.nn.one_hot(labels, self.num_classes)
+                return -jnp.sum(jax.nn.log_softmax(logits) * one_hot, axis=-1)
+
+            def metric_accuracy(sdf_tiles, labels):
+                logits = nn(sdf_tiles)
+                return jnp.mean(jnp.argmax(logits, -1) == labels)
+
+            def main_loss(sdf_tiles, labels):
+                logits = nn(sdf_tiles)
+                return jnp.mean(softmax_cross_entropy(logits, labels))
+
+            def init(sdf_tiles, labels):
+                return main_loss(sdf_tiles, labels)
+
+            return init, SurfaceSegmentation.FUNC(nn=nn,
+                                                  main_loss=main_loss,
+                                                  metric_accuracy=metric_accuracy)
+
+        init, function_tuple = hk.multi_transform(constructor)
+        functions = SurfaceSegmentation.FUNC(*function_tuple)
         init_params = init(rng_key, *tuple(self._init_data))
 
         return init_params, functions

@@ -57,6 +57,12 @@ class MeshRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
     def index_normed2physical(self, index: int) -> int:
         return index
 
+    def vec_index_physical2normed(self, index: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return index
+
+    def vec_index_normed2physical(self, index: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return index
+
     def xyz_physical2normed(self, xyz: (float, float, float)) -> (float, float, float):
         X = (xyz[0] - self.physical_center[0]) / self.scale_physical2normed + self.normed_center[0]
         Y = (xyz[1] - self.physical_center[1]) / self.scale_physical2normed + self.normed_center[1]
@@ -70,6 +76,12 @@ class MeshRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
         Z = (xyz[2] - self.normed_center[2]) * self.scale_physical2normed + self.physical_center[2]
 
         return (X, Y, Z)
+
+    def vec_xyz_physical2normed(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return (xyz - jnp.array(self.physical_center)) / self.scale_physical2normed + jnp.array(self.normed_center)
+
+    def vec_xyz_normed2physical(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return (xyz - jnp.array(self.normed_center)) * self.scale_physical2normed + jnp.array(self.physical_center)
 
     @classmethod
     def load_mesh_and_bring_to_center(cls, source: MeshSource,
@@ -422,8 +434,8 @@ class SamplingEachN(AbstractMethod, ExtendedNodeMixin):
                                        count=count, step=step, shift=shift)
         ret_index_set = onp.zeros_like(index_set)
         ret_array = onp.zeros_like(array)
-        for i in range(len(ret_index_set)):
-            ret_index_set[i] = self.parent.index_physical2normed(index_set[i])
-            ret_array[i] = self.parent.xyz_physical2normed(array[i])
+
+        ret_index_set = self.parent.vec_index_physical2normed(index_set)
+        ret_array = self.parent.vec_xyz_physical2normed(array)
 
         return ret_index_set, ret_array
