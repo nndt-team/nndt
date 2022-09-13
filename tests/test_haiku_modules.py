@@ -1,11 +1,10 @@
 import unittest
-from typing import *
 
 import haiku as hk
 import jax
 import jax.numpy as jnp
 
-from haiku_modules import DescConv
+from nndt.haiku_modules import DescConv
 
 
 class HaikuModulesTestCase(unittest.TestCase):
@@ -59,6 +58,7 @@ class HaikuModulesTestCase(unittest.TestCase):
 
         self.assertTrue(bool(jnp.all(result >= 0.)))
         self.assertTrue(bool(jnp.any(result >= 0.1)))
+
 
 if __name__ == '__main__':
     unittest.main()
