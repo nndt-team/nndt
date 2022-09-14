@@ -108,3 +108,20 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
     y = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[1], maxval=upper[1])
     z = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[2], maxval=upper[2])
     return jnp.hstack([x, y, z])
+
+
+def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
+    def prim(x: float, y: float, z: float):
+        sdf = (x - center[0])**2 + (y - center[1])**2 + (z - center[2])**2 - radius**2
+        return sdf
+    vec_prim = jax.vmap(prim)
+
+    prim_x = jax.grad(prim, argnums=0)
+    prim_y = jax.grad(prim, argnums=1)
+    prim_z = jax.grad(prim, argnums=2)
+
+    vec_prim_x = jax.vmap(prim_x)
+    vec_prim_y = jax.vmap(prim_y)
+    vec_prim_z = jax.vmap(prim_z)
+
+    return vec_prim, vec_prim_x, vec_prim_y, vec_prim_z

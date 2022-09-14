@@ -44,12 +44,19 @@ class AbstractRegion:
 
 
 class AbstractSource:
+    def __init__(self):
+        self.name = ""
+    def __repr__(self):
+        return Fore.LIGHTBLUE_EX + f'{str(self.__class__.__name__)}("{self.name}")' + Fore.RESET
+
+
+class FileSource(AbstractSource):
 
     def __init__(self, filepath):
+        super(FileSource, self).__init__()
         if not os.path.exists(filepath):
             raise FileNotFoundError()
         self.filepath = filepath
-        self.name = ""
 
     def __repr__(self):
         return Fore.LIGHTBLUE_EX + f'{str(self.__class__.__name__)}("{self.name}", filename="{os.path.basename(self.filepath)}")' + Fore.RESET

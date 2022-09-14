@@ -198,6 +198,39 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(float(xyz.min()) < -5)
         self.assertTrue(5< float(xyz.max()))
 
+    def test_create_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      center=(0., 0., 0.),
+                                      radius=2.,
+                                      parent=object)
+        print(space.explore())
+
+    def test_create_SphereSDF_from_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      center=(0., 0., 0.),
+                                      radius=2.,
+                                      parent=object)
+        print(space.explore())
+
+    def test_create_SphereSDF_from_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      parent=object)
+        preload_all_possible(mesh_source)
+        print(space.explore())
+
+        xyz = jnp.array([[0., 0., 0.], [1., 0., 0.], [2., 0., 0.]])
+        ret = space['default/test/region/repr/xyz2sdt'](xyz)
+        self.assertTrue(jnp.allclose(jnp.array([[-1.], [0.], [3.]]), ret))
+
 
 if __name__ == '__main__':
     unittest.main()

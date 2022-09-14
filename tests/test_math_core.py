@@ -38,6 +38,34 @@ class MathCoreTestCase(unittest.TestCase):
         self.assertEqual([1, 5, 9, 3], list(array))
         self.assertEqual([1, 5, 9, 3], list(index_set))
 
+    def test_sdf_primitive_sphere(self):
+        vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere()
+        xyz = jnp.array([[0., 0., 0.], [0., 0., 1.], [0., 0., 2.]])
+
+        self.assertTrue(bool(jnp.allclose(jnp.array([-1., 0., 3.]),
+                                          vec_prim(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([0., 0., 0.]),
+                                          vec_prim_x(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([0., 0., 0.]),
+                                          vec_prim_y(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([0., 2., 4.]),
+                                          vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+
+    def test_sdf_primitive_sphere2(self):
+        vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere(
+                        center=(1., 1., 1.),
+                        radius=float(jnp.sqrt(1**2 + 1**2 + 1**2)))
+        xyz = jnp.array([[0., 0., 0.]])
+
+        self.assertTrue(bool(jnp.allclose(jnp.array([0., 0., 0.]),
+                                          vec_prim(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([-2., -2., -2.]),
+                                          vec_prim_x(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([-2., -2., -2.]),
+                                          vec_prim_y(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([-2., -2., -2.]),
+                                          vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
+
 
 if __name__ == '__main__':
     unittest.main()
