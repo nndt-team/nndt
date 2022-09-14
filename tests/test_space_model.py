@@ -225,8 +225,11 @@ class MyTestCase(unittest.TestCase):
         mesh_source = SphereSDFSource("region",
                                       parent=object)
         preload_all_possible(mesh_source)
-        #TODO HERE CHECK XYZ REQUEST
         print(space.explore())
+
+        xyz = jnp.array([[0., 0., 0.], [1., 0., 0.], [2., 0., 0.]])
+        ret = space['default/test/region/repr/xyz2sdt'](xyz)
+        self.assertTrue(jnp.allclose(jnp.array([[-1.], [0.], [3.]]), ret))
 
 
 if __name__ == '__main__':
