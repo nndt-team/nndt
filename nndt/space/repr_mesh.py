@@ -16,7 +16,7 @@ from nndt.space.vtk_wrappers import *
 
 class MeshRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
 
-    def __init__(self, parent: AbstractSource, surface_mesh2: SurfaceMesh,
+    def __init__(self, parent: FileSource, surface_mesh2: SurfaceMesh,
                  physical_center: (float, float, float),
                  physical_bbox: ((float, float, float), (float, float, float)),
                  normed_center: (float, float, float),

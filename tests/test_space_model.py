@@ -198,6 +198,16 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(float(xyz.min()) < -5)
         self.assertTrue(5< float(xyz.max()))
 
+    def test_create_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      center=(0., 0., 0.),
+                                      radius=2.,
+                                      parent=object)
+        print(space.explore())
+
 
 if __name__ == '__main__':
     unittest.main()

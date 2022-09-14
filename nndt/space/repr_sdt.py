@@ -10,7 +10,7 @@ from nndt.space.vtk_wrappers import *
 class SDTRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
     MAGIC_CORRECTION = 0.503  # This is absolutely magic coefficient that reduce error between bboxes to 0.49075 mm
 
-    def __init__(self, parent: AbstractSource, sdt_explicit_array2: SDTExplicitArray,
+    def __init__(self, parent: FileSource, sdt_explicit_array2: SDTExplicitArray,
                  physical_center: (float, float, float),
                  physical_bbox: ((float, float, float), (float, float, float)),
                  normed_center: (float, float, float),
