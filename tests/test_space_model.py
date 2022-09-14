@@ -208,6 +208,26 @@ class MyTestCase(unittest.TestCase):
                                       parent=object)
         print(space.explore())
 
+    def test_create_SphereSDF_from_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      center=(0., 0., 0.),
+                                      radius=2.,
+                                      parent=object)
+        print(space.explore())
+
+    def test_create_SphereSDF_from_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      parent=object)
+        preload_all_possible(mesh_source)
+        #TODO HERE CHECK XYZ REQUEST
+        print(space.explore())
+
 
 if __name__ == '__main__':
     unittest.main()
