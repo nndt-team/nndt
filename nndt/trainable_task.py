@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from collections import namedtuple
-from typing import NamedTuple
+from typing import NamedTuple, Callable
 
 import haiku as hk
 import jax
@@ -184,3 +184,110 @@ class SurfaceSegmentation(AbstractTrainableTask):
         init_params = init(rng_key, *tuple(self._init_data))
 
         return init_params, functions
+
+
+class Eikonal3D(AbstractTrainableTask):
+
+    class FUNC(NamedTuple):
+        nn: Callable[[float, float, float], float]   # [N]
+        nn_dx: Callable[[float, float, float], float]  # [N]
+        nn_dy: Callable[[float, float, float], float]  # [N]
+        nn_dz: Callable[[float, float, float], float]  # [N]
+        main_loss: Callable[[float, float, float], float]  # [N]
+    class DATA(NamedTuple): # F(X,Y,Z) = U
+        X: jnp.ndarray  # [N]
+        Y: jnp.ndarray  # [N]
+        Z: jnp.ndarray  # [N]
+
+    def __init__(self,
+                 fun_sdf_domain : Callable[[float, float, float], float],
+                 fun_sdf_start: Callable[[float, float, float], float],
+                 mlp_layers=(16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16, 1),
+                 lambda_grad = 0.1,
+                 lambda_non_negativity = 0.1,
+                 batch_size=100):
+        self.fun_sdf_domain = fun_sdf_domain
+        self.fun_sdf_start = fun_sdf_start
+
+        self.mlp_layers = mlp_layers
+        self.batch_size = batch_size
+
+        self._init_data = Eikonal3D.DATA(X=jnp.zeros(self.batch_size),
+                                        Y=jnp.zeros(self.batch_size),
+                                        Z=jnp.zeros(self.batch_size))
+
+        self.LAMBDA_GRAD = lambda_grad
+        self.LAMBDA_NON_NEGATIVITY = lambda_non_negativity
+
+    def init_data(self) -> namedtuple:
+        return self._init_data
+
+    def init_and_functions(self, rng_key: KeyArray) -> (namedtuple, namedtuple):
+        mlp_layers = self.mlp_layers
+        fun_sdf_domain = self.fun_sdf_domain
+        fun_sdf_start = self.fun_sdf_start
+
+        LAMBDA_NON_NEGATIVITY = self.LAMBDA_NON_NEGATIVITY
+        LAMBDA_GRAD = self.LAMBDA_GRAD
+        def constructor():
+
+            def NN(x, y, z):
+                vec = jnp.hstack([x, y, z])
+                net = hk.nets.MLP(output_sizes = mlp_layers,
+                                  activation = jnp.tanh)
+                return jnp.squeeze(net(vec))
+            vec_NN = hk.vmap(NN, in_axes=(0,0,0), split_rng = False)
+
+            grad_x = hk.grad(NN, argnums=0)
+            grad_y = hk.grad(NN, argnums=1)
+            grad_z = hk.grad(NN, argnums=2)
+
+            vec_grad_x = hk.vmap(grad_x, in_axes=(0,0,0), split_rng = False)
+            vec_grad_y = hk.vmap(grad_y, in_axes=(0,0,0), split_rng = False)
+            vec_grad_z = hk.vmap(grad_z, in_axes=(0,0,0), split_rng = False)
+
+            def vec_conductivity(X, Y, Z):
+                return 1.*(fun_sdf_domain(X, Y, Z) < 0)
+
+            def vec_eikonal(x,y,z):
+                return vec_grad_x(x,y,z)**2 + vec_grad_y(x,y,z)**2 + vec_grad_z(x,y,z)**2
+
+            def vec_region0(X, Y, Z, SDF):
+                return 1. * (fun_sdf_start(X, Y, Z) < 0)
+
+            def vec_main_loss(X, Y, Z):
+                Omega0 = (fun_sdf_start(X, Y, Z) < 0)
+                Omega1 = (1. - Omega0)
+
+
+                pred_u = vec_NN(X,Y,Z)
+
+                loss = jnp.mean(Omega0*(0. - pred_u)**2) + \
+                       LAMBDA_GRAD*jnp.mean(Omega1*(vec_eikonal(X, Y, Z) - vec_conductivity(X, Y, Z))**2) + \
+                       LAMBDA_NON_NEGATIVITY*jnp.mean(jax.nn.relu(-pred_u)**2)
+
+                return loss
+
+            def init(X, Y, Z):
+                return vec_main_loss(X, Y, Z)
+
+            return init, Eikonal3D.FUNC(nn=vec_NN,
+                                        nn_dx=vec_grad_x,
+                                        nn_dy=vec_grad_y,
+                                        nn_dz=vec_grad_z,
+                                        main_loss=vec_main_loss)
+
+        init, function_tuple = hk.multi_transform(constructor)
+        functions = Eikonal3D.FUNC(*function_tuple)
+        init_params = init(rng_key, *tuple(self._init_data))
+
+        return init_params, functions
+
+
+
+
+
+
+
+
+
