@@ -48,7 +48,7 @@ class SphereSDF_PureSDF(AbstractMethod, ExtendedNodeMixin):
     def __repr__(self):
         return f'pure_sdf() -> F(x,y,z)=sdf'
 
-    def __call__(self) -> Callable[(float, float, float), float]:
+    def __call__(self) -> Callable[[float, float, float], float]:
         x0, y0, z0 = self.parent.center
         r = self.parent.radius
         def prim(x: float, y: float, z: float):
