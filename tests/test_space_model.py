@@ -12,6 +12,10 @@ from nndt.space.sources import *
 from nndt.space.utils import *
 from nndt.space.vtk_wrappers import *
 
+import haiku as hk
+import jax
+import jax.numpy as jnp
+
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         self.assertEqual(True, True)  # add assertion here
@@ -231,6 +235,44 @@ class MyTestCase(unittest.TestCase):
         ret = space['default/test/region/repr/xyz2sdt'](xyz)
         self.assertTrue(jnp.allclose(jnp.array([[-1.], [0.], [3.]]), ret))
 
+    def test_create_SphereSDF_from_SphereSDFSource(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      parent=object)
+        preload_all_possible(mesh_source)
+        print(space.explore())
+
+        xyz = jnp.array([[0., 0., 0.], [1., 0., 0.], [2., 0., 0.]])
+        ret = space['default/test/region/repr/xyz2sdt'](xyz)
+        self.assertTrue(jnp.allclose(jnp.array([[-1.], [0.], [3.]]), ret))
+
+    def test_SphereSDF_PureSDF(self):
+        space = Space("main")
+        group = Group("default", parent=space)
+        object = Object("test", parent=group)
+        mesh_source = SphereSDFSource("region",
+                                      parent=object)
+        preload_all_possible(mesh_source)
+        print(space.explore())
+        prim_ = space['default/test/region/repr/pure_sdf']()
+
+        def construct():
+            prim = prim_
+            vec_prim = hk.vmap(prim, split_rng=False)
+            def init(X, Y, Z):
+                return vec_prim(X, Y, Z)
+
+            return init, vec_prim
+
+        rng_key = jax.random.PRNGKey(42)
+        init, nn = hk.multi_transform(construct)
+        params = init(rng_key, jnp.zeros(100), jnp.zeros(100), jnp.zeros(100))
+        xyz = jnp.array([[0., 0., 0.], [1., 0., 0.], [2., 0., 0.]])
+        ret = nn(params, rng_key, xyz[:, 0], xyz[:, 1], xyz[:, 2])
+        print(ret)
+        self.assertTrue(jnp.allclose(jnp.array([-1., 0., 3.]), ret))
 
 if __name__ == '__main__':
     unittest.main()

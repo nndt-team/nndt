@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from nndt.space.regions import *
 from nndt.space.repr_mesh import *
 from nndt.space.repr_sdt import *
-from nndt.space.repr_prim import SphereSDF_Xyz2SDT, SphereSDF
+from nndt.space.repr_prim import SphereSDF_Xyz2SDT, SphereSDF, SphereSDF_PureSDF
 from nndt.space.sources import SphereSDFSource
 
 
@@ -40,6 +40,7 @@ def preload_all_possible(space: Space,
         if isinstance(node, SphereSDFSource):
             repr = SphereSDF(node, name="repr")
             _ = SphereSDF_Xyz2SDT(repr)
+            _ = SphereSDF_PureSDF(repr)
 
     gc.collect()
 
