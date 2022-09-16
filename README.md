@@ -26,10 +26,10 @@ NOTE! This project is in an early stage. API and examples are changed every day.
 The following notebooks use `v0.0.1rc` branch.
 
 Tutorials
-1. [Space model and generators](https://colab.research.google.com/drive/1OK0qq-aiqZcDZEUOR4Us-QJibQSTIDH9?usp=sharing)
-2. [Trainable tasks](https://colab.research.google.com/drive/1mmemJpGzM6e_BC37WlCt9CtgX7WNXNkz?usp=sharing)
+1. [Space model and generators](https://drive.google.com/file/d/16VEUCfcCtRQOYGqe6N2MBsIsD8OILufL/view?usp=sharing)
+2. [Trainable tasks](https://drive.google.com/file/d/16ZnfqzL9VsGqnyWG4zV9uVcwFSvlHdYN/view?usp=sharing)
 
-Examples:
+Examples
 1. [Shape interpolation](https://github.com/KonstantinUshenin/nndt/blob/main/demos_preliminary/sdf_multiple_files.py)
 2. [Mesh segmentation (supervised)](https://github.com/KonstantinUshenin/nndt/blob/main/demos_preliminary/mesh_segmentation.py)
 3. [Eikonal equation solution (geodesic distance in 3D)](https://github.com/KonstantinUshenin/nndt/blob/main/demos_preliminary/eikonal_on_primitives.py)
