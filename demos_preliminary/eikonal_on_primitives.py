@@ -4,9 +4,9 @@ import optax
 from nndt.space.loaders import preload_all_possible
 from nndt.space.regions import *
 from nndt.space.sources import *
+from nndt.space.utils import downup_update_bbox
 from nndt.trainable_task import Eikonal3D
 from nndt.vizualize import BasicVizualization
-from nndt.space.utils import downup_update_bbox
 
 LEARNING_RATE = 0.001
 EPOCHS = 10001

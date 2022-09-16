@@ -39,7 +39,7 @@ class IteratorWithTimeMeasurements:
             raise StopIteration()
         self.counter += 1
 
-        return (self.counter - 1)
+        return self.counter - 1
 
     def __len__(self):
         return self.epochs
