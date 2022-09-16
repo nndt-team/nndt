@@ -1,8 +1,9 @@
-import numpy as onp
 import os
-import vtk
 from abc import abstractmethod
 from pathlib import Path
+
+import numpy as onp
+import vtk
 
 
 class UnloadMixin:

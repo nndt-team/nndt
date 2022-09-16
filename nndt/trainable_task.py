@@ -1,11 +1,11 @@
+from abc import abstractmethod
 from collections import namedtuple
+from typing import NamedTuple, Callable
 
 import haiku as hk
 import jax
 import jax.numpy as jnp
-from abc import abstractmethod
 from jax.random import KeyArray
-from typing import NamedTuple, Callable
 
 from nndt.haiku_modules import DescConv
 

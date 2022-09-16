@@ -1,7 +1,6 @@
-import haiku as hk
-import jax
-import jax.numpy as jnp
 import unittest
+
+import haiku as hk
 
 from nndt.space.loaders import *
 from nndt.space.regions import *

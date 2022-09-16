@@ -1,7 +1,8 @@
+import unittest
+
 import haiku as hk
 import jax
 import jax.numpy as jnp
-import unittest
 
 from nndt.haiku_modules import DescConv
 

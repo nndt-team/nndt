@@ -1,7 +1,8 @@
 import os
+from typing import *
+
 from anytree import NodeMixin, Resolver, RenderTree
 from colorama import Fore
-from typing import *
 
 
 class ExtendedNodeMixin(NodeMixin):
