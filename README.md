@@ -5,6 +5,8 @@
 [![GitHub issues by-label](https://img.shields.io/github/issues/KonstantinUshenin/nndt/good%20first%20issue)](https://github.com/KonstantinUshenin/nndt/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 [![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml)
 
+[Wiki](https://github.com/KonstantinUshenin/nndt/wiki) | [Change logs](https://github.com/KonstantinUshenin/nndt/blob/v0.0.1rc/CHANGELOG.md)
+
 There will be some awesome library.
 
 ## Install
