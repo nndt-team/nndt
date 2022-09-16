@@ -26,7 +26,7 @@ def take_each_n(array, count=1, step=1, shift=0):
         an array of indices used in selecting elements from the source array
         an array of elements taken from the source array
     """
-   
+
     _, index_set = jnp.divmod(shift + jnp.arange(0, count, dtype=int) * step, array.shape[0])
 
     return index_set, jnp.take(array, index_set, axis=0)
@@ -49,7 +49,7 @@ def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)):
     ndarray
         mesh-grid of the sampled points from the 3D cube
     """
-    
+
     center_shift_ = jnp.array(center_shift)
     cube = jnp.mgrid[0:1:spacing[0] * 1j,
            0:1:spacing[1] * 1j,
@@ -112,8 +112,9 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
 
 def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
     def prim(x: float, y: float, z: float):
-        sdf = (x - center[0])**2 + (y - center[1])**2 + (z - center[2])**2 - radius**2
+        sdf = (x - center[0]) ** 2 + (y - center[1]) ** 2 + (z - center[2]) ** 2 - radius ** 2
         return sdf
+
     vec_prim = jax.vmap(prim)
 
     prim_x = jax.grad(prim, argnums=0)

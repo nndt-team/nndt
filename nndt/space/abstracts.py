@@ -1,8 +1,7 @@
 import os
-from typing import *
-
 from anytree import NodeMixin, Resolver, RenderTree
 from colorama import Fore
+from typing import *
 
 
 class ExtendedNodeMixin(NodeMixin):
@@ -46,6 +45,7 @@ class AbstractRegion:
 class AbstractSource:
     def __init__(self):
         self.name = ""
+
     def __repr__(self):
         return Fore.LIGHTBLUE_EX + f'{str(self.__class__.__name__)}("{self.name}")' + Fore.RESET
 

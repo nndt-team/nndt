@@ -1,9 +1,8 @@
-import os
-
 import jax
 import jax.numpy as jnp
 import numpy as onp
 import optax
+import os
 from tqdm import tqdm
 
 from nndt.space.loaders import load_data, preload_all_possible, Object

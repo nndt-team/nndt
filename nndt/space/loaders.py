@@ -1,12 +1,11 @@
 import gc
-
 from anytree import PreOrderIter
 from sklearn.model_selection import train_test_split
 
 from nndt.space.regions import *
 from nndt.space.repr_mesh import *
-from nndt.space.repr_sdt import *
 from nndt.space.repr_prim import SphereSDF_Xyz2SDT, SphereSDF, SphereSDF_PureSDF
+from nndt.space.repr_sdt import *
 from nndt.space.sources import SphereSDFSource
 
 

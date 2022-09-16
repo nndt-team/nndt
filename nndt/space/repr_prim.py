@@ -36,7 +36,8 @@ class SphereSDF_Xyz2SDT(AbstractMethod, ExtendedNodeMixin):
 
     def __call__(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
         ns_sdt = self.parent.vec_prim(ns_xyz[:, 0], ns_xyz[:, 1], ns_xyz[:, 2])
-        return ns_sdt[...,jnp.newaxis]
+        return ns_sdt[..., jnp.newaxis]
+
 
 class SphereSDF_PureSDF(AbstractMethod, ExtendedNodeMixin):
 
@@ -51,6 +52,7 @@ class SphereSDF_PureSDF(AbstractMethod, ExtendedNodeMixin):
     def __call__(self) -> Callable[[float, float, float], float]:
         x0, y0, z0 = self.parent.center
         r = self.parent.radius
+
         def prim(x: float, y: float, z: float):
             sdf = (x - x0) ** 2 + (y - y0) ** 2 + (z - z0) ** 2 - r ** 2
             return sdf

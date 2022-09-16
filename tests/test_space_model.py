@@ -1,20 +1,15 @@
-import os
+import haiku as hk
+import jax
+import jax.numpy as jnp
 import unittest
 
-from anytree import Resolver
-
-from nndt.space.abstracts import *
 from nndt.space.loaders import *
 from nndt.space.regions import *
 from nndt.space.repr_mesh import *
 from nndt.space.repr_sdt import *
 from nndt.space.sources import *
-from nndt.space.utils import *
 from nndt.space.vtk_wrappers import *
 
-import haiku as hk
-import jax
-import jax.numpy as jnp
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):

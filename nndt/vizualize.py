@@ -1,10 +1,9 @@
-import os
-import pickle
-import time
-
 import jax.numpy as jnp
 import matplotlib.pylab as plt
 import numpy as onp
+import os
+import pickle
+import time
 from skimage import measure
 
 from nndt.space.repr_mesh import SaveMesh
@@ -39,7 +38,7 @@ class IteratorWithTimeMeasurements:
             raise StopIteration()
         self.counter += 1
 
-        return (self.counter - 1)
+        return self.counter - 1
 
     def __len__(self):
         return self.epochs

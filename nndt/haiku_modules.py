@@ -1,8 +1,7 @@
-from typing import *
-
 import haiku as hk
 import jax
 import jax.numpy as jnp
+from typing import *
 
 
 class DescConv(hk.Module):
@@ -23,7 +22,7 @@ class DescConv(hk.Module):
         layers = []
         for index in range(n_layers):
             layers.append(hk.Conv3D(
-                            output_channels= 2**index * kernels_in_first_layer,
+                            output_channels=2**index * kernels_in_first_layer,
                             kernel_shape=kernel_shape,
                             stride=stride,
                             w_init=hk.initializers.VarianceScaling(1.0, "fan_avg", "uniform"),
@@ -31,7 +30,6 @@ class DescConv(hk.Module):
                             padding="VALID"))
 
         self.layers = tuple(layers)
-
 
     def __call__(self, inputs):
         out = inputs
