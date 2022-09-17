@@ -71,27 +71,39 @@ def assert_sum_equal_one(values):
 
 class BarycentricGridTestCase(unittest.TestCase):
 
+    def test_helper(self):
+        val = help_barycentric_grid((1, -1))
+        self.assertEqual("l1*e1 + (1-l1)*e2", val)
+        val = help_barycentric_grid((-1, 1))
+        self.assertEqual("(1-l1)*e1 + l1*e2", val)
+        val = help_barycentric_grid((1, 0, 2))
+        self.assertEqual("l1*e1 + (1-(l1+l2))*e2 + l2*e3", val)
+        val = help_barycentric_grid((1, (-1, -2), 2))
+        self.assertEqual("l1*e1 + (1-l1)*(1-l2)*e2 + l2*e3", val)
+        val = help_barycentric_grid(((-1, -2), (-1, 2), (1, -2), (1, 2)))
+        self.assertEqual("(1-l1)*(1-l2)*e1 + (1-l1)*l2*e2 + l1*(1-l2)*e3 + l1*l2*e4", val)
+
     def test_linear(self):
-        # l1*e1 + (1-l2)*e2
-        coords = barycentric_grid(order= (1, -1),
-                                  spacing= (0, 3))
+        # l1*e1 + (1-l1)*e2
+        coords = barycentric_grid(order = (1, -1),
+                                  spacing = (0, 3))
         assert_sum_equal_one(coords)
 
-        jnp.allclose([[0., 1.],
-                      [0.5, 0.5],
-                      [1., 0.]], coords)
+        jnp.allclose(jnp.array([[0., 1.],
+                                [0.5, 0.5],
+                                [1., 0.]]), coords)
 
     def test_linear_inverted(self):
-        # (1-l1)*e1 + l2*e2
+        # (1-l1)*e1 + l1*e2
         coords = barycentric_grid(order = (-1, 1),
                                   spacing = (0, 3),
                                   filter_negative = True)
 
         assert_sum_equal_one(coords)
 
-        jnp.allclose([[1., 0.],
-                      [0.5, 0.5],
-                      [0., 1.]], coords)
+        jnp.allclose(jnp.array([[1., 0.],
+                                [0.5, 0.5],
+                                [0., 1.]]), coords)
 
     def test_ternary(self):
         # l1*e1 + (1-(l1+l2))*e2 + l2*e3
@@ -101,12 +113,12 @@ class BarycentricGridTestCase(unittest.TestCase):
 
         assert_sum_equal_one(coords)
 
-        jnp.allclose([[0.0, 1.0, 0.0],
-                      [0.0, 0.5, 0.5],
-                      [0.0, 0.0, 1.0],
-                      [0.5, 0.5, 0.0],
-                      [0.5, 0.0, 0.5],
-                      [1.0, 0.0, 0.0]], coords)
+        jnp.allclose(jnp.array([[0.0, 1.0, 0.0],
+                                [0.0, 0.5, 0.5],
+                                [0.0, 0.0, 1.0],
+                                [0.5, 0.5, 0.0],
+                                [0.5, 0.0, 0.5],
+                                [1.0, 0.0, 0.0]]), coords)
 
     def test_ternary_without_negative_filter(self):
         # l1*e1 + (1-(l1+l2))*e2 + l2*e3
@@ -116,52 +128,51 @@ class BarycentricGridTestCase(unittest.TestCase):
 
         assert_sum_equal_one(coords)
 
-        jnp.allclose([[0.0, 1.0, 0.0],
-                      [0.0, 0.5, 0.5],
-                      [0.0, 0.0, 1.0],
-                      [0.5, 0.5, 0.0],
-                      [0.5, 0.0, 0.5],
-                      [0.5, -0.5, 1.0],
-                      [1.0, 0.0, 0.0],
-                      [1.0, -0.5, 0.5],
-                      [1.0, -1.0, 1.0]], coords)
+        jnp.allclose(jnp.array([[0.0, 1.0, 0.0],
+                                [0.0, 0.5, 0.5],
+                                [0.0, 0.0, 1.0],
+                                [0.5, 0.5, 0.0],
+                                [0.5, 0.0, 0.5],
+                                [0.5, -0.5, 1.0],
+                                [1.0, 0.0, 0.0],
+                                [1.0, -0.5, 0.5],
+                                [1.0, -1.0, 1.0]]), coords)
 
     def test_replenishment_without_negative_filter(self):
-        # l1*e1 + (1-(l1+l2))*e2 + l2*e3
+        # l1*e1 + (1-l1)*(1-l2)*e2 + l2*e3
         coords = barycentric_grid(order = (1, (-1,-2), 2),
                                   spacing = (0, 3, 3),
                                   filter_negative = False)
 
         assert_sum_equal_one(coords)
 
-        jnp.allclose([[0.0, 1.0, 0.0],
-                      [0.0, 0.5, 0.5],
-                      [0.0, 0.0, 1.0],
-                      [0.5, 0.5, 0.0],
-                      [0.5, 0.0, 0.5],
-                      [0.5, -0.5, 1.0],
-                      [1.0, 0.0, 0.0],
-                      [1.0, -0.5, 0.5],
-                      [1.0, -1.0, 1.0]], coords)
+        jnp.allclose(jnp.array([[0.0, 1.0, 0.0],
+                                [0.0, 0.5, 0.5],
+                                [0.0, 0.0, 1.0],
+                                [0.5, 0.5, 0.0],
+                                [0.5, 0.25, 0.5],
+                                [0.5, 0.0, 1.0],
+                                [1.0, 0.0, 0.0],
+                                [1.0, 0.0, 0.5],
+                                [1.0, 0.0, 1.0]]), coords)
 
     def test_square(self):
-        # (1-l1)*(1-l2)*e1 + (l1-1)*l2*e2 + l1*(1-l2)*e3 + l1*l2*e4
+        # (1-l1)*(1-l2)*e1 + (1-l1)*l2*e2 + l1*(1-l2)*e3 + l1*l2*e4
         coords = barycentric_grid(order = ((-1, -2), (-1, 2), (1, -2), (1, 2)),
                                   spacing = (0, 3, 3),
                                   filter_negative = True)
 
         assert_sum_equal_one(coords)
 
-        jnp.allclose([[1.0, 0.0, 0.0, 0.0],
-                      [0.5, 0.5, 0.0, 0.0],
-                      [0.0, 1.0, 0.0, 0.0],
-                      [0.5, 0.0, 0.5, 0.0],
-                      [0.25, 0.25, 0.25, 0.25],
-                      [0.0, 0.5, 0.0, 0.5],
-                      [0.0, 0.0, 1.0, 0.0],
-                      [0.0, 0.0, 0.5, 0.5],
-                      [0.0, 0.0, 0.0, 1.0]], coords)
-
+        jnp.allclose(jnp.array([[1.0, 0.0, 0.0, 0.0],
+                                [0.5, 0.5, 0.0, 0.0],
+                                [0.0, 1.0, 0.0, 0.0],
+                                [0.5, 0.0, 0.5, 0.0],
+                                [0.25, 0.25, 0.25, 0.25],
+                                [0.0, 0.5, 0.0, 0.5],
+                                [0.0, 0.0, 1.0, 0.0],
+                                [0.0, 0.0, 0.5, 0.5],
+                                [0.0, 0.0, 0.0, 1.0]]), coords)
 
 
 if __name__ == '__main__':

@@ -130,7 +130,106 @@ def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
     return vec_prim, vec_prim_x, vec_prim_y, vec_prim_z
 
 
+def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
+    order_adv = [((v,) if isinstance(v, int) else v) for v in order]
+
+    polynomial = ""
+    polynomial_sub = ""
+
+    for ind_code, code in enumerate(order_adv):
+        expr = ""
+        expr_sub = ""
+        for ind_iter, iter_ in enumerate(code):
+            if iter_ == 0:
+                expr += f"X*"
+            elif iter_ > 0:
+                expr += f"l{iter_}*"
+                expr_sub += f"l{iter_}+"
+            elif iter_ < 0:
+                expr += f"(1-l{-iter_})*"
+                expr_sub += f"(1-l{-iter_})+"
+            if ind_iter == len(code)-1:
+                expr = expr[:-1]
+        polynomial += f"{expr}*e{ind_code+1} + "
+        polynomial_sub += f"{expr_sub}"
+        if ind_code == len(order_adv) - 1:
+            polynomial = polynomial[:-3]
+            polynomial_sub = polynomial_sub[:-1]
+
+    polynomial = polynomial.replace("X", f"(1-({polynomial_sub}))")
+
+    return polynomial
+
+
 def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
                      spacing: Sequence[int] = (0, 3),
-                     filter_negative = True):
-    pass
+                     filter_negative: bool = True):
+    assert ((len(order) >= 2),
+            "The `order` parameter must include more than 1 iterator.")
+    assert ((len(spacing) >= 2),
+            "The `spacing` parameter must include more than 1 iterator.")
+    assert (((spacing[0] == 0) or (spacing[0] is None)),
+            "First value in spacing must be 0, because zero iterator is not used.")
+
+    order_adv = [((v,) if isinstance(v, int) else v) for v in order]
+    flat_flat_order = [element for x in order_adv for element in x]
+
+    assert (jnp.max(jnp.abs(jnp.array(flat_flat_order))) > len(spacing),
+            "Index of iterator in `order` overcomes the number of iterators in `spacing`.")
+    assert (jnp.sum(jnp.array(flat_flat_order) == 0) > 1,
+            "Only one 0 is possible in `order`. Zero shows replenished coefficient.")
+
+    lin_spaces = [[0., 0.]] + [jnp.linspace(0, 1, s) for s in spacing[1:]]
+    iter_list = [0]*len(spacing)
+    ret = []
+
+    while iter_list[0] < 1:
+
+        # Collect cases from current iterator states
+        case = []
+        case_sub = 0.
+        replace_ind = None
+        for ord_ind, ord in enumerate(order_adv):
+            val = 1.
+            val_sub = 1.
+            for ord_ind2, ord2 in enumerate(ord):
+                if ord2 == 0:
+                    val *= 0.
+                    val_sub *= 0.
+                    replace_ind = ord_ind
+                elif ord2 > 0:
+                    val *= lin_spaces[ord2][iter_list[ord2]]
+                    val_sub *= lin_spaces[ord2][iter_list[ord2]]
+                elif ord2 < 0:
+                    val *= (1. - lin_spaces[-ord2][iter_list[-ord2]])
+                    val_sub *= (1. - lin_spaces[-ord2][iter_list[-ord2]])
+
+            case.append(float(val))
+            case_sub += val_sub
+
+        if replace_ind is not None:
+            case[replace_ind] = float(1 - case_sub)
+
+        # Add this case or filter if negative values are not allowed
+        here_is_negative = False
+        for i in case:
+            if i < 0.:
+                here_is_negative = True
+        if (not here_is_negative) or (not filter_negative and here_is_negative):
+            ret.append(case)
+
+        # Update iterators from the last
+        iter_list[-1] += 1
+        for ind in reversed(range(len(iter_list))):
+            if iter_list[ind] >= len(lin_spaces[ind]):
+                iter_list[ind] = 0
+                iter_list[ind-1] += 1
+
+    ret = jnp.array(ret)
+    return ret
+
+
+
+
+
+
