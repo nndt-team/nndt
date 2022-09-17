@@ -1,3 +1,5 @@
+from typing import *
+
 import jax
 import jax.numpy as jnp
 from jax.random import KeyArray
@@ -126,3 +128,9 @@ def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
     vec_prim_z = jax.vmap(prim_z)
 
     return vec_prim, vec_prim_x, vec_prim_y, vec_prim_z
+
+
+def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
+                     spacing: Sequence[int] = (0, 3),
+                     filter_negative = True):
+    pass
