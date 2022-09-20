@@ -30,6 +30,9 @@ jobs:
       - name: Test requirements installation
         run: python setup.py install
 
+      - name: Prepare pacient data
+        run: 7z x tests/acdc_for_test.7z
+
       - name: Generate coverage report
         run: |
           python setup.py install
@@ -38,9 +41,7 @@ jobs:
           pytest --cov=./ --cov-report=xml
 
       - name: Run unit tests
-        run: |
-          7z x tests/acdc_for_test.7z
-          pytest tests/*.py
+        run: pytest tests/*.py
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
