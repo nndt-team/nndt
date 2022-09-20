@@ -1,3 +1,4 @@
+import pickle
 from abc import abstractmethod
 from collections import namedtuple
 from typing import NamedTuple, Callable
@@ -7,7 +8,9 @@ import jax
 import jax.numpy as jnp
 from jax.random import KeyArray
 
+import nndt
 from nndt.haiku_modules import DescConv
+
 
 
 class AbstractTrainableTask:
@@ -20,6 +23,68 @@ class AbstractTrainableTask:
     def init_and_functions(self, rng_key: KeyArray) -> (namedtuple, namedtuple):
         pass
 
+class SimpleSDF(AbstractTrainableTask):
+    FUNC = namedtuple("SimpleSDF_DATA", ["sdf", "vec_sdf",
+                                          "sdf_dx", "sdf_dy", "sdf_dz",
+                                          "vec_sdf_dx", "vec_sdf_dy", "vec_sdf_dz",
+                                          "vec_main_loss"])
+
+    class DATA(NamedTuple):
+        X: jnp.ndarray  # [N]
+        Y: jnp.ndarray  # [N]
+        Z: jnp.ndarray  # [N]
+        SDF: jnp.ndarray  # [N]
+
+        def __add__(self, other):
+            return SimpleSDF.DATA(X=jnp.concatenate([self.X, other.X], axis=0),
+                                   Y=jnp.concatenate([self.Y, other.Y], axis=0),
+                                   Z=jnp.concatenate([self.Z, other.Z], axis=0),
+                                   SDF=jnp.concatenate([self.SDF, other.SDF], axis=0))
+
+    def __init__(self,
+                 mlp_layers=(32, 32, 32, 32, 32, 32, 32, 32, 1),
+                 batch_size=64*64*64):
+        self.mlp_layers = mlp_layers
+        self.batch_size = batch_size
+        self._init_data = SimpleSDF.DATA(X=jnp.zeros(self.batch_size),
+                                          Y=jnp.zeros(self.batch_size),
+                                          Z=jnp.zeros(self.batch_size),
+                                          SDF=jnp.zeros(self.batch_size))
+
+    def init_and_functions(self, rng_key: KeyArray) -> (namedtuple, namedtuple):
+        def constructor():
+            def f_sdf(x, y, z):
+                vec = jnp.hstack([x, y, z])
+                net = hk.nets.MLP(output_sizes=self.mlp_layers,
+                                  activation=jnp.tanh)
+                return jnp.squeeze(net(vec))
+
+            vec_f_sdf = hk.vmap(f_sdf, in_axes=(0, 0, 0), split_rng=False)
+
+            def vec_main_loss(X, Y, Z, SDF):
+                return jnp.mean((vec_f_sdf(X, Y, Z) - SDF) ** 2)
+
+            grad_x = hk.grad(f_sdf, argnums=0)
+            grad_y = hk.grad(f_sdf, argnums=1)
+            grad_z = hk.grad(f_sdf, argnums=2)
+
+            vec_grad_x = hk.vmap(grad_x, in_axes=(0, 0, 0), split_rng=False)
+            vec_grad_y = hk.vmap(grad_y, in_axes=(0, 0, 0), split_rng=False)
+            vec_grad_z = hk.vmap(grad_z, in_axes=(0, 0, 0), split_rng=False)
+
+            def init(X, Y, Z, SDF):
+                return vec_main_loss(X, Y, Z, SDF)
+
+            return init, ApproximateSDF.FUNC(sdf=f_sdf, vec_sdf=vec_f_sdf,
+                                             sdf_dx=grad_x, sdf_dy=grad_y, sdf_dz=grad_z,
+                                             vec_sdf_dx=vec_grad_x, vec_sdf_dy=vec_grad_y, vec_sdf_dz=vec_grad_z,
+                                             vec_main_loss=vec_main_loss)
+
+        init, function_tuple = hk.multi_transform(constructor)
+        functions = SimpleSDF.FUNC(*function_tuple)
+        init_params = init(rng_key, *tuple(self._init_data))
+
+        return init_params, functions
 
 class ApproximateSDF(AbstractTrainableTask):
     FUNC = namedtuple("ApproximateSDF_DATA", ["sdf", "vec_sdf",
