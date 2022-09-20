@@ -1,0 +1,12 @@
+coverage:
+  range: 70..90
+  round: down
+  precision: 2
+
+fixes:
+  - "/home/runner/work/nndt/nndt/::"
+
+ignore:
+  - "setup.py"
+  - "__init__.py"
+  - "tests/*.py"
