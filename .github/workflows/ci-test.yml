@@ -7,23 +7,44 @@ on:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  codecov:
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.10
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@master
         with:
           python-version: '3.10'
 
-      - name: Install pytest
-        run: pip install pytest
+      - name: Code style fixing
+        run: |
+          pip install black
+          black --target-version=py310 .
 
       - name: Test requirements installation
         run: python setup.py install
 
-      - name: Prepare test data
-        run: 7z x tests/acdc_for_test.7z
+      - name: Generate coverage report
+        run: |
+          python setup.py install
+          pip install pytest
+          pip install pytest-cov
+          pytest --cov=./ --cov-report=xml
 
       - name: Run unit tests
-        run: pytest tests/*.py
+        run: |
+          7z x tests/acdc_for_test.7z
+          pytest tests/*.py
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
