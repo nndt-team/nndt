@@ -36,6 +36,7 @@ def preload_all_possible(space: Space,
 
             _ = Xyz2SDT(repr)
             _ = Xyz2LocalSDT(repr)
+            _ = TrainSDT2SDF(repr)
 
         if isinstance(node, SphereSDFSource):
             repr = SphereSDF(node, name="repr")

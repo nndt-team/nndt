@@ -75,7 +75,7 @@ class SimpleSDF(AbstractTrainableTask):
             def init(X, Y, Z, SDF):
                 return vec_main_loss(X, Y, Z, SDF)
 
-            return init, ApproximateSDF.FUNC(sdf=f_sdf, vec_sdf=vec_f_sdf,
+            return init, SimpleSDF.FUNC(sdf=f_sdf, vec_sdf=vec_f_sdf,
                                              sdf_dx=grad_x, sdf_dy=grad_y, sdf_dz=grad_z,
                                              vec_sdf_dx=vec_grad_x, vec_sdf_dy=vec_grad_y, vec_sdf_dz=vec_grad_z,
                                              vec_main_loss=vec_main_loss)
