@@ -36,6 +36,12 @@ def preload_all_possible(space: Space,
 
             _ = Xyz2SDT(repr)
             _ = Xyz2LocalSDT(repr)
+            _ = TrainSDT2SDF(repr)
+
+        if isinstance(node, SDFPKLSource):
+            repr = SDFRepr.load_from_json(node)
+            _ = Xyz2SDT(repr)
+            _ = Xyz2LocalSDT(repr)
 
         if isinstance(node, SphereSDFSource):
             repr = SphereSDF(node, name="repr")
@@ -48,11 +54,14 @@ def preload_all_possible(space: Space,
 def load_data(name_list,
               mesh_list: Optional[Sequence[str]] = None,
               sdt_list: Optional[Sequence[str]] = None,
+              sdfpkl_list: Optional[Sequence[str]] = None,
               test_size: Optional[float] = None) -> Space:
     if mesh_list is not None:
         assert (len(name_list) == len(mesh_list))
     if sdt_list is not None:
         assert (len(name_list) == len(sdt_list))
+    if sdfpkl_list is not None:
+        assert (len(name_list) == len(sdfpkl_list))
 
     if test_size is None:
         space = Space("main")
@@ -63,6 +72,8 @@ def load_data(name_list,
                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
             if sdt_list is not None:
                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
+            if sdfpkl_list is not None:
+                sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
     else:
         assert (0.0 < test_size < 1.0)
         space = Space("main")
@@ -78,6 +89,8 @@ def load_data(name_list,
                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
             if sdt_list is not None:
                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
+            if sdfpkl_list is not None:
+                sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
 
         group_test = Group("test", parent=space)
         for ind in index_test:
@@ -87,5 +100,7 @@ def load_data(name_list,
                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
             if sdt_list is not None:
                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
+            if sdfpkl_list is not None:
+                sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
 
     return space
