@@ -1,4 +1,5 @@
 import pickle
+import warnings
 
 import jax
 import jax.numpy as jnp
@@ -8,13 +9,26 @@ from tqdm import tqdm
 import nndt
 from nndt.math_core import grid_in_cube
 from nndt.space.abstracts import *
-from nndt.space.sources import SDTSource
+from nndt.space.sources import SDTSource, SDFPKLSource
 from nndt.space.utils import downup_update_bbox
 from nndt.space.vtk_wrappers import *
 from trainable_task import SimpleSDF
 
+from packaging import version
 
-class SDTRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
+
+class AbstractSDXRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
+
+    @abstractmethod
+    def ps_xyz2sdt(self, ps_xyz: onp.ndarray) -> onp.ndarray:
+        pass
+
+    @abstractmethod
+    def ns_xyz2sdt(self, ns_xyz: onp.ndarray) -> onp.ndarray:
+        pass
+
+
+class SDTRepr(AbstractSDXRepr):
     MAGIC_CORRECTION = 0.503  # This is absolutely magic coefficient that reduce error between bboxes to 0.49075 mm
 
     def __init__(self, parent: FileSource, sdt_explicit_array2: SDTExplicitArray,
@@ -43,12 +57,12 @@ class SDTRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
 
     def params_to_json(self):
         return {"physical_center": self.physical_center,
-                 "physical_bbox": self.physical_bbox,
-                 "normed_center": self.normed_center,
-                 "normed_bbox": self.normed_bbox,
-                 "scale_physical2normed": self.scale_physical2normed}
+                "physical_bbox": self.physical_bbox,
+                "normed_center": self.normed_center,
+                "normed_bbox": self.normed_bbox,
+                "scale_physical2normed": self.scale_physical2normed}
 
-    def unload_mesh(self):
+    def unload_data(self):
         self._sdt_explicit_array2.unload_data()
 
     def is_data_load(self):
@@ -168,7 +182,7 @@ class TrainSDT2SDF(AbstractMethod, ExtendedNodeMixin):
                  learning_rate=0.006,
                  epochs=10001):
 
-        kwargs = {"mlp_layers": tuple([width]*depth + [1]),
+        kwargs = {"mlp_layers": tuple([width] * depth + [1]),
                   "batch_size": spacing[0] * spacing[1] * spacing[2]}
 
         task = SimpleSDF(**kwargs)
@@ -201,6 +215,90 @@ class TrainSDT2SDF(AbstractMethod, ExtendedNodeMixin):
                              "trainable_task": kwargs,
                              "history_loss": loss_history,
                              "params": params},
-                            open(filename+".pkl", 'wb'))
+                            open(filename + ".pkl", 'wb'))
                 min_loss = loss
 
+
+class SDFRepr(AbstractSDXRepr):
+
+    MAGIC_CORRECTION = 0.503  # This is absolutely magic coefficient that reduce error between bboxes to 0.49075 mm
+
+    def __init__(self, parent: SDFPKLSource,
+                 trainable_task: SimpleSDF,
+                 trainable_params,
+                 physical_center: (float, float, float),
+                 physical_bbox: ((float, float, float), (float, float, float)),
+                 normed_center: (float, float, float),
+                 normed_bbox: ((float, float, float), (float, float, float)),
+                 scale_physical2normed: float,
+                 _ndim=3,
+                 _scale=1.,
+                 name=""):
+        super(SDFRepr, self).__init__(_ndim=_ndim,
+                                      _bbox=normed_bbox,
+                                      name=name)
+        self.name = name
+        self.parent = parent
+
+        self.trainable_task = trainable_task
+        self.trainable_params = trainable_params
+
+        self.physical_center = onp.array(physical_center)
+        self.physical_bbox = physical_bbox
+        self.normed_center = onp.array(normed_center)
+        self.normed_bbox = normed_bbox
+
+        self.scale_physical2normed = scale_physical2normed
+        self._print_color = Fore.GREEN
+
+    def ps_xyz2sdt(self, ps_xyz: onp.ndarray) -> onp.ndarray:
+        ns_xyz = (ps_xyz - self.physical_center) / self.scale_physical2normed + self.normed_center
+        ns_sdf = self.ns_xyz2sdt(ns_xyz)
+        ps_sdt = ns_sdf * self.scale_physical2normed
+
+        return ps_sdt
+
+    def ns_xyz2sdt(self, ns_xyz: onp.ndarray) -> onp.ndarray:
+        rng = jax.random.PRNGKey(42)
+        ns_sdf = self.trainable_task.FUNC.vec_sdf(self.trainable_params, rng,
+                                                  ns_xyz[:, 0], ns_xyz[:, 1], ns_xyz[:, 2])
+        return ns_sdf
+
+    def unload_data(self):
+        warnings.warn("Data unloading is not implemented yet for SDFRepr!")
+        pass
+
+    def is_data_load(self) -> bool:
+        return True
+
+    @classmethod
+    def load_from_json(cls, source: SDFPKLSource):
+        with open(source.filepath, "rb") as input_file:
+            result = pickle.load(input_file)
+
+            version_ = result["version"]
+            repr_ = result["repr"]
+            trainable_task_ = result["trainable_task"]
+            history_loss_ = result["history_loss"]
+            params_ = result["params"]
+
+        if version.parse(nndt.__version__) < version.parse(version_):
+            warnings.warn("Loaded neural network was created on earlier version of NNDT!")
+
+        task = SimpleSDF(**trainable_task_)
+        rng = jax.random.PRNGKey(42)
+        _, _ = task.init_and_functions(rng)
+
+        sdf_repr = SDFRepr(parent=source,
+                           trainable_task = task,
+                           trainable_params = params_,
+                           physical_center = repr_["physical_center"],
+                           physical_bbox = repr_["physical_bbox"],
+                           normed_center = repr_["normed_center"],
+                           normed_bbox = repr_["normed_bbox"],
+                           scale_physical2normed = repr_["scale_physical2normed"],
+                           _ndim=3,
+                           _scale=1.,
+                           name="")
+
+        return sdf_repr
