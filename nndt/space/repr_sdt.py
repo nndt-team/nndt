@@ -12,7 +12,7 @@ from nndt.space.abstracts import *
 from nndt.space.sources import SDTSource, SDFPKLSource
 from nndt.space.utils import downup_update_bbox
 from nndt.space.vtk_wrappers import *
-from trainable_task import SimpleSDF
+from nndt.trainable_task import SimpleSDF
 
 from packaging import version
 
