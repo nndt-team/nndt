@@ -121,7 +121,7 @@ class SDTRepr(AbstractSDXRepr):
 
 class Xyz2SDT(AbstractMethod, ExtendedNodeMixin):
 
-    def __init__(self, parent: SDTRepr):
+    def __init__(self, parent: AbstractSDXRepr):
         super(Xyz2SDT, self).__init__()
         self.name = "xyz2sdt"
         self.parent = parent
@@ -136,7 +136,7 @@ class Xyz2SDT(AbstractMethod, ExtendedNodeMixin):
 
 class Xyz2LocalSDT(AbstractMethod, ExtendedNodeMixin):
 
-    def __init__(self, parent: SDTRepr):
+    def __init__(self, parent: AbstractSDXRepr):
         super(Xyz2LocalSDT, self).__init__()
         self.name = "xyz2local_sdt"
         self.parent = parent
@@ -233,7 +233,7 @@ class SDFRepr(AbstractSDXRepr):
                  scale_physical2normed: float,
                  _ndim=3,
                  _scale=1.,
-                 name=""):
+                 name="repr"):
         super(SDFRepr, self).__init__(_ndim=_ndim,
                                       _bbox=normed_bbox,
                                       name=name)
@@ -251,6 +251,9 @@ class SDFRepr(AbstractSDXRepr):
         self.scale_physical2normed = scale_physical2normed
         self._print_color = Fore.GREEN
 
+        rng = jax.random.PRNGKey(42)
+        _, self.F = self.trainable_task.init_and_functions(rng)
+
     def ps_xyz2sdt(self, ps_xyz: onp.ndarray) -> onp.ndarray:
         ns_xyz = (ps_xyz - self.physical_center) / self.scale_physical2normed + self.normed_center
         ns_sdf = self.ns_xyz2sdt(ns_xyz)
@@ -259,9 +262,17 @@ class SDFRepr(AbstractSDXRepr):
         return ps_sdt
 
     def ns_xyz2sdt(self, ns_xyz: onp.ndarray) -> onp.ndarray:
+        ret_shape = list(ns_xyz.shape)
+        ret_shape[-1] = 1; ret_shape = tuple(ret_shape)
+
+        ns_xyz_flat = ns_xyz.reshape((-1,3))
         rng = jax.random.PRNGKey(42)
-        ns_sdf = self.trainable_task.FUNC.vec_sdf(self.trainable_params, rng,
-                                                  ns_xyz[:, 0], ns_xyz[:, 1], ns_xyz[:, 2])
+        ns_sdf = self.F.vec_sdf(self.trainable_params, rng,
+                              ns_xyz_flat[:, 0],
+                              ns_xyz_flat[:, 1],
+                              ns_xyz_flat[:, 2])
+
+        ns_sdf = ns_sdf.reshape(ret_shape)
         return ns_sdf
 
     def unload_data(self):
@@ -286,8 +297,6 @@ class SDFRepr(AbstractSDXRepr):
             warnings.warn("Loaded neural network was created on earlier version of NNDT!")
 
         task = SimpleSDF(**trainable_task_)
-        rng = jax.random.PRNGKey(42)
-        _, _ = task.init_and_functions(rng)
 
         sdf_repr = SDFRepr(parent=source,
                            trainable_task = task,
@@ -296,9 +305,6 @@ class SDFRepr(AbstractSDXRepr):
                            physical_bbox = repr_["physical_bbox"],
                            normed_center = repr_["normed_center"],
                            normed_bbox = repr_["normed_bbox"],
-                           scale_physical2normed = repr_["scale_physical2normed"],
-                           _ndim=3,
-                           _scale=1.,
-                           name="")
+                           scale_physical2normed = repr_["scale_physical2normed"])
 
         return sdf_repr
