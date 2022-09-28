@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     os.makedirs(LOG_FOLDER, exist_ok=True)
 
-    folder = '../tests/acdc_for_test'
+    folder = '../../tests/acdc_for_test'
     name_list = os.listdir(folder)
     name_list.sort()
     mesh_list = [f"{folder}/{p}/colored.obj" for p in name_list]

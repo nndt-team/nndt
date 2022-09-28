@@ -198,7 +198,7 @@ class ApproximateSDFLipMLP(AbstractTrainableTask):
         self.batch_size = batch_size
         self.model_number = model_number
 
-        self._init_data = ApproximateSDF.DATA(X=jnp.zeros(self.batch_size),
+        self._init_data = ApproximateSDFLipMLP.DATA(X=jnp.zeros(self.batch_size),
                                               Y=jnp.zeros(self.batch_size),
                                               Z=jnp.zeros(self.batch_size),
                                               T=jnp.zeros(self.batch_size),
