@@ -1,0 +1,158 @@
+Space("main", bbox="((-0.95, -0.97, -0.97), (0.95, 0.97, 0.97))")
+├── Group("default", bbox="((-0.95, -0.97, -0.97), (0.95, 0.97, 0.97))")
+│   ├── Object("patient009", bbox="((-0.95, -0.91, -0.91), (0.95, 0.91, 0.91))")
+│   │   ├── MeshSource("mesh", filename="colored.obj")
+│   │   │   └── MeshRepr("repr", bbox="((-0.95, -0.91, -0.91), (0.95, 0.91, 0.91))")
+│   │   │       ├── index2xyz(ns_index[1]) -> ns_xyz[3]
+│   │   │       ├── sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])
+│   │   │       ├── save_mesh(filepath, dict)
+│   │   │       ├── PointColorRepr("point_color")
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── SDTSource("sdt", filename="sdf.npy")
+│   │   │   └── SDTRepr("repr", bbox="((-0.94, -0.90, -0.90), (0.94, 0.90, 0.90))")
+│   │   │       ├── xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]
+│   │   │       ├── xyz2local_sdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_local_sdt[D,H,W,1]
+│   │   │       ├── train_sdt2sdf(filename, spacing=(64, 64, 64), width=32, depth=8, learning_rate=0.006, epochs=10001)
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   ├── sampling_uniform(N) -> xyz[N,3]
+│   │   └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   ├── Object("patient029", bbox="((-0.94, -0.97, -0.97), (0.94, 0.97, 0.97))")
+│   │   ├── MeshSource("mesh", filename="colored.obj")
+│   │   │   └── MeshRepr("repr", bbox="((-0.94, -0.97, -0.97), (0.94, 0.97, 0.97))")
+│   │   │       ├── index2xyz(ns_index[1]) -> ns_xyz[3]
+│   │   │       ├── sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])
+│   │   │       ├── save_mesh(filepath, dict)
+│   │   │       ├── PointColorRepr("point_color")
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── SDTSource("sdt", filename="sdf.npy")
+│   │   │   └── SDTRepr("repr", bbox="((-0.94, -0.97, -0.97), (0.94, 0.97, 0.97))")
+│   │   │       ├── xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]
+│   │   │       ├── xyz2local_sdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_local_sdt[D,H,W,1]
+│   │   │       ├── train_sdt2sdf(filename, spacing=(64, 64, 64), width=32, depth=8, learning_rate=0.006, epochs=10001)
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   ├── sampling_uniform(N) -> xyz[N,3]
+│   │   └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   ├── Object("patient049", bbox="((-0.95, -0.92, -0.92), (0.95, 0.92, 0.92))")
+│   │   ├── MeshSource("mesh", filename="colored.obj")
+│   │   │   └── MeshRepr("repr", bbox="((-0.95, -0.92, -0.92), (0.95, 0.92, 0.92))")
+│   │   │       ├── index2xyz(ns_index[1]) -> ns_xyz[3]
+│   │   │       ├── sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])
+│   │   │       ├── save_mesh(filepath, dict)
+│   │   │       ├── PointColorRepr("point_color")
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── SDTSource("sdt", filename="sdf.npy")
+│   │   │   └── SDTRepr("repr", bbox="((-0.95, -0.92, -0.92), (0.95, 0.92, 0.92))")
+│   │   │       ├── xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]
+│   │   │       ├── xyz2local_sdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_local_sdt[D,H,W,1]
+│   │   │       ├── train_sdt2sdf(filename, spacing=(64, 64, 64), width=32, depth=8, learning_rate=0.006, epochs=10001)
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   ├── sampling_uniform(N) -> xyz[N,3]
+│   │   └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   ├── Object("patient069", bbox="((-0.77, -0.67, -0.67), (0.77, 0.67, 0.67))")
+│   │   ├── MeshSource("mesh", filename="colored.obj")
+│   │   │   └── MeshRepr("repr", bbox="((-0.77, -0.67, -0.67), (0.77, 0.67, 0.67))")
+│   │   │       ├── index2xyz(ns_index[1]) -> ns_xyz[3]
+│   │   │       ├── sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])
+│   │   │       ├── save_mesh(filepath, dict)
+│   │   │       ├── PointColorRepr("point_color")
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── SDTSource("sdt", filename="sdf.npy")
+│   │   │   └── SDTRepr("repr", bbox="((-0.77, -0.67, -0.67), (0.77, 0.67, 0.67))")
+│   │   │       ├── xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]
+│   │   │       ├── xyz2local_sdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_local_sdt[D,H,W,1]
+│   │   │       ├── train_sdt2sdf(filename, spacing=(64, 64, 64), width=32, depth=8, learning_rate=0.006, epochs=10001)
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   ├── sampling_uniform(N) -> xyz[N,3]
+│   │   └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   ├── Object("patient089", bbox="((-0.92, -0.81, -0.81), (0.92, 0.81, 0.81))")
+│   │   ├── MeshSource("mesh", filename="colored.obj")
+│   │   │   └── MeshRepr("repr", bbox="((-0.92, -0.81, -0.81), (0.92, 0.81, 0.81))")
+│   │   │       ├── index2xyz(ns_index[1]) -> ns_xyz[3]
+│   │   │       ├── sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])
+│   │   │       ├── save_mesh(filepath, dict)
+│   │   │       ├── PointColorRepr("point_color")
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── SDTSource("sdt", filename="sdf.npy")
+│   │   │   └── SDTRepr("repr", bbox="((-0.92, -0.81, -0.81), (0.92, 0.81, 0.81))")
+│   │   │       ├── xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]
+│   │   │       ├── xyz2local_sdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_local_sdt[D,H,W,1]
+│   │   │       ├── train_sdt2sdf(filename, spacing=(64, 64, 64), width=32, depth=8, learning_rate=0.006, epochs=10001)
+│   │   │       ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   │       ├── sampling_uniform(N) -> xyz[N,3]
+│   │   │       └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   │   ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   │   ├── sampling_uniform(N) -> xyz[N,3]
+│   │   └── sampling_grid_with_shackle(N) -> xyz[N,3]
+│   ├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+│   ├── sampling_uniform(N) -> xyz[N,3]
+│   └── sampling_grid_with_shackle(N) -> xyz[N,3]
+├── sampling_grid(spacing=(D,H,W)) -> xyz[D,H,W,3]
+├── sampling_uniform(N) -> xyz[N,3]
+└── sampling_grid_with_shackle(N) -> xyz[N,3]
+
+min_loss = 0.016842: 100%|██████████| 10001/10001 [00:07<00:00, 1314.98it/s]
+min_loss = 0.011928: 100%|██████████| 10001/10001 [00:10<00:00, 953.10it/s]
+min_loss = 0.011887: 100%|██████████| 10001/10001 [00:14<00:00, 678.79it/s]
+min_loss = 0.011925: 100%|██████████| 10001/10001 [00:25<00:00, 386.30it/s]
+min_loss = 0.011337: 100%|██████████| 10001/10001 [00:45<00:00, 219.85it/s]
+min_loss = 0.025028: 100%|██████████| 10001/10001 [01:29<00:00, 112.03it/s]
+min_loss = 0.033914: 100%|██████████| 10001/10001 [02:58<00:00, 56.17it/s]
+min_loss = 0.007547: 100%|██████████| 10001/10001 [00:08<00:00, 1158.95it/s]
+min_loss = 0.002720: 100%|██████████| 10001/10001 [00:12<00:00, 781.10it/s]
+min_loss = 0.001432: 100%|██████████| 10001/10001 [00:20<00:00, 481.00it/s]
+min_loss = 0.000804: 100%|██████████| 10001/10001 [00:36<00:00, 271.55it/s]
+min_loss = 0.000614: 100%|██████████| 10001/10001 [01:09<00:00, 143.08it/s]
+min_loss = 0.000972: 100%|██████████| 10001/10001 [02:17<00:00, 72.57it/s]
+min_loss = 0.030129: 100%|██████████| 10001/10001 [04:32<00:00, 36.68it/s]
+min_loss = 0.003791: 100%|██████████| 10001/10001 [00:09<00:00, 1052.91it/s]
+min_loss = 0.000901: 100%|██████████| 10001/10001 [00:13<00:00, 721.06it/s]
+min_loss = 0.000424: 100%|██████████| 10001/10001 [00:24<00:00, 415.36it/s]
+min_loss = 0.000200: 100%|██████████| 10001/10001 [00:44<00:00, 224.64it/s]
+min_loss = 0.000165: 100%|██████████| 10001/10001 [01:26<00:00, 116.27it/s]
+min_loss = 0.000218: 100%|██████████| 10001/10001 [02:45<00:00, 60.36it/s]
+min_loss = 0.031334: 100%|██████████| 10001/10001 [05:33<00:00, 29.98it/s]
+min_loss = 0.001780: 100%|██████████| 10001/10001 [00:10<00:00, 924.44it/s]
+min_loss = 0.000644: 100%|██████████| 10001/10001 [00:17<00:00, 568.40it/s]
+min_loss = 0.000249: 100%|██████████| 10001/10001 [00:33<00:00, 302.48it/s]
+min_loss = 0.000119: 100%|██████████| 10001/10001 [01:00<00:00, 166.46it/s]
+min_loss = 0.000096: 100%|██████████| 10001/10001 [01:54<00:00, 87.40it/s]
+min_loss = 0.000115: 100%|██████████| 10001/10001 [04:00<00:00, 41.64it/s]
+min_loss = 0.033914: 100%|██████████| 10001/10001 [07:54<00:00, 21.08it/s]
+min_loss = 0.001207: 100%|██████████| 10001/10001 [00:14<00:00, 691.61it/s]
+min_loss = 0.000441: 100%|██████████| 10001/10001 [00:28<00:00, 347.03it/s]
+min_loss = 0.000120: 100%|██████████| 10001/10001 [00:55<00:00, 178.72it/s]
+min_loss = 0.000077: 100%|██████████| 10001/10001 [01:50<00:00, 90.73it/s]
+min_loss = 0.000089: 100%|██████████| 10001/10001 [03:52<00:00, 43.02it/s]
+min_loss = 0.003064: 100%|██████████| 10001/10001 [07:49<00:00, 21.29it/s]
+min_loss = 0.030803: 100%|██████████| 10001/10001 [15:52<00:00, 10.50it/s]
+min_loss = 0.000926: 100%|██████████| 10001/10001 [00:22<00:00, 439.55it/s]
+min_loss = 0.000336: 100%|██████████| 10001/10001 [00:47<00:00, 212.77it/s]
+min_loss = 0.000085: 100%|██████████| 10001/10001 [01:41<00:00, 98.76it/s]
+min_loss = 0.000063: 100%|██████████| 10001/10001 [03:22<00:00, 49.38it/s]
+min_loss = 0.000085: 100%|██████████| 10001/10001 [06:35<00:00, 25.27it/s]
+min_loss = 0.027869: 100%|██████████| 10001/10001 [13:03<00:00, 12.77it/s]
+min_loss = 0.030170: 100%|██████████| 10001/10001 [26:22<00:00,  6.32it/s]
+
+Process finished with exit code 0
