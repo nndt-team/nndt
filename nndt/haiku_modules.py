@@ -39,3 +39,67 @@ class DescConv(hk.Module):
             out = layer(out)
             out = activation(out)
         return out
+
+
+class LipLinear(hk.Module):
+
+    def __init__(self, output_size, name=None, activation: Callable[[jnp.ndarray], jnp.ndarray] = jax.nn.relu):
+        super().__init__(name=name)
+        self.output_size = output_size
+        self.activation = activation
+
+    def weight_normalization(self, W, softplus_c):
+        absrowsum = jnp.sum(jnp.abs(W), axis=1)
+        scale = jnp.minimum(1.0, softplus_c / absrowsum)
+        return W * scale[:, None]
+
+    def __call__(self, x):
+        input_size, output_size = x.shape[-1], self.output_size
+        w_init = hk.initializers.VarianceScaling(2.0, "fan_in", "truncated_normal")
+        W = hk.get_parameter("W", shape=[input_size, output_size], dtype=x.dtype, init=w_init)
+        b = hk.get_parameter("b", shape=[output_size], dtype=x.dtype, init=jnp.zeros)
+
+        def _c_init(shape: Sequence[int], dtype: Any) -> jnp.ndarray:
+            return jnp.max(jnp.sum(jnp.abs(W.T), axis=1))
+
+        c = hk.get_parameter("c", shape=(), dtype=x.dtype, init=_c_init)
+        W_ = self.weight_normalization(W.T, jax.nn.softplus(c)).T
+        out = self.activation(jnp.dot(x, W_) + b)
+        return out
+
+    def get_lipschitz_loss(self):
+        c = hk.get_parameter("c", shape=(), init=jnp.zeros)
+        return jax.nn.softplus(c)
+
+
+class LipMLP(hk.Module):
+
+    def __init__(self, output_sizes: Iterable[int],
+                 name: Optional[str] = None):
+        super().__init__(name=name)
+        self.output_sizes = output_sizes
+
+        layers = []
+        output_sizes = tuple(output_sizes)
+        for index, output_size in enumerate(output_sizes[:-1]):
+            layers.append(LipLinear(output_size=output_size,
+                                    name="lip_mlp_%d" % index,
+                                    activation=jax.nn.tanh))
+        index, output_size = len(output_sizes) - 1, output_sizes[-1]
+        layers.append(LipLinear(output_size=output_size,
+                                name="lip_mlp_%d" % index,
+                                activation=lambda x: x))
+
+        self.layers = tuple(layers)
+
+    def __call__(self, inputs):
+        out = inputs
+        for i, layer in enumerate(self.layers):
+            out = layer(out)
+        return out
+
+    def get_lipschitz_loss(self):
+        out = 1.
+        for i, layer in enumerate(self.layers):
+            out = out * layer.get_lipschitz_loss()
+        return out

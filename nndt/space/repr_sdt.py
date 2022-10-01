@@ -307,4 +307,6 @@ class SDFRepr(AbstractSDXRepr):
                            normed_bbox = repr_["normed_bbox"],
                            scale_physical2normed = repr_["scale_physical2normed"])
 
+        downup_update_bbox(sdf_repr)
+
         return sdf_repr

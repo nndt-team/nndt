@@ -9,13 +9,11 @@ from nndt.space.loaders import load_data, preload_all_possible
 from nndt.trainable_task import ApproximateSDF
 from nndt.vizualize import BasicVizualization
 
-from tqdm import tqdm
-
 LEARNING_RATE = 0.006
 EPOCHS = 9001
-SHAPE = (128, 128, 128)
+SHAPE = (64, 64, 64)
 FLAT_SHAPE = SHAPE[0] * SHAPE[1] * SHAPE[2]
-EXP_NAME = 'sdt2sdf_check'
+EXP_NAME = 'sdt2sdf_default'
 LOG_FOLDER = f'./{EXP_NAME}/'
 LEVEL_SHIFT = 0.03
 
@@ -29,16 +27,12 @@ if __name__ == '__main__':
     name_list.sort()
     mesh_list = [f"{folder}/{p}/colored.obj" for p in name_list]
     sdt_list = [f"{folder}/{p}/sdf.npy" for p in name_list]
-    sdf_list = [f"sdt2sdf_default/{p}.pkl" for p in name_list]
-    space = load_data(name_list, mesh_list, sdt_list, sdf_list)
+    space = load_data(name_list, mesh_list, sdt_list)
     preload_all_possible(space)
     print(space.explore())
 
-    viz = BasicVizualization(LOG_FOLDER, EXP_NAME)
-    for patient in tqdm(name_list):
-        sampling = space[f'default/{patient}/sampling_grid'](spacing=SHAPE)
-        method1 = space[f'default/{patient}/sdt/repr/xyz2sdt']
-        method2 = space[f'default/{patient}/sdfpkl/repr/xyz2sdt']
-
-        viz.sdf_to_obj(f"{patient}_sdt", method1(sampling)[:, :, :, 0], level=LEVEL_SHIFT)
-        viz.sdf_to_obj(f"{patient}_sdf", method2(sampling)[:, :, :, 0], level=LEVEL_SHIFT)
+    for width in [2, 4, 8, 16, 32, 64]:
+        for depth in [1, 2, 4, 8, 16, 32, 64]:
+            for patient in name_list[:1]:
+                train = space[f'default/{patient}/sdt/repr/train_sdt2sdf']
+                train(f'./{EXP_NAME}/{depth}_{width}_{patient}', width=width, depth=depth)
