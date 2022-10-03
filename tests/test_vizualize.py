@@ -2,12 +2,14 @@ import os
 import shutil
 import unittest
 
-from vizualize import BasicVizualization
 import numpy as np
+
+from nndt.vizualize import BasicVizualization
 
 LOG_FOLDER = 'test_log'
 EXP_NAME = 'test_exp'
 EPOCHS = 100
+
 
 class MyTestCase(unittest.TestCase):
 
@@ -54,6 +56,7 @@ class MyTestCase(unittest.TestCase):
             if viz.is_print_on_epoch(epoch):
                 viz.draw_loss("TRAIN_LOSS", viz._records["loss"])
                 self.assertTrue(os.path.exists(f'./{LOG_FOLDER}/TRAIN_LOSS.jpg'))
+
 
 if __name__ == '__main__':
     unittest.main()
