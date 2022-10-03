@@ -11,7 +11,7 @@ EXP_NAME = 'test_exp'
 EPOCHS = 100
 
 
-class MyTestCase(unittest.TestCase):
+class VizualizeTestCase(unittest.TestCase):
 
     def tearDown(self) -> None:
         shutil.rmtree(f'./{LOG_FOLDER}')
