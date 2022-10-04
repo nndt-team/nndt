@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from space2 import *
+from nndt.space2 import *
 
 
 class MyTestCase(unittest.TestCase):
