@@ -37,6 +37,11 @@ FORBIDDEN_NAME = ['separator',
                   '_post_attach']
 
 
+def name_to_safename(name: str) -> str:
+    name_ = name.replace('.', '_') # TODO this replace only one symbol. This MUST be more replacements.
+    return name_
+
+
 class ExtendedNode(NodeMixin):
     resolver = Resolver('name')
 
@@ -45,7 +50,7 @@ class ExtendedNode(NodeMixin):
         if name in FORBIDDEN_NAME:
             raise ValueError(f'{name} cannot be used for the space element. This name is reserved by anytree package.')
 
-        self.name = name
+        self.name = name_to_safename(name)
         self.parent = parent
         self._print_color = _print_color
         self._prefix = _prefix
@@ -65,8 +70,17 @@ class ExtendedNode(NodeMixin):
     def __repr__(self):
         return self._print_color + f'{self._prefix}:{self.name}' + Fore.RESET
 
+    def _post_attach(self, parent):
+        if parent is not None:
+            setattr(parent, self.name, self)
+
+    def _post_detach(self, parent):
+        if parent is not None:
+            if hasattr(parent, self.name):
+                delattr(parent, self.name)
+
     def explore(self):
-        return RenderTree(self)
+        return RenderTree(self).__str__()
 
 
 class Space(ExtendedNode):
