@@ -1,5 +1,4 @@
 import unittest
-import os
 
 from nndt.space2 import *
 
@@ -39,6 +38,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(obj1, obj2)
         self.assertEqual(obj1, obj3)
         self.assertEqual(obj1, obj4)
+
     def test_explore(self):
         space = load_from_path("./acdc_for_test")
 

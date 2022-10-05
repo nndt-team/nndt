@@ -38,14 +38,14 @@ FORBIDDEN_NAME = ['separator',
 
 
 def name_to_safename(name: str) -> str:
-    name_ = name.replace('.', '_') # TODO this replace only one symbol. This MUST be more replacements.
+    name_ = name.replace('.', '_')  # TODO this replace only one symbol. This MUST be more replacements.
     return name_
 
 
 class ExtendedNode(NodeMixin):
     resolver = Resolver('name')
 
-    def __init__(self, name, parent=None, _print_color=None, _prefix: str ='UNDEFINED'):
+    def __init__(self, name, parent=None, _print_color=None, _prefix: str = 'UNDEFINED'):
         super(ExtendedNode, self).__init__()
         if name in FORBIDDEN_NAME:
             raise ValueError(f'{name} cannot be used for the space element. This name is reserved by anytree package.')
@@ -85,27 +85,29 @@ class ExtendedNode(NodeMixin):
 
 class Space(ExtendedNode):
     def __init__(self, name, parent=None):
-        super(Space, self).__init__(name, parent=parent, _print_color=Fore.RED, _prefix ='S')
+        super(Space, self).__init__(name, parent=parent, _print_color=Fore.RED, _prefix='S')
 
 
 class Group(ExtendedNode):
     def __init__(self, name, parent=None):
-        super(Group, self).__init__(name, parent=parent, _print_color=Fore.RED, _prefix ='G')
+        super(Group, self).__init__(name, parent=parent, _print_color=Fore.RED, _prefix='G')
 
 
 class Object3D(ExtendedNode):
     def __init__(self, name, parent=None):
-        super(Object3D, self).__init__(name, parent=parent, _print_color=Fore.BLUE, _prefix ='O3D')
+        super(Object3D, self).__init__(name, parent=parent, _print_color=Fore.BLUE, _prefix='O3D')
+
 
 class FileSource(ExtendedNode):
     def __init__(self, name, filepath, parent=None):
-        super(FileSource, self).__init__(name, parent=parent, _print_color=Fore.GREEN, _prefix ='S')
+        super(FileSource, self).__init__(name, parent=parent, _print_color=Fore.GREEN, _prefix='S')
         if not os.path.exists(filepath):
             raise FileNotFoundError()
         self.filepath = filepath
 
     def __repr__(self):
         return self._print_color + f'{self._prefix}:{self.name}' + Fore.WHITE + f" filepath='{self.filepath}'" + Fore.RESET
+
 
 def load_from_path(root_path):
     space = Space("space")
