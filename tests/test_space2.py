@@ -1,9 +1,11 @@
 import os.path
 import unittest
+import io
 
 from nndt.space2 import *
 
 FILE_TMP = "./test_file.space"
+FILE_TMP2 = "./test_file2.space"
 
 
 class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
@@ -11,6 +13,8 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
     def setUp(self) -> None:
         if os.path.exists(FILE_TMP):
             os.remove(FILE_TMP)
+        if os.path.exists(FILE_TMP2):
+            os.remove(FILE_TMP2)
 
     def test_load_from_path(self):
         space = load_from_path("./test_folder_tree")
@@ -63,6 +67,10 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space2 = load_space(FILE_TMP)
         print(text2 := space2.explore())
         self.assertEqual(text1, text2)
+        space2.save_space(FILE_TMP2)
+        with open(FILE_TMP, 'r') as fl:
+            with open(FILE_TMP2, 'r') as fl2:
+                self.assertEqual(fl.readlines(), fl2.readlines())
 
         space = load_from_path("./test_folder_tree")
         print(text1 := space.explore())
@@ -70,6 +78,10 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space2 = load_space(FILE_TMP)
         print(text2 := space2.explore())
         self.assertEqual(text1, text2)
+        space2.save_space(FILE_TMP2)
+        with open(FILE_TMP, 'r') as fl:
+            with open(FILE_TMP2, 'r') as fl2:
+                self.assertEqual(fl.readlines(), fl2.readlines())
 
     def test_to_json_and_from_json(self):
         space = load_from_path("./acdc_for_test")

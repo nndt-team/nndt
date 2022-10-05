@@ -82,13 +82,18 @@ def from_json(json: str):
 class ExtendedNode(NodeMixin):
     resolver = Resolver('name')
 
-    def __init__(self, name, parent=None, _print_color=None, _nodetype: str = 'UNDEFINED'):
+    def __init__(self, name: str,
+                 parent = None,
+                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 _print_color: str =None,
+                 _nodetype: str = 'UNDEFINED'):
         super(ExtendedNode, self).__init__()
         if name in FORBIDDEN_NAME:
             raise ValueError(f'{name} cannot be used for the space element. This name is reserved by anytree package.')
 
         self.name = _name_to_safename(name)
         self.parent = parent
+        self.bbox = bbox
         self._print_color = _print_color
         self._nodetype = _nodetype
 
@@ -107,6 +112,10 @@ class ExtendedNode(NodeMixin):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.RESET
 
+    def _print_bbox(self):
+        a = self.bbox
+        return f"(({a[0][0]:.02f}, {a[0][1]:.02f}), ({a[1][0]:.02f}, {a[1][1]:.02f}), ({a[2][0]:.02f}, {a[2][1]:.02f}))"
+
     def _post_attach(self, parent):
         if parent is not None:
             setattr(parent, self.name, self)
@@ -121,8 +130,10 @@ class ExtendedNode(NodeMixin):
 
 
 class Space(ExtendedNode):
-    def __init__(self, name, parent=None):
-        super(Space, self).__init__(name, parent=parent, _print_color=Fore.RED, _nodetype='S')
+    def __init__(self, name,
+                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 parent=None):
+        super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
         self.version = nndt.__version__
 
     def save_space(self, filepath: str):
@@ -136,28 +147,36 @@ class Space(ExtendedNode):
         return json_exp.export(self)
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' v{self.version}' + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
 
 
 class Group(ExtendedNode):
-    def __init__(self, name, parent=None):
-        super(Group, self).__init__(name, parent=parent, _print_color=Fore.RED, _nodetype='G')
+    def __init__(self, name,
+                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 parent=None):
+        super(Group, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='G')
 
 
 class Object3D(ExtendedNode):
-    def __init__(self, name, parent=None):
-        super(Object3D, self).__init__(name, parent=parent, _print_color=Fore.BLUE, _nodetype='O3D')
+    def __init__(self, name,
+                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 parent=None):
+        super(Object3D, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.BLUE, _nodetype='O3D')
 
+    def __repr__(self):
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
 
 class FileSource(ExtendedNode):
-    def __init__(self, name, filepath=None, parent=None):
-        super(FileSource, self).__init__(name, parent=parent, _print_color=Fore.GREEN, _nodetype='FS')
+    def __init__(self, name, filepath,
+                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 parent=None):
+        super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
         if not os.path.exists(filepath):
             raise FileNotFoundError()
         self.filepath = filepath
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f"'{self.filepath}'" + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.filepath}" + Fore.RESET
 
 
 def load_from_path(root_path):
