@@ -3,6 +3,7 @@ from typing import *
 
 from anytree import NodeMixin, Resolver, RenderTree
 from colorama import Fore
+import nndt
 
 FORBIDDEN_NAME = ['separator',
                   'parent',
@@ -86,7 +87,10 @@ class ExtendedNode(NodeMixin):
 class Space(ExtendedNode):
     def __init__(self, name, parent=None):
         super(Space, self).__init__(name, parent=parent, _print_color=Fore.RED, _prefix='S')
+        self.version = nndt.__version__
 
+    def __repr__(self):
+        return self._print_color + f'{self._prefix}:{self.name}' + Fore.WHITE + f' v{self.version}' + Fore.RESET
 
 class Group(ExtendedNode):
     def __init__(self, name, parent=None):
@@ -106,7 +110,7 @@ class FileSource(ExtendedNode):
         self.filepath = filepath
 
     def __repr__(self):
-        return self._print_color + f'{self._prefix}:{self.name}' + Fore.WHITE + f" filepath='{self.filepath}'" + Fore.RESET
+        return self._print_color + f'{self._prefix}:{self.name}' + Fore.WHITE + f"'{self.filepath}'" + Fore.RESET
 
 
 def load_from_path(root_path):
