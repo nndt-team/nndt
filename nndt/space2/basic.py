@@ -1,6 +1,7 @@
 import json
 import os
 from typing import *
+import fnmatch
 
 from anytree import NodeMixin, Resolver, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
@@ -57,7 +58,7 @@ def _nodecls_function(parent=None, **attrs):
         raise ValueError('_nodetype is not located in some node of space file')
 
     if attrs['_nodetype'] == 'FS':
-        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], attrs['filepath'], parent=parent)
+        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], attrs['filepath'], attrs['loader_type'], parent=parent)
     else:
         ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], parent=parent)
 
@@ -167,22 +168,37 @@ class Object3D(ExtendedNode):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
 
 class FileSource(ExtendedNode):
-    def __init__(self, name, filepath,
+    def __init__(self, name, filepath, loader_type,
                  bbox=((0., 0.), (0., 0.), (0., 0.)),
                  parent=None):
         super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
         if not os.path.exists(filepath):
             raise FileNotFoundError()
         self.filepath = filepath
+        self.loader_type = loader_type
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.filepath}" + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type} {self.filepath}" + Fore.RESET
 
 
-def load_from_path(root_path):
+def load_from_path(root_path,
+                   template_txt='*.txt',
+                   template_sdt='*sd[ft]*.npy',
+                   template_mesh_obj='*.obj'):
     space = Space("space")
 
-    def add_values(lst, fullpath):
+    def filename_to_loader_type(filename):
+        if fnmatch.fnmatch(filename, template_txt):
+            ret = 'txt'
+        elif fnmatch.fnmatch(filename, template_sdt):
+            ret = 'sdt'
+        elif fnmatch.fnmatch(filename, template_mesh_obj):
+            ret = 'mesh_obj'
+        else:
+            ret = 'undefined'
+        return ret
+
+    def add_values(lst, fullpath, filename):
         if len(lst) >= 2:
             current_node_ = space
             for ind, name_ in enumerate(lst):
@@ -195,14 +211,14 @@ def load_from_path(root_path):
                     elif ind == (len(lst) - 2):
                         current_node_ = Object3D(name_, parent=current_node_)
                     elif ind == (len(lst) - 1):
-                        current_node_ = FileSource(name_, fullpath, parent=current_node_)
+                        current_node_ = FileSource(name_, fullpath, filename_to_loader_type(filename), parent=current_node_)
 
     for root, dirs, files in os.walk(root_path, topdown=False):
         for fl in files:
             line = os.path.relpath(root, root_path)
             line2 = os.path.join(line, fl)
             lst = line2.split('/')
-            add_values(lst, os.path.join(root, fl))
+            add_values(lst, os.path.join(root, fl), fl)
 
     return space
 
