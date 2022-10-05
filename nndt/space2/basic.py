@@ -1,7 +1,6 @@
-import json
+import fnmatch
 import os
 from typing import *
-import fnmatch
 
 from anytree import NodeMixin, Resolver, RenderTree
 from anytree.exporter import JsonExporter, DictExporter
@@ -58,11 +57,13 @@ def _nodecls_function(parent=None, **attrs):
         raise ValueError('_nodetype is not located in some node of space file')
 
     if attrs['_nodetype'] == 'FS':
-        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], attrs['filepath'], attrs['loader_type'], parent=parent)
+        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], attrs['filepath'], attrs['loader_type'],
+                                                      parent=parent)
     else:
         ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], parent=parent)
 
     return ret
+
 
 def load_space(filepath: str):
     if not os.path.exists(filepath):
@@ -74,19 +75,22 @@ def load_space(filepath: str):
         space = json_imp.read(fl)
 
     return space
+
+
 def from_json(json: str):
     dict_imp = DictImporter(nodecls=_nodecls_function)
     json_imp = JsonImporter(dictimporter=dict_imp)
     space = json_imp.import_(json)
     return space
 
+
 class ExtendedNode(NodeMixin):
     resolver = Resolver('name')
 
     def __init__(self, name: str,
-                 parent = None,
+                 parent=None,
                  bbox=((0., 0.), (0., 0.), (0., 0.)),
-                 _print_color: str =None,
+                 _print_color: str = None,
                  _nodetype: str = 'UNDEFINED'):
         super(ExtendedNode, self).__init__()
         if name in FORBIDDEN_NAME:
@@ -167,6 +171,7 @@ class Object3D(ExtendedNode):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
 
+
 class FileSource(ExtendedNode):
     def __init__(self, name, filepath, loader_type,
                  bbox=((0., 0.), (0., 0.), (0., 0.)),
@@ -211,7 +216,8 @@ def load_from_path(root_path,
                     elif ind == (len(lst) - 2):
                         current_node_ = Object3D(name_, parent=current_node_)
                     elif ind == (len(lst) - 1):
-                        current_node_ = FileSource(name_, fullpath, filename_to_loader_type(filename), parent=current_node_)
+                        current_node_ = FileSource(name_, fullpath, filename_to_loader_type(filename),
+                                                   parent=current_node_)
 
     for root, dirs, files in os.walk(root_path, topdown=False):
         for fl in files:
