@@ -1,9 +1,16 @@
+import os.path
 import unittest
 
 from nndt.space2 import *
 
+FILE_TMP = "./test_file.space"
 
-class MyTestCase(unittest.TestCase):
+
+class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
+
+    def setUp(self) -> None:
+        if os.path.exists(FILE_TMP):
+            os.remove(FILE_TMP)
 
     def test_load_from_path(self):
         space = load_from_path("./test_folder_tree")
@@ -49,6 +56,39 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(text1, text2)
         self.assertEqual(text1, text3)
 
+    def test_save_space_and_load_space(self):
+        space = load_from_path("./acdc_for_test")
+        print(text1 := space.explore())
+        space.save_space(FILE_TMP)
+        space2 = load_space(FILE_TMP)
+        print(text2 := space2.explore())
+        self.assertEqual(text1, text2)
+
+        space = load_from_path("./test_folder_tree")
+        print(text1 := space.explore())
+        space.save_space(FILE_TMP)
+        space2 = load_space(FILE_TMP)
+        print(text2 := space2.explore())
+        self.assertEqual(text1, text2)
+
+    def test_to_json_and_from_json(self):
+        space = load_from_path("./acdc_for_test")
+        print(text1 := space.explore())
+        json1 = space.to_json()
+        space2 = from_json(json1)
+        print(text2 := space2.explore())
+        self.assertEqual(text1, text2)
+        json2 = space2.to_json()
+        self.assertEqual(json1, json2)
+
+        space = load_from_path("./test_folder_tree")
+        print(text1 := space.explore())
+        json1 = space.to_json()
+        space2 = from_json(json1)
+        print(text2 := space2.explore())
+        self.assertEqual(text1, text2)
+        json2 = space2.to_json()
+        self.assertEqual(json1, json2)
 
 if __name__ == '__main__':
     unittest.main()
