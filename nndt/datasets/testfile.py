@@ -4,51 +4,96 @@ from amos import AMOS_5
 import urllib
 import itertools
 import re
+
 #%%
-url = AMOS_5.url
+dataset = AMOS_5()
+url = dataset.url
+
+
 
 def get_id(url):
     parts = urllib.parse.urlparse(url)
     match = re.match(r"/file/d/(?P<id>[^/]*)", parts.path)
     return match.group("id")
-#%%
-def download_file_from_google_drive(file_id: str,
-                                    root: str,
-                                    filename: str = None,
-                                    md5: str = None):
-    root = os.path.expanduser(root)
-    if not filename:
-        filename = file_id
-    fpath = os.path.join(root, filename)
 
-    os.makedirs(root, exist_ok=True)
-
-    url = "https://drive.google.com/uc"
-    params = dict(id=file_id, export="download")
-    with requests.Session() as session:
-        response = session.get(url, params=params, stream=True)
-    return response
-
-resp = download_file_from_google_drive(get_id(url), root='.')
 #%%
-def _extract_gdrive_api_response(response, chunk_size: int = 32 * 1024) -> [bytes,[bytes]]:
-    content = response.iter_content(chunk_size)
-    first_chunk = None
-    # filter out keep-alive new chunks
-    while not first_chunk:
-        first_chunk = next(content)
-    content = itertools.chain([first_chunk], content)
+def download_file_from_google_drive(id, destination):
+    URL = "https://docs.google.com/uc?export=download"
 
-    try:
-        match = re.search("<title>Google Drive - (?P<api_response>.+?)</title>", first_chunk.decode())
-        api_response = match["api_response"] if match is not None else None
-    except UnicodeDecodeError:
-        api_response = None
-    return api_response, content
-#%%
-r, content = _extract_gdrive_api_response(resp)
-#%%
-r
+    session = requests.Session()
+
+    response = session.get(URL, params = { 'id' : id }, stream = True)
+    token = get_confirm_token(response)
+
+    if token:
+        params = { 'id' : id, 'confirm' : token }
+        response = session.get(URL, params = params, stream = True)
+
+    save_response_content(response, destination)
+
+def get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            return value
+
+    return None
+
+def save_response_content(response, destination):
+    CHUNK_SIZE = 32768
+
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(CHUNK_SIZE):
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
+
+if __name__ == "__main__":
+    file_id = url
+    destination = './amos.7z'
+    download_file_from_google_drive(file_id, destination)
+
+
+
+
+
+
+# #%%
+# def download_file_from_google_drive(file_id: str,
+#                                     root: str,
+#                                     filename: str = None,
+#                                     md5: str = None):
+#     root = os.path.expanduser(root)
+#     if not filename:
+#         filename = file_id
+#     fpath = os.path.join(root, filename)
+#
+#     os.makedirs(root, exist_ok=True)
+#
+#     url = "https://drive.google.com/uc"
+#     params = dict(id=file_id, export="download")
+#     with requests.Session() as session:
+#         response = session.get(url, params=params, stream=True)
+#     return response
+#
+# resp = download_file_from_google_drive(get_id(url), root='.')
+# #%%
+# def _extract_gdrive_api_response(response, chunk_size: int = 32 * 1024) -> [bytes,[bytes]]:
+#     content = response.iter_content(chunk_size)
+#     first_chunk = None
+#     # filter out keep-alive new chunks
+#     while not first_chunk:
+#         first_chunk = next(content)
+#     content = itertools.chain([first_chunk], content)
+#
+#     try:
+#         match = re.search("<title>Google Drive - (?P<api_response>.+?)</title>", first_chunk.decode())
+#         api_response = match["api_response"] if match is not None else None
+#     except UnicodeDecodeError:
+#         api_response = None
+#     return api_response, content
+# #%%
+# r, content = _extract_gdrive_api_response(resp)
+# #%%
+# r
 
 
 #%%
