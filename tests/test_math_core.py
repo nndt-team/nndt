@@ -64,6 +64,25 @@ class MathCoreTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.allclose(jnp.array([-2., -2., -2.]),
                                           vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
 
+    def test_train_test_split(self):
+        array = jax.array([i*i for i in range(10)])
+        rng = jax.random.PRNGKey(2)
+        test_size = 0.2
+        train_data_indices, test_data_indices = train_test_split(array, rng, test_size)
+
+        self.assertEqual(test_size, len(test_data_indices)/len(array))
+        self.assertIsInstance(list, type(train_data_indices))
+        self.assertIsInstance(list, type(test_data_indices))
+        self.assertEqual([ind for ind in train_data_indices if ind not in test_data_indices], train_data_indices)
+        self.assertEqual([ind for ind in test_data_indices if ind not in train_data_indices], test_data_indices)
+
+        rng_2, _ = jax.random.split(rng)
+        train_data_indices_2, test_data_indices_2 = train_test_split(array, rng_2, test_size)
+
+        self.assertNotEqual(train_data_indices_2, train_data_indices)
+        self.assertNotEqual(test_data_indices_2, test_data_indices)
+
+
 def assert_sum_equal_one(values):
     jnp.allclose(1., jnp.sum(values, axis=-1))
 

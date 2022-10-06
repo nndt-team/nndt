@@ -229,6 +229,19 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     return ret
 
 
+def train_test_split(array: jnp.array,
+                     rng: jax.random.PRNGKey,
+                     test_size: float = 0.3) -> (list, list):
+    indices = jnp.arange(len(array))
+
+    test_index_list = [index for index in
+                       jax.random.choice(key=rng,
+                                         a=indices,
+                                         replace=False,
+                                         shape=[int(len(indices)*test_size)]).tolist()]
+    train_index_list = [index for index in indices.tolist() if index not in test_index_list]
+
+    return train_index_list, test_index_list
 
 
 
