@@ -1,12 +1,13 @@
 import os.path
 import unittest
-import io
-import inspect
 
 from nndt.space2 import *
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
+
+PATH_TEST_STRUCTURE = './test_folder_tree'
+PATH_TEST_ACDC = './acdc_for_test'
 
 
 class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
@@ -18,17 +19,17 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
             os.remove(FILE_TMP2)
 
     def test_load_from_path(self):
-        space = load_from_path("./test_folder_tree")
+        space = load_from_path(PATH_TEST_STRUCTURE)
         print(space.explore())
 
     def test_space_modes(self):
-        space = load_from_path("./test_folder_tree")
+        space = load_from_path(PATH_TEST_STRUCTURE)
         print(text1 := space.explore('default'))
         print(text2 := space.explore('full'))
         self.assertLessEqual(len(text1), len(text2))
 
     def test_load_from_path2(self):
-        space = load_from_path("./acdc_for_test")
+        space = load_from_path(PATH_TEST_ACDC)
         print(space.explore())
 
     def test_forbidden_name(self):
@@ -36,7 +37,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
             space = Space('children')
 
     def test_request_tree_nodes(self):
-        space = load_from_path("./acdc_for_test")
+        space = load_from_path(PATH_TEST_ACDC)
 
         obj1 = space.patient069
         obj2 = space[0]
@@ -46,7 +47,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(obj1, obj3)
 
     def test_request_tree_nodes2(self):
-        space = load_from_path("./acdc_for_test")
+        space = load_from_path(PATH_TEST_ACDC)
 
         obj1 = space.patient069.colored_obj
         obj2 = space[0][0]
@@ -58,7 +59,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(obj1, obj4)
 
     def test_explore(self):
-        space = load_from_path("./acdc_for_test")
+        space = load_from_path(PATH_TEST_ACDC)
 
         print(text1 := space.patient069.explore())
         print(text2 := space[0].explore())
@@ -67,8 +68,8 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(text1, text2)
         self.assertEqual(text1, text3)
 
-    def test_save_space_and_load_space(self):
-        space = load_from_path("./acdc_for_test")
+    def helper_save_space_and_load_space(self, pathname):
+        space = load_from_path(pathname)
         print(text1 := space.explore())
         space.save_space(FILE_TMP)
         space2 = load_space(FILE_TMP)
@@ -79,73 +80,28 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
             with open(FILE_TMP2, 'r') as fl2:
                 self.assertEqual(fl.readlines(), fl2.readlines())
 
-        space = load_from_path("./test_folder_tree")
+    def test_save_space_and_load_space(self):
+        self.helper_save_space_and_load_space(PATH_TEST_ACDC)
+        self.helper_save_space_and_load_space(PATH_TEST_STRUCTURE)
+
+    def helper_to_json_and_from_json(self, pathname):
+        space = load_from_path(pathname)
         print(text1 := space.explore())
-        space.save_space(FILE_TMP)
-        space2 = load_space(FILE_TMP)
+        json1 = space.to_json()
+        space2 = from_json(json1)
         print(text2 := space2.explore())
         self.assertEqual(text1, text2)
-        space2.save_space(FILE_TMP2)
-        with open(FILE_TMP, 'r') as fl:
-            with open(FILE_TMP2, 'r') as fl2:
-                self.assertEqual(fl.readlines(), fl2.readlines())
+        json2 = space2.to_json()
+        self.assertEqual(json1, json2)
 
     def test_to_json_and_from_json(self):
-        space = load_from_path("./acdc_for_test")
-        print(text1 := space.explore())
-        json1 = space.to_json()
-        space2 = from_json(json1)
-        print(text2 := space2.explore())
-        self.assertEqual(text1, text2)
-        json2 = space2.to_json()
-        self.assertEqual(json1, json2)
-
-        space = load_from_path("./test_folder_tree")
-        print(text1 := space.explore())
-        json1 = space.to_json()
-        space2 = from_json(json1)
-        print(text2 := space2.explore())
-        self.assertEqual(text1, text2)
-        json2 = space2.to_json()
-        self.assertEqual(json1, json2)
+        self.helper_to_json_and_from_json(PATH_TEST_ACDC)
+        self.helper_to_json_and_from_json(PATH_TEST_STRUCTURE)
 
     def test_node_decorator(self):
-        space = load_from_path("./acdc_for_test")
-
-
-        print(space.explore())
-
-
-        # def get_decorators(function):
-        #     """Returns list of decorators names
-        #
-        #     Args:
-        #         function (Callable): decorated method/function
-        #
-        #     Return:
-        #         List of decorators as strings
-        #
-        #     Example:
-        #         Given:
-        #
-        #         @my_decorator
-        #         @another_decorator
-        #         def decorated_function():
-        #             pass
-        #
-        #         >>> get_decorators(decorated_function)
-        #         ['@my_decorator', '@another_decorator']
-        #
-        #     """
-        #     source = inspect.getsource(function)
-        #     index = source.find("def ")
-        #     return [
-        #         line.strip().split()[0]
-        #         for line in source[:index].strip().splitlines()
-        #         if line.strip()[0] == "@"
-        #     ]
-
-
+        space = load_from_path(PATH_TEST_ACDC)
+        print(space.explore('full'))
+        self.assertEqual(None, space.do_nothing())
 
 
 if __name__ == '__main__':
