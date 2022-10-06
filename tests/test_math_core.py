@@ -65,7 +65,7 @@ class MathCoreTestCase(unittest.TestCase):
                                           vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
 
     def test_train_test_split(self):
-        array = jax.array([i*i for i in range(10)])
+        array = jnp.array([i*i for i in range(10)])
         rng = jax.random.PRNGKey(2)
         test_size = 0.2
         train_data_indices, test_data_indices = train_test_split(array, rng, test_size)
