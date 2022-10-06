@@ -1,6 +1,7 @@
 import os.path
 import unittest
 import io
+import inspect
 
 from nndt.space2 import *
 
@@ -19,6 +20,12 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
     def test_load_from_path(self):
         space = load_from_path("./test_folder_tree")
         print(space.explore())
+
+    def test_space_modes(self):
+        space = load_from_path("./test_folder_tree")
+        print(text1 := space.explore('default'))
+        print(text2 := space.explore('full'))
+        self.assertLessEqual(len(text1), len(text2))
 
     def test_load_from_path2(self):
         space = load_from_path("./acdc_for_test")
@@ -101,6 +108,45 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(text1, text2)
         json2 = space2.to_json()
         self.assertEqual(json1, json2)
+
+    def test_node_decorator(self):
+        space = load_from_path("./acdc_for_test")
+
+
+        print(space.explore())
+
+
+        # def get_decorators(function):
+        #     """Returns list of decorators names
+        #
+        #     Args:
+        #         function (Callable): decorated method/function
+        #
+        #     Return:
+        #         List of decorators as strings
+        #
+        #     Example:
+        #         Given:
+        #
+        #         @my_decorator
+        #         @another_decorator
+        #         def decorated_function():
+        #             pass
+        #
+        #         >>> get_decorators(decorated_function)
+        #         ['@my_decorator', '@another_decorator']
+        #
+        #     """
+        #     source = inspect.getsource(function)
+        #     index = source.find("def ")
+        #     return [
+        #         line.strip().split()[0]
+        #         for line in source[:index].strip().splitlines()
+        #         if line.strip()[0] == "@"
+        #     ]
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
