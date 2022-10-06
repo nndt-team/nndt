@@ -101,7 +101,19 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
     def test_node_decorator(self):
         space = load_from_path(PATH_TEST_ACDC)
         print(space.explore('full'))
-        self.assertEqual(None, space.do_nothing())
+        space.do_nothing()
+        self.assertTrue(hasattr(space, 'patient009'))
+        self.assertTrue(hasattr(space, 'patient029'))
+        self.assertTrue(hasattr(space, 'patient049'))
+        self.assertTrue(hasattr(space, 'patient069'))
+        self.assertTrue(hasattr(space, 'patient089'))
+        self.assertIn('do_nothing', [x.name for x in space.children])
+        self.assertIn('explore', [x.name for x in space.children])
+        self.assertIn('patient009', [x.name for x in space.children])
+        self.assertIn('patient029', [x.name for x in space.children])
+        self.assertIn('patient049', [x.name for x in space.children])
+        self.assertIn('patient069', [x.name for x in space.children])
+        self.assertIn('patient089', [x.name for x in space.children])
 
 
 if __name__ == '__main__':

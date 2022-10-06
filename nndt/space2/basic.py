@@ -9,6 +9,8 @@ from colorama import Fore
 
 import nndt
 
+NODE_METHOD_DICT = {}
+
 FORBIDDEN_NAME = ['separator',
                   'parent',
                   '__check_loop',
@@ -51,6 +53,9 @@ def _attribute_filter(attrs):
     ret = [(k, v) for k, v in attrs if isinstance(v, (int, float, str, tuple))]
     return sorted(ret)
 
+def _children_filter(children):
+    ret = [v for v in children if isinstance(v, ExtendedNode)]
+    return ret
 
 def _nodecls_function(parent=None, **attrs):
     if '_nodetype' not in attrs:
@@ -64,25 +69,48 @@ def _nodecls_function(parent=None, **attrs):
 
     return ret
 
+def node_method(docstring=None):
+    def decorator_wrapper(fn):
+        classname = str(fn.__qualname__).split('.')[0]
+        if classname not in NODE_METHOD_DICT:
+            NODE_METHOD_DICT[classname] = {}
+        NODE_METHOD_DICT[classname][str(fn.__name__)] = docstring
+        def wrapper(*args, **kwargs):
+            return fn(*args, **kwargs)
 
-def load_space(filepath: str):
-    if not os.path.exists(filepath):
-        raise FileNotFoundError()
+        return wrapper
 
-    dict_imp = DictImporter(nodecls=_nodecls_function)
-    json_imp = JsonImporter(dictimporter=dict_imp)
-    with open(filepath, 'r') as fl:
-        space = json_imp.read(fl)
+    return decorator_wrapper
 
-    return space
+class MethodNode(NodeMixin):
+    def __init__(self, name: str, docstring: Optional[str], parent=None,
+                 _print_color: str = Fore.RESET,
+                 _nodetype: str = 'M'):
+        super(MethodNode, self).__init__()
+        if name in FORBIDDEN_NAME:
+            raise ValueError(f'{name} cannot be used for the space element. This name is reserved by anytree package.')
+
+        self.name = name
+        self.docstring = docstring if docstring is not None else name
+        self.parent = parent
+        self._print_color = _print_color
+        self._nodetype = _nodetype
+
+    def __repr__(self):
+        return self._print_color + f'{self._nodetype}:{self.docstring}' + Fore.RESET
 
 
-def from_json(json: str):
-    dict_imp = DictImporter(nodecls=_nodecls_function)
-    json_imp = JsonImporter(dictimporter=dict_imp)
-    space = json_imp.import_(json)
-    return space
 
+def initialize_method_node(obj: object):
+    class_hierarchy = list(obj.__class__.__bases__)
+    class_hierarchy = class_hierarchy + [obj.__class__]
+    for class_name in reversed([str(class_.__name__) for class_ in class_hierarchy]):
+        if class_name in NODE_METHOD_DICT:
+            for fn_name, fn_docs in NODE_METHOD_DICT[class_name].items():
+                if hasattr(obj, fn_name) and (fn_name not in [x.name for x in obj.children]):
+                    method = MethodNode(fn_name,
+                                        fn_docs,
+                                        parent=obj)
 
 class ExtendedNode(NodeMixin):
     resolver = Resolver('name')
@@ -108,7 +136,8 @@ class ExtendedNode(NodeMixin):
     def __getitem__(self, request_: Union[int, str]):
 
         if isinstance(request_, int):
-            return self.children[request_]
+            children_without_methods = [ch for ch in self.children if isinstance(ch, ExtendedNode)]
+            return children_without_methods[request_]
         elif isinstance(request_, str):
             return self.resolver.get(self, request_)
         else:
@@ -125,13 +154,24 @@ class ExtendedNode(NodeMixin):
         if parent is not None:
             setattr(parent, self.name, self)
 
+        initialize_method_node(self)
+
     def _post_detach(self, parent):
         if parent is not None:
             if hasattr(parent, self.name):
                 delattr(parent, self.name)
 
-    def explore(self):
-        return RenderTree(self).__str__()
+    @node_method("do_nothing()")
+    def do_nothing(self):
+        pass
+
+    @node_method("explore(default|full)")
+    def explore(self, mode: Optional[str] = "default"):
+        if mode is None or (mode == "default"):
+            ret = RenderTree(self, childiter=_children_filter).__str__()
+        elif mode == "full":
+            ret = RenderTree(self).__str__()
+        return ret
 
 
 class Space(ExtendedNode):
@@ -141,13 +181,15 @@ class Space(ExtendedNode):
         super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
         self.version = nndt.__version__
 
+        initialize_method_node(self)
+
     def save_space(self, filepath: str):
         filepath_with_ext = filepath if filepath.endswith('.space') else filepath + '.space'
         with open(filepath_with_ext, 'w', encoding='utf-8') as fl:
             fl.write(self.to_json())
 
     def to_json(self):
-        dict_exp = DictExporter(attriter=_attribute_filter)
+        dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
         json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
         return json_exp.export(self)
 
@@ -233,6 +275,26 @@ DICT_NODETYPE_CLASS = {'UNDEFINED': None,
                        'S': Space,
                        'G': Group,
                        'O3D': Object3D,
-                       'FS': FileSource
+                       'FS': FileSource,
+                       "M": MethodNode,
                        }
 DICT_CLASS_NODETYPE = {(v, k) for k, v in DICT_NODETYPE_CLASS.items()}
+
+
+def load_space(filepath: str):
+    if not os.path.exists(filepath):
+        raise FileNotFoundError()
+
+    dict_imp = DictImporter(nodecls=_nodecls_function)
+    json_imp = JsonImporter(dictimporter=dict_imp)
+    with open(filepath, 'r') as fl:
+        space = json_imp.read(fl)
+
+    return space
+
+
+def from_json(json: str):
+    dict_imp = DictImporter(nodecls=_nodecls_function)
+    json_imp = JsonImporter(dictimporter=dict_imp)
+    space = json_imp.import_(json)
+    return space
