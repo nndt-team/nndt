@@ -117,7 +117,6 @@ class ExtendedNode(NodeMixin):
 
     def __init__(self, name: str,
                  parent=None,
-                 bbox=((0., 0.), (0., 0.), (0., 0.)),
                  _print_color: str = None,
                  _nodetype: str = 'UNDEFINED'):
         super(ExtendedNode, self).__init__()
@@ -126,7 +125,6 @@ class ExtendedNode(NodeMixin):
 
         self.name = _name_to_safename(name)
         self.parent = parent
-        self.bbox = bbox
         self._print_color = _print_color
         self._nodetype = _nodetype
 
