@@ -54,7 +54,7 @@ def _attribute_filter(attrs):
     return sorted(ret)
 
 def _children_filter(children):
-    ret = [v for v in children if isinstance(v, ExtendedNode)]
+    ret = [v for v in children if isinstance(v, BBoxNode)]
     return ret
 
 def _nodecls_function(parent=None, **attrs):
@@ -99,8 +99,6 @@ class MethodNode(NodeMixin):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.docstring}' + Fore.RESET
 
-
-
 def initialize_method_node(obj: object):
     class_hierarchy = list(obj.__class__.__bases__)
     class_hierarchy = class_hierarchy + [obj.__class__]
@@ -112,21 +110,26 @@ def initialize_method_node(obj: object):
                                         fn_docs,
                                         parent=obj)
 
-class ExtendedNode(NodeMixin):
+class BBoxNode(NodeMixin):
     resolver = Resolver('name')
 
     def __init__(self, name: str,
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None,
                  _print_color: str = None,
                  _nodetype: str = 'UNDEFINED'):
-        super(ExtendedNode, self).__init__()
+        super(BBoxNode, self).__init__()
         if name in FORBIDDEN_NAME:
             raise ValueError(f'{name} cannot be used for the space element. This name is reserved by anytree package.')
 
         self.name = _name_to_safename(name)
         self.parent = parent
+        self.bbox = bbox
         self._print_color = _print_color
         self._nodetype = _nodetype
+
+        from space2 import SamplingNode
+        _ = SamplingNode(parent=self)
 
     def __len__(self):
         return len(self.children)
@@ -134,7 +137,7 @@ class ExtendedNode(NodeMixin):
     def __getitem__(self, request_: Union[int, str]):
 
         if isinstance(request_, int):
-            children_without_methods = [ch for ch in self.children if isinstance(ch, ExtendedNode)]
+            children_without_methods = [ch for ch in self.children if isinstance(ch, BBoxNode)]
             return children_without_methods[request_]
         elif isinstance(request_, str):
             return self.resolver.get(self, request_)
@@ -146,7 +149,7 @@ class ExtendedNode(NodeMixin):
 
     def _print_bbox(self):
         a = self.bbox
-        return f"(({a[0][0]:.02f}, {a[0][1]:.02f}), ({a[1][0]:.02f}, {a[1][1]:.02f}), ({a[2][0]:.02f}, {a[2][1]:.02f}))"
+        return f"(({a[0][0]:.02f}, {a[0][1]:.02f} {a[0][2]:.02f}), ({a[1][0]:.02f}, {a[1][1]:.02f}, {a[1][2]:.02f}))"
 
     def _post_attach(self, parent):
         if parent is not None:
@@ -172,9 +175,9 @@ class ExtendedNode(NodeMixin):
         return ret
 
 
-class Space(ExtendedNode):
+class Space(BBoxNode):
     def __init__(self, name,
-                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
         self.version = nndt.__version__
@@ -195,16 +198,16 @@ class Space(ExtendedNode):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
 
 
-class Group(ExtendedNode):
+class Group(BBoxNode):
     def __init__(self, name,
-                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(Group, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='G')
 
 
-class Object3D(ExtendedNode):
+class Object3D(BBoxNode):
     def __init__(self, name,
-                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(Object3D, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.BLUE, _nodetype='O3D')
 
@@ -212,9 +215,9 @@ class Object3D(ExtendedNode):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
 
 
-class FileSource(ExtendedNode):
+class FileSource(BBoxNode):
     def __init__(self, name, filepath, loader_type,
-                 bbox=((0., 0.), (0., 0.), (0., 0.)),
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
         if not os.path.exists(filepath):
@@ -274,7 +277,6 @@ DICT_NODETYPE_CLASS = {'UNDEFINED': None,
                        'G': Group,
                        'O3D': Object3D,
                        'FS': FileSource,
-                       "M": MethodNode,
                        }
 DICT_CLASS_NODETYPE = {(v, k) for k, v in DICT_NODETYPE_CLASS.items()}
 
