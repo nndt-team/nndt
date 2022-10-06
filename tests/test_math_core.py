@@ -71,8 +71,8 @@ class MathCoreTestCase(unittest.TestCase):
         train_data_indices, test_data_indices = train_test_split(array, rng, test_size)
 
         self.assertEqual(test_size, len(test_data_indices)/len(array))
-        self.assertIsInstance(list, type(train_data_indices))
-        self.assertIsInstance(list, type(test_data_indices))
+        self.assertEqual(list, type(train_data_indices))
+        self.assertEqual(list, type(test_data_indices))
         self.assertEqual([ind for ind in train_data_indices if ind not in test_data_indices], train_data_indices)
         self.assertEqual([ind for ind in test_data_indices if ind not in train_data_indices], test_data_indices)
 
