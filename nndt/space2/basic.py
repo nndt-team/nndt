@@ -2,7 +2,7 @@ import fnmatch
 import os
 from typing import *
 
-from anytree import NodeMixin, Resolver, RenderTree
+from anytree import NodeMixin, Resolver, RenderTree, PostOrderIter
 from anytree.exporter import JsonExporter, DictExporter
 from anytree.importer import JsonImporter, DictImporter
 from colorama import Fore
@@ -174,6 +174,9 @@ class BBoxNode(NodeMixin):
             ret = RenderTree(self).__str__()
         return ret
 
+    def _initialization(self, keep_in_memory=False):
+        pass
+
 
 class Space(BBoxNode):
     def __init__(self, name,
@@ -197,6 +200,9 @@ class Space(BBoxNode):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
 
+    @node_method("initialization(keep_in_memory=True)")
+    def initialization(self, keep_in_memory=True):
+        [node._initialization(keep_in_memory=keep_in_memory) for node in PostOrderIter(self) if isinstance(node, BBoxNode)]
 
 class Group(BBoxNode):
     def __init__(self, name,
@@ -214,9 +220,8 @@ class Object3D(BBoxNode):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
 
-
 class FileSource(BBoxNode):
-    def __init__(self, name, filepath, loader_type,
+    def __init__(self, name, filepath: str, loader_type: str,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
@@ -224,10 +229,22 @@ class FileSource(BBoxNode):
             raise FileNotFoundError()
         self.filepath = filepath
         self.loader_type = loader_type
+        self.loader = None
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type} {self.filepath}" + Fore.RESET
+        star_bool = self.loader.is_load if self.loader is not None else False
+        star = "^" if star_bool else ""
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
 
+    def _initialization(self, keep_in_memory=False):
+        from space2 import DICT_LOADERTYPE_CLASS
+        if self.loader_type not in DICT_LOADERTYPE_CLASS:
+            raise NotImplementedError(f'{self.loader_type} is unknown loader')
+
+        self.loader = DICT_LOADERTYPE_CLASS[self.loader_type](filesource = self.filepath)
+        self.loader.load_data()
+        if not keep_in_memory:
+            self.loader.unload_data()
 
 def load_from_path(root_path,
                    template_txt='*.txt',
