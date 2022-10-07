@@ -1,56 +1,82 @@
 import os
 import requests
-from amos import AMOS_5
+from acdc import ACDC_5
 import urllib
 import itertools
 import re
 
-#%%
-dataset = AMOS_5()
-url = dataset.url
 
+# import .utils
 
-
-def get_id(url):
-    parts = urllib.parse.urlparse(url)
-    match = re.match(r"/file/d/(?P<id>[^/]*)", parts.path)
-    return match.group("id")
 
 #%%
-def download_file_from_google_drive(id, destination):
-    URL = "https://docs.google.com/uc?export=download"
 
-    session = requests.Session()
 
-    response = session.get(URL, params = { 'id' : id }, stream = True)
-    token = get_confirm_token(response)
 
-    if token:
-        params = { 'id' : id, 'confirm' : token }
-        response = session.get(URL, params = params, stream = True)
 
-    save_response_content(response, destination)
 
-def get_confirm_token(response):
-    for key, value in response.cookies.items():
-        if key.startswith('download_warning'):
-            return value
-
-    return None
-
-def save_response_content(response, destination):
-    CHUNK_SIZE = 32768
-
-    with open(destination, "wb") as f:
-        for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk: # filter out keep-alive new chunks
-                f.write(chunk)
-
-if __name__ == "__main__":
-    file_id = url
-    destination = './amos.7z'
-    download_file_from_google_drive(file_id, destination)
-
+# #%%
+# dataset = ACDC_5()
+# url = dataset.url
+#
+#
+#
+# def get_id(url):
+#     parts = urllib.parse.urlparse(url)
+#     match = re.match(r"/file/d/(?P<id>[^/]*)", parts.path)
+#     return match.group("id")
+#
+#
+# def get_file_from_google(id):
+#     google_url = 'https://drive.google.com/uc?export=download&id='
+#     url = google_url+id
+#
+#     print('request sent')
+#     r = requests.get(url, allow_redirects=True)
+#
+#     print(r)
+#     open('file.7z', 'wb').write(r.content)
+# #%%
+#
+# 'google' in url
+#
+# #%%
+# get_file_from_google(get_id(url))
+# #%%
+# def download_file_from_google_drive(id, destination):
+#     URL = "https://docs.google.com/uc?export=download"
+#
+#     session = requests.Session()
+#
+#     response = session.get(URL, params = { 'id' : id }, stream = True)
+#     token = get_confirm_token(response)
+#
+#     if token:
+#         params = { 'id' : id, 'confirm' : token }
+#         response = session.get(URL, params = params, stream = True)
+#
+#     save_response_content(response, destination)
+#
+# def get_confirm_token(response):
+#     for key, value in response.cookies.items():
+#         if key.startswith('download_warning'):
+#             return value
+#
+#     return None
+#
+# def save_response_content(response, destination):
+#     CHUNK_SIZE = 32768
+#
+#     with open(destination, "wb") as f:
+#         for chunk in response.iter_content(CHUNK_SIZE):
+#             if chunk: # filter out keep-alive new chunks
+#                 f.write(chunk)
+#
+# if __name__ == "__main__":
+#     file_id = url
+#     destination = './amos.7z'
+#     download_file_from_google_drive(file_id, destination)
+#
 
 
 
@@ -161,4 +187,32 @@ if __name__ == "__main__":
 #     archive = os.path.join(download_root, filename)
 #     print(f"Extracting {archive} to {extract_root}")
 #     _extract_zip(archive, extract_root)
+
+#
+#
+#
+#
+#
+# def download_and_extract_archive(
+#         url: str,
+#         download_root: str,
+#         extract_root: str = None,
+#         filename: str = None,
+#         md5: str = None,
+#         remove_finished: bool = False,
+# ) -> None:
+#     download_root = os.path.expanduser(download_root)
+#     if extract_root is None:
+#         extract_root = download_root
+#     if not filename:
+#         filename = os.path.basename(url)
+#
+#     download_url(url, download_root, filename, md5)
+#
+#     archive = os.path.join(download_root, filename)
+#     print(f"Extracting {archive} to {extract_root}")
+#     _extract_zip(archive, extract_root)
+#
+
+
 
