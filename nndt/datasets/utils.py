@@ -32,7 +32,7 @@ def load_acdc(download=True):
     if 'google' in url:
         get_file_from_google(url)
 
-    _extract_zip('file.7z', './')
+    #_extract_zip('file.7z', './') # badzip error
     #os.remove('file.7z')
     print('Done')
 
@@ -52,5 +52,5 @@ def get_file_from_google(drive_url):
     r = requests.get(url_to_download, allow_redirects=True)
     print('Dataset received')
 
-    with open('./file', 'wb') as fl:
+    with open('./acdc.7z', 'wb') as fl:
         fl.write(r.content)
