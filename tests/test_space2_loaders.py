@@ -19,6 +19,8 @@ class LoadersTestCase(unittest.TestCase):
         print(space.explore('default'))
         print(space.explore('full'))
 
+        return space
+
     def test_initialization_call(self):
         self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
         self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
@@ -26,6 +28,20 @@ class LoadersTestCase(unittest.TestCase):
     def test_initialization_call_and_keep_in_memory(self):
         self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=True)
         self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=True)
+
+    def test_initialization_check_access_to_field_mesh(self):
+        space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
+
+        self.assertNotIn('^', space.patient069.colored_obj.explore())
+        self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
+        self.assertIn('^', space.patient069.colored_obj.explore())
+
+    def test_initialization_check_access_to_field_text(self):
+        space = self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
+
+        self.assertNotIn('^', space.group1.patient11.organ110.data1100_txt.explore())
+        self.assertIsNotNone(space.group1.patient11.organ110.data1100_txt._loader.text)
+        self.assertIn('^', space.group1.patient11.organ110.data1100_txt.explore())
 
 
 if __name__ == '__main__':

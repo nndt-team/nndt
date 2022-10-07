@@ -229,10 +229,10 @@ class FileSource(BBoxNode):
             raise FileNotFoundError()
         self.filepath = filepath
         self.loader_type = loader_type
-        self.loader = None
+        self._loader = None
 
     def __repr__(self):
-        star_bool = self.loader.is_load if self.loader is not None else False
+        star_bool = self._loader.is_load if self._loader is not None else False
         star = "^" if star_bool else ""
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
 
@@ -241,10 +241,10 @@ class FileSource(BBoxNode):
         if self.loader_type not in DICT_LOADERTYPE_CLASS:
             raise NotImplementedError(f'{self.loader_type} is unknown loader')
 
-        self.loader = DICT_LOADERTYPE_CLASS[self.loader_type](filesource = self.filepath)
-        self.loader.load_data()
+        self._loader = DICT_LOADERTYPE_CLASS[self.loader_type](filepath = self.filepath)
+        self._loader.load_data()
         if not keep_in_memory:
-            self.loader.unload_data()
+            self._loader.unload_data()
 
 def load_from_path(root_path,
                    template_txt='*.txt',
