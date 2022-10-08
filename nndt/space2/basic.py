@@ -9,7 +9,7 @@ from anytree.importer import JsonImporter, DictImporter
 from colorama import Fore
 
 import nndt
-from math_core import train_test_split
+from nndt.math_core import train_test_split
 
 NODE_METHOD_DICT = {}
 

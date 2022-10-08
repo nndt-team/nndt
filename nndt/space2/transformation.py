@@ -6,7 +6,7 @@ import numpy as onp
 from anytree import NodeMixin
 from colorama import Fore
 
-from space2 import BBoxNode, node_method
+from nndt.space2 import BBoxNode, node_method
 
 
 class AbstractTransformation(NodeMixin):
