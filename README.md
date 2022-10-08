@@ -8,7 +8,7 @@
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/KonstantinUshenin/nndt)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-blue.svg)](https://www.python.org/dev/peps/pep-0008/)
-[![PEP8](https://img.shields.io/badge/code%20style-pep257-blue.svg)](https://www.python.org/dev/peps/pep-0257/)
+[![PEP257](https://img.shields.io/badge/code%20style-pep257-blue.svg)](https://www.python.org/dev/peps/pep-0257/)
 
 [Wiki](https://github.com/KonstantinUshenin/nndt/wiki) | [Change logs](https://github.com/KonstantinUshenin/nndt/blob/v0.0.1rc/CHANGELOG.md)
 
