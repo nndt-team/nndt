@@ -3,22 +3,60 @@ from typing import *
 
 import jax.numpy as jnp
 import numpy as onp
+from anytree import NodeMixin
 from colorama import Fore
 
 from space2 import BBoxNode, node_method
 
 
-class AbstractTransformation(BBoxNode):
+class AbstractTransformation(NodeMixin):
 
-    def __init__(self, name: str, parent=None,
-                 bbox=((0., 0., 0.), (0., 0., 0.))):
-        super(AbstractTransformation, self).__init__(name=name, parent=None,
-                                                     bbox=bbox,
-                                                     _print_color=Fore.RESET,
-                                                     _nodetype='T')
+    def __init__(self, name: str,
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
+                 parent=None):
+        super(AbstractTransformation, self).__init__()
 
         self.name = name
         self.parent = parent
+        self.bbox = bbox
+        self._print_color = Fore.RED
+        self._nodetype = 'T'
+        self._transform_type = "unknown_transform"
+
+    def __len__(self):
+        return len(self.children)
+
+    def __getitem__(self, request_: Union[int, str]):
+
+        if isinstance(request_, int):
+            children_without_methods = [ch for ch in self.children if isinstance(ch, BBoxNode)]
+            return children_without_methods[request_]
+        elif isinstance(request_, str):
+            return self.resolver.get(self, request_)
+        else:
+            raise NotImplementedError()
+
+    def __repr__(self):
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._transform_type}'+ Fore.RESET
+
+    def _print_bbox(self):
+        a = self.bbox
+        return f"(({a[0][0]:.02f}, {a[0][1]:.02f}, {a[0][2]:.02f}), ({a[1][0]:.02f}, {a[1][1]:.02f}, {a[1][2]:.02f}))"
+
+    def _post_attach(self, parent):
+        if parent is not None:
+            setattr(parent, self.name, self)
+
+        from space2 import initialize_method_node
+        initialize_method_node(self)
+
+    def _post_detach(self, parent):
+        if parent is not None:
+            if hasattr(parent, self.name):
+                delattr(parent, self.name)
+
+    def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
+        pass
 
     @abstractmethod
     def xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:

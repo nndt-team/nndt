@@ -40,7 +40,7 @@ class MethodSetTestCase(unittest.TestCase):
     def helper_transform_load(self, mode="ident"):
         space = load_from_path(PATH_TEST_ACDC)
         space.initialization(mode=mode, keep_in_memory=False)
-        print(space.explore("full"))
+        print(space.explore("default"))
 
         return space
 

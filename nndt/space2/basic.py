@@ -57,6 +57,11 @@ def _children_filter(children):
     ret = [v for v in children if isinstance(v, BBoxNode)]
     return ret
 
+def _children_filter_for_explore(children):
+    from nndt.space2.transformation import AbstractTransformation
+    ret = [v for v in children if isinstance(v, (BBoxNode, AbstractTransformation))]
+    return ret
+
 def _nodecls_function(parent=None, **attrs):
     if '_nodetype' not in attrs:
         raise ValueError('_nodetype is not located in some node of space file')
@@ -162,20 +167,24 @@ class BBoxNode(NodeMixin):
             if hasattr(parent, self.name):
                 delattr(parent, self.name)
 
+    def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
+        pass
+
     @node_method("do_nothing()")
     def do_nothing(self):
         pass
 
-    @node_method("explore(default|full)")
+    @node_method("explore(default|source|full)")
     def explore(self, mode: Optional[str] = "default"):
         if mode is None or (mode == "default"):
+            ret = RenderTree(self, childiter=_children_filter_for_explore).__str__()
+        elif mode == "source" or mode == "sources":
             ret = RenderTree(self, childiter=_children_filter).__str__()
         elif mode == "full":
             ret = RenderTree(self).__str__()
+        else:
+            raise NotImplementedError(f"{mode} is not implemented for the explore method. ")
         return ret
-
-    def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
-        pass
 
 
 class Space(BBoxNode):
