@@ -37,7 +37,7 @@ class AbstractTransformation(NodeMixin):
             raise NotImplementedError()
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._transform_type}'+ Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._transform_type}' + Fore.RESET
 
     def _print_bbox(self):
         a = self.bbox
@@ -120,7 +120,7 @@ class ToNormalCubeTransform(AbstractTransformation):
 
         self.ps_lower = jnp.array(ps_bbox[0])
         self.ps_upper = jnp.array(ps_bbox[1])
-        self.ps_center = (self.ps_lower + self.ps_upper)/2.
+        self.ps_center = (self.ps_lower + self.ps_upper) / 2.
         self.scale = (self.ps_upper - self.ps_lower) / 2.
 
         self.bbox = ((-1., -1., -1.), (1., 1., 1.))

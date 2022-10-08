@@ -55,14 +55,17 @@ def _attribute_filter(attrs):
     ret = [(k, v) for k, v in attrs if isinstance(v, (int, float, str, tuple))]
     return sorted(ret)
 
+
 def _children_filter(children):
     ret = [v for v in children if isinstance(v, BBoxNode)]
     return ret
+
 
 def _children_filter_for_explore(children):
     from nndt.space2.transformation import AbstractTransformation
     ret = [v for v in children if isinstance(v, (BBoxNode, AbstractTransformation))]
     return ret
+
 
 def _nodecls_function(parent=None, **attrs):
     if '_nodetype' not in attrs:
@@ -76,18 +79,21 @@ def _nodecls_function(parent=None, **attrs):
 
     return ret
 
+
 def node_method(docstring=None):
     def decorator_wrapper(fn):
         classname = str(fn.__qualname__).split('.')[0]
         if classname not in NODE_METHOD_DICT:
             NODE_METHOD_DICT[classname] = {}
         NODE_METHOD_DICT[classname][str(fn.__name__)] = docstring
+
         def wrapper(*args, **kwargs):
             return fn(*args, **kwargs)
 
         return wrapper
 
     return decorator_wrapper
+
 
 class MethodNode(NodeMixin):
     def __init__(self, name: str, docstring: Optional[str], parent=None,
@@ -106,6 +112,7 @@ class MethodNode(NodeMixin):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.docstring}' + Fore.RESET
 
+
 def initialize_method_node(obj: object):
     class_hierarchy = list(obj.__class__.__bases__)
     class_hierarchy = class_hierarchy + [obj.__class__]
@@ -116,6 +123,7 @@ def initialize_method_node(obj: object):
                     method = MethodNode(fn_name,
                                         fn_docs,
                                         parent=obj)
+
 
 class BBoxNode(NodeMixin):
     resolver = Resolver('name')
@@ -221,6 +229,7 @@ class Space(BBoxNode):
             if isinstance(child, (Object3D, Group)):
                 self.bbox = update_bbox(self.bbox, child.bbox)
 
+
 class Group(BBoxNode):
     def __init__(self, name,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
@@ -244,7 +253,7 @@ class Object3D(BBoxNode):
 
     def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
         sdt_array_list = [source for source in self.children
-                                 if isinstance(source, FileSource) and source.loader_type == 'sdt']
+                          if isinstance(source, FileSource) and source.loader_type == 'sdt']
         transform = None
         if len(sdt_array_list):
             from nndt.space2.transformation import IdentityTransform, ShiftAndScaleTransform, ToNormalCubeTransform
@@ -253,9 +262,9 @@ class Object3D(BBoxNode):
                 transform = IdentityTransform(ps_bbox=ps_bbox,
                                               parent=self)
             elif mode == 'shift_and_scale':
-                ps_center = ((ps_bbox[0][0]+ps_bbox[1][0])/2.,
-                             (ps_bbox[0][1]+ps_bbox[1][1])/2.,
-                             (ps_bbox[0][2]+ps_bbox[1][2])/2.)
+                ps_center = ((ps_bbox[0][0] + ps_bbox[1][0]) / 2.,
+                             (ps_bbox[0][1] + ps_bbox[1][1]) / 2.,
+                             (ps_bbox[0][2] + ps_bbox[1][2]) / 2.)
                 transform = ShiftAndScaleTransform(ps_bbox=ps_bbox,
                                                    ps_center=ps_center,
                                                    ns_center=(0., 0., 0.),
@@ -269,7 +278,7 @@ class Object3D(BBoxNode):
             self.bbox = update_bbox(self.bbox, transform.bbox)
 
         mesh_obj_array_list = [source for source in self.children
-                          if isinstance(source, FileSource) and source.loader_type == 'mesh_obj']
+                               if isinstance(source, FileSource) and source.loader_type == 'mesh_obj']
 
         if len(mesh_obj_array_list) and transform is not None:
             from nndt.space2 import MeshNode
@@ -298,11 +307,12 @@ class FileSource(BBoxNode):
         if self.loader_type not in DICT_LOADERTYPE_CLASS:
             raise NotImplementedError(f'{self.loader_type} is unknown loader')
 
-        self._loader = DICT_LOADERTYPE_CLASS[self.loader_type](filepath = self.filepath)
+        self._loader = DICT_LOADERTYPE_CLASS[self.loader_type](filepath=self.filepath)
         self._loader.load_data()
         self.bbox = self._loader.calc_bbox()
         if not keep_in_memory:
             self._loader.unload_data()
+
 
 def load_from_path(root_path,
                    template_txt='*.txt',
@@ -346,14 +356,13 @@ def load_from_path(root_path,
 
     return space
 
+
 def load_from_file_lists(name_list,
-              mesh_list: Optional[Sequence[str]] = None,
-              sdt_list: Optional[Sequence[str]] = None,
-              test_size: Optional[float] = None) -> Space:
-
-
+                         mesh_list: Optional[Sequence[str]] = None,
+                         sdt_list: Optional[Sequence[str]] = None,
+                         test_size: Optional[float] = None) -> Space:
     if mesh_list is not None:
-            assert (len(name_list) == len(mesh_list))
+        assert (len(name_list) == len(mesh_list))
     if sdt_list is not None:
         assert (len(name_list) == len(sdt_list))
     # if sdfpkl_list is not None:
@@ -399,72 +408,6 @@ def load_from_file_lists(name_list,
             #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
 
     return space
-
-
-
-# def load_data(name_list,
-#               mesh_list: Optional[Sequence[str]] = None,
-#               sdt_list: Optional[Sequence[str]] = None,
-#               sdfpkl_list: Optional[Sequence[str]] = None,
-#               test_size: Optional[float] = None) -> Space:
-#     if mesh_list is not None:
-#         assert (len(name_list) == len(mesh_list))
-#     if sdt_list is not None:
-#         assert (len(name_list) == len(sdt_list))
-#     if sdfpkl_list is not None:
-#         assert (len(name_list) == len(sdfpkl_list))
-#
-#     if test_size is None:
-#         space = Space("main")
-#         group = Group("default", parent=space)
-#         for ind, name in enumerate(name_list):
-#             object = Object(name, parent=group)
-#             if mesh_list is not None:
-#                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
-#             if sdt_list is not None:
-#                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
-#             if sdfpkl_list is not None:
-#                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
-#     else:
-#         assert (0.0 < test_size < 1.0)
-#         space = Space("main")
-#         index_train, index_test = train_test_split(range(len(name_list)),
-#                                                    test_size=test_size,
-#                                                    random_state=42)
-#
-#         group_train = Group("train", parent=space)
-#         for ind in index_train:
-#             name = name_list[ind]
-#             object = Object(name, parent=group_train)
-#             if mesh_list is not None:
-#                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
-#             if sdt_list is not None:
-#                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
-#             if sdfpkl_list is not None:
-#                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
-#
-#         group_test = Group("test", parent=space)
-#         for ind in index_test:
-#             name = name_list[ind]
-#             object = Object(name, parent=group_test)
-#             if mesh_list is not None:
-#                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
-#             if sdt_list is not None:
-#                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
-#             if sdfpkl_list is not None:
-#                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
-#
-#     return space
-
-
-
-
-
-
-
-
-
-
 
 
 DICT_NODETYPE_CLASS = {'UNDEFINED': None,

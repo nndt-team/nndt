@@ -70,7 +70,7 @@ class SamplingNode(MethodSetNode):
 class MeshNode(MethodSetNode):
     def __init__(self, object_3d: Object3D,
                  mesh: FileSource,
-                 transform: AbstractTransformation,  parent: BBoxNode = None):
+                 transform: AbstractTransformation, parent: BBoxNode = None):
         super(MeshNode, self).__init__('mesh', parent=parent)
         self.object_3d = object_3d
         assert (mesh.loader_type == 'mesh_obj')
