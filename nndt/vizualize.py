@@ -47,9 +47,9 @@ class IteratorWithTimeMeasurements:
 
 class BasicVizualization:
 
-    def __init__(self, folder, experiment_name, print_on_each_epoch=20):
-        self.experiment_name = experiment_name
+    def __init__(self, folder, experiment_name=None, print_on_each_epoch=20):
         self.folder = folder
+        self.experiment_name = experiment_name if (experiment_name is not None) else folder
         os.makedirs(self.folder, exist_ok=True)
         self.print_on_each_epoch = print_on_each_epoch
         self._records = {"_epoch": [], "_time": []}
