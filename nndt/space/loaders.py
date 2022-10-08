@@ -1,7 +1,8 @@
 import gc
 
 from anytree import PreOrderIter
-from sklearn.model_selection import train_test_split
+
+from nndt.math_core import train_test_split
 
 from nndt.space.regions import *
 from nndt.space.repr_mesh import *
@@ -77,9 +78,11 @@ def load_data(name_list,
     else:
         assert (0.0 < test_size < 1.0)
         space = Space("main")
+        rng = jax.random.PRNGKey(0)
+        rng_key, _ = jax.random.split(rng)
         index_train, index_test = train_test_split(range(len(name_list)),
-                                                   test_size=test_size,
-                                                   random_state=42)
+                                                   rng=rng_key,
+                                                   test_size=test_size)
 
         group_train = Group("train", parent=space)
         for ind in index_train:

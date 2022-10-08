@@ -113,6 +113,20 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
 
 
 def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
+    """
+
+    Parameters
+    ----------
+    center : tuple, optional
+        Coordinates of center x, y, z (defaults is (0., 0., 0.))
+    radius : float, optional
+        Radius of sphere (defaults is 1.)
+    
+    Returns
+    -------
+    Set of jax.vmap
+        description smth, x, y, z
+    """
     def prim(x: float, y: float, z: float):
         sdf = (x - center[0]) ** 2 + (y - center[1]) ** 2 + (z - center[2]) ** 2 - radius ** 2
         return sdf
@@ -131,6 +145,18 @@ def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
 
 
 def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
+    """Presents view of barycentric_grid formula with various parameters
+
+    Parameters
+    ----------
+    order : Sequence[Union[int, Sequence[int]]], optional
+        oder of params (defaults is (1, -1))
+
+    Returns
+    -------
+    str
+        view of formula
+    """
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
 
     polynomial = ""
@@ -164,6 +190,22 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
 def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
                      spacing: Sequence[int] = (0, 3),
                      filter_negative: bool = True):
+    """Makes a barycentyc grid
+
+    Parameters
+    ----------
+    order : (Sequence[Union[int, Sequence[int]]], optional)
+        order of parameters (defaults is (1, -1))
+    spacing : (Sequence[int], optional)
+        _description_. (defaults is (0, 3))
+    filter_negative : (bool, optional)
+        complite negative values (defaults is True)
+
+    Returns
+    -------
+    jnp.array 
+        _description_
+    """
     assert ((len(order) >= 2),
             "The `order` parameter must include more than 1 iterator.")
     assert ((len(spacing) >= 2),
@@ -229,6 +271,19 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     return ret
 
 
+def train_test_split(array: jnp.array,
+                     rng: jax.random.PRNGKey,
+                     test_size: float = 0.3) -> (list, list):
+    indices = jnp.arange(len(array))
+
+    test_index_list = [index for index in
+                       jax.random.choice(key=rng,
+                                         a=indices,
+                                         replace=False,
+                                         shape=[int(len(indices)*test_size)]).tolist()]
+    train_index_list = [index for index in indices.tolist() if index not in test_index_list]
+
+    return train_index_list, test_index_list
 
 
 

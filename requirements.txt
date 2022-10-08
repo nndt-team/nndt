@@ -9,3 +9,4 @@ scikit_learn
 scikit-image
 vtk
 tqdm
+pyvista==0.36.1
