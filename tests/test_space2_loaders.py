@@ -13,6 +13,11 @@ PATH_TEST_ACDC = './acdc_for_test'
 
 class LoadersTestCase(unittest.TestCase):
 
+    def cmp_array(self, arr0, arr1, atol=0.1):
+        arr0_ = jnp.array(arr0)
+        arr1_ = jnp.array(arr1)
+        self.assertTrue(bool(jnp.allclose(arr0_, arr1_, atol=atol, rtol=0.0)))
+
     def helper_initialization_call(self, path, keep_in_memory):
         space = load_from_path(path)
         space.initialization(keep_in_memory=keep_in_memory)
@@ -42,6 +47,46 @@ class LoadersTestCase(unittest.TestCase):
         self.assertNotIn('^', space.group1.patient11.organ110.data1100_txt.explore())
         self.assertIsNotNone(space.group1.patient11.organ110.data1100_txt._loader.text)
         self.assertIn('^', space.group1.patient11.organ110.data1100_txt.explore())
+
+    def test_initialization_ps_bbox_in_mesh(self):
+        space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
+        tolerance = 0.00001
+
+        self.cmp_array(((58.81672286987305, 111.76485443115234, 6.518979072570801),
+                        (133.49337768554688, 182.3278045654297, 83.50870513916016)),
+                       space.patient009.colored_obj.bbox, tolerance)
+        self.cmp_array(((44.65834426879883, 120.142333984375, 6.617307186126709),
+                        (119.0753173828125, 197.04644775390625, 89.1721420288086)),
+                       space.patient029.colored_obj.bbox, tolerance)
+        self.cmp_array(((98.19243621826172, 77.09327697753906, 11.006719589233398),
+                        (173.4209747314453, 149.07855224609375, 60.4520378112793)),
+                       space.patient049.colored_obj.bbox, tolerance)
+        self.cmp_array(((68.10173034667969, 108.21791076660156, 7.120966911315918),
+                        (125.36803436279297, 155.4543914794922, 54.33668899536133)),
+                       space.patient069.colored_obj.bbox, tolerance)
+        self.cmp_array(((90.06974029541016, 105.29344177246094, 6.555858135223389),
+                        (162.07835388183594, 166.13941955566406, 50.982513427734375)),
+                       space.patient089.colored_obj.bbox, tolerance)
+
+    def test_initialization_ps_bbox_in_sdt(self):
+        space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
+        tolerance = 1.1
+
+        self.cmp_array(((58.81672286987305, 111.76485443115234, 6.518979072570801),
+                        (133.49337768554688, 182.3278045654297, 83.50870513916016)),
+                        space.patient009.sdf_npy.bbox, tolerance)
+        self.cmp_array(((44.65834426879883, 120.142333984375, 6.617307186126709),
+                        (119.0753173828125, 197.04644775390625, 89.1721420288086)),
+                        space.patient029.sdf_npy.bbox, tolerance)
+        self.cmp_array(((98.19243621826172, 77.09327697753906, 11.006719589233398),
+                        (173.4209747314453, 149.07855224609375, 60.4520378112793)),
+                        space.patient049.sdf_npy.bbox, tolerance)
+        self.cmp_array(((68.10173034667969, 108.21791076660156, 7.120966911315918),
+                        (125.36803436279297, 155.4543914794922, 54.33668899536133)),
+                        space.patient069.sdf_npy.bbox, tolerance)
+        self.cmp_array(((90.06974029541016, 105.29344177246094, 6.555858135223389),
+                        (162.07835388183594, 166.13941955566406, 50.982513427734375)),
+                        space.patient089.sdf_npy.bbox, tolerance)
 
 
 if __name__ == '__main__':

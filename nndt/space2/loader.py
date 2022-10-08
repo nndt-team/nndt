@@ -1,9 +1,13 @@
 from abc import abstractmethod
 
-import vtk
 import jax.numpy as jnp
+import vtk
+
 
 class AbstractLoader():
+
+    def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        return (0., 0., 0.), (0., 0., 0.)
 
     @abstractmethod
     def load_data(self):
@@ -66,6 +70,10 @@ class MeshObjLoader(AbstractLoader):
         self.is_load = False
         self._mesh = None
 
+    def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        Xmin, Xmax, Ymin, Ymax, Zmin, Zmax = self.mesh.GetBounds()
+        return (Xmin, Ymin, Zmin), (Xmax, Ymax, Zmax)
+
     @property
     def mesh(self):
         if not self.is_load:
@@ -92,6 +100,19 @@ class SDTLoader(AbstractLoader):
         self.filepath = filepath
         self.is_load = False
         self._sdt = None
+        self._sdt_threshold_level = 0.
+
+    def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        mask_arr = (self.sdt <= self._sdt_threshold_level)
+        Xmin = float(jnp.argmax(jnp.any(mask_arr, axis=(1, 2))))
+        Ymin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 2))))
+        Zmin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 1))))
+
+        Xmax = float(self.sdt.shape[0] - jnp.argmax(jnp.any(mask_arr, axis=(1, 2))[::-1]))
+        Ymax = float(self.sdt.shape[1] - jnp.argmax(jnp.any(mask_arr, axis=(0, 2))[::-1]))
+        Zmax = float(self.sdt.shape[2] - jnp.argmax(jnp.any(mask_arr, axis=(0, 1))[::-1]))
+
+        return (Xmin, Ymin, Zmin), (Xmax, Ymax, Zmax)
 
     @property
     def sdt(self):
