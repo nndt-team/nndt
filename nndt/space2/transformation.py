@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import numpy as onp
 from colorama import Fore
 
-from space2 import BBoxNode
+from space2 import BBoxNode, node_method
 
 
 class AbstractTransformation(BBoxNode):
@@ -38,9 +38,11 @@ class IdentityTransform(AbstractTransformation):
         self.bbox = ps_bbox
         self._transform_type = "ident"
 
+    @node_method("xyz_ps2ns")
     def xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return xyz
 
+    @node_method("xyz_ns2ps")
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return xyz
 
@@ -63,9 +65,11 @@ class ShiftAndScaleTransform(AbstractTransformation):
         self.bbox = ((float(bbox_[0][0]), float(bbox_[0][1]), float(bbox_[0][2])),
                      (float(bbox_[1][0]), float(bbox_[1][1]), float(bbox_[1][2])))
 
+    @node_method("xyz_ps2ns")
     def xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return (xyz - jnp.array(self.ps_center)) / self.scale_ps2ns + jnp.array(self.ns_center)
 
+    @node_method("xyz_ns2ps")
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return (xyz - jnp.array(self.ns_center)) * self.scale_ps2ns + jnp.array(self.ps_center)
 
@@ -78,13 +82,17 @@ class ToNormalCubeTransform(AbstractTransformation):
 
         self.ps_lower = jnp.array(ps_bbox[0])
         self.ps_upper = jnp.array(ps_bbox[1])
+        self.ps_center = (self.ps_lower + self.ps_upper)/2.
+        self.scale = (self.ps_upper - self.ps_lower) / 2.
 
         self.bbox = ((-1., -1., -1.), (1., 1., 1.))
 
         self._transform_type = "to_cube"
 
+    @node_method("xyz_ps2ns")
     def xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
-        return (2. * (xyz - self.ps_lower) / (self.ps_upper - self.ps_lower)) - 0.5
+        return (xyz - self.ps_center) / self.scale
 
+    @node_method("xyz_ns2ps")
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
-        return ((xyz + 0.5) / 2.) * (self.ps_upper - self.ps_lower) + self.ps_lower
+        return (xyz * self.scale) + self.ps_center
