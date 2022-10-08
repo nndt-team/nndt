@@ -6,6 +6,8 @@ from jax.random import PRNGKeyArray
 
 from nndt.math_core import grid_in_cube2, uniform_in_cube
 from nndt.space2 import BBoxNode, node_method
+from space2 import FileSource, Object3D
+from space2.transformation import AbstractTransformation
 
 
 class MethodSetNode(NodeMixin):
@@ -63,3 +65,24 @@ class SamplingNode(MethodSetNode):
         lower, upper = self.parent.bbox
         basic_cube = uniform_in_cube(rng_key, count=count, lower=lower, upper=upper)
         return basic_cube
+
+
+class MeshNode(MethodSetNode):
+    def __init__(self, object_3d: Object3D,
+                 mesh: FileSource,
+                 transform: AbstractTransformation,  parent: BBoxNode = None):
+        super(MeshNode, self).__init__('mesh', parent=parent)
+        self.object_3d = object_3d
+        assert (mesh.loader_type == 'mesh_obj')
+        self.mesh = mesh
+        self.transform = transform
+
+    @node_method("index2xyz(ns_index[...,1]) -> ns_xyz[...,3]")
+    def index2xyz(self, ns_index: jnp.ndarray) -> jnp.ndarray:
+        result_ps = jnp.take(self.mesh._loader.points, ns_index)
+        result_ns = self.transform.xyz_ps2ns(result_ps)
+        return result_ns
+
+    @node_method("xyz2index(ns_index[...,3]) -> ns_xyz[...,1]")
+    def xyz2index(self, ns_index: jnp.ndarray) -> jnp.ndarray:
+        raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")

@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 import jax.numpy as jnp
 import vtk
+from vtkmodules.util.numpy_support import vtk_to_numpy
 
 
 class AbstractLoader():
@@ -69,6 +70,7 @@ class MeshObjLoader(AbstractLoader):
         self.filepath = filepath
         self.is_load = False
         self._mesh = None
+        self._points = None
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
         Xmin, Xmax, Ymin, Ymax, Zmin, Zmax = self.mesh.GetBounds()
@@ -80,11 +82,18 @@ class MeshObjLoader(AbstractLoader):
             self.load_data()
         return self._mesh
 
+    @property
+    def points(self):
+        if not self.is_load:
+            self.load_data()
+        return self._points
+
     def load_data(self):
         reader = vtk.vtkOBJReader()
         reader.SetFileName(self.filepath)
         reader.Update()
         self._mesh = reader.GetOutput()
+        self._points = vtk_to_numpy(self._mesh.GetPoints().GetData())
         self.is_load = True
 
     def unload_data(self):

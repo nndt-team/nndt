@@ -22,11 +22,22 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(PATH_TEST_STRUCTURE)
         print(space.explore())
 
-    def test_space_modes(self):
+    def test_space_models_TEST_STRUCTURE(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
-        print(text1 := space.explore('default'))
-        print(text2 := space.explore('full'))
+        print(text1 := space.explore('source'))
+        print(text2 := space.explore('default'))
+        print(text3 := space.explore('full'))
         self.assertLessEqual(len(text1), len(text2))
+        self.assertLessEqual(len(text2), len(text3))
+
+    def test_space_models_ACDC(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.initialization()
+        print(text1 := space.explore('source'))
+        print(text2 := space.explore('default'))
+        print(text3 := space.explore('full'))
+        self.assertLessEqual(len(text1), len(text2))
+        self.assertLessEqual(len(text2), len(text3))
 
     def test_load_from_path2(self):
         space = load_from_path(PATH_TEST_ACDC)

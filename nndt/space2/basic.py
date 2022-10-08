@@ -133,7 +133,7 @@ class BBoxNode(NodeMixin):
         self._print_color = _print_color
         self._nodetype = _nodetype
 
-        from space2 import SamplingNode
+        from nndt.space2 import SamplingNode
         _ = SamplingNode(parent=self)
 
     def __len__(self):
@@ -243,6 +243,7 @@ class Object3D(BBoxNode):
     def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
         sdt_array_list = [source for source in self.children
                                  if isinstance(source, FileSource) and source.loader_type == 'sdt']
+        transform = None
         if len(sdt_array_list):
             from nndt.space2.transformation import IdentityTransform, ShiftAndScaleTransform, ToNormalCubeTransform
             ps_bbox = sdt_array_list[0].bbox
@@ -264,6 +265,14 @@ class Object3D(BBoxNode):
             else:
                 raise NotImplementedError(f"{mode} is not supported for initialization")
             self.bbox = update_bbox(self.bbox, transform.bbox)
+
+        mesh_obj_array_list = [source for source in self.children
+                          if isinstance(source, FileSource) and source.loader_type == 'mesh_obj']
+
+        if len(mesh_obj_array_list) and transform is not None:
+            from nndt.space2 import MeshNode
+            mesh = mesh_obj_array_list[0]
+            MeshNode(self, mesh, transform, parent=self)
 
 
 class FileSource(BBoxNode):
