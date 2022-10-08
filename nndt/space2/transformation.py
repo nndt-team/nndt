@@ -47,7 +47,7 @@ class AbstractTransformation(NodeMixin):
         if parent is not None:
             setattr(parent, self.name, self)
 
-        from space2 import initialize_method_node
+        from nndt.space2 import initialize_method_node
         initialize_method_node(self)
 
     def _post_detach(self, parent):

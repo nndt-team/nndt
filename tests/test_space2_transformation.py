@@ -3,8 +3,8 @@ import unittest
 import jax
 import jax.numpy as jnp
 
-from math_core import grid_in_cube2
-from space2 import load_from_path
+from nndt.math_core import grid_in_cube2
+from nndt.space2 import load_from_path
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"

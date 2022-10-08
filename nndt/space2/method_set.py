@@ -6,8 +6,8 @@ from jax.random import PRNGKeyArray
 
 from nndt.math_core import grid_in_cube2, uniform_in_cube
 from nndt.space2 import BBoxNode, node_method
-from space2 import FileSource, Object3D
-from space2.transformation import AbstractTransformation
+from nndt.space2 import FileSource, Object3D
+from nndt.space2.transformation import AbstractTransformation
 
 
 class MethodSetNode(NodeMixin):
@@ -28,7 +28,7 @@ class MethodSetNode(NodeMixin):
         if parent is not None:
             setattr(parent, self.name, self)
 
-        from space2 import initialize_method_node
+        from nndt.space2 import initialize_method_node
         initialize_method_node(self)
 
     def _post_detach(self, parent):

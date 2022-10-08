@@ -303,7 +303,7 @@ class FileSource(BBoxNode):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
 
     def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
-        from space2 import DICT_LOADERTYPE_CLASS
+        from nndt.space2 import DICT_LOADERTYPE_CLASS
         if self.loader_type not in DICT_LOADERTYPE_CLASS:
             raise NotImplementedError(f'{self.loader_type} is unknown loader')
 

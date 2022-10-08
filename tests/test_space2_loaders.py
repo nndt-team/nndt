@@ -3,7 +3,7 @@ import unittest
 import jax
 import jax.numpy as jnp
 
-from space2 import load_from_path
+from nndt.space2 import load_from_path
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
