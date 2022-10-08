@@ -16,7 +16,9 @@ class LoadersTestCase(unittest.TestCase):
     def cmp_array(self, arr0, arr1, atol=0.1):
         arr0_ = jnp.array(arr0)
         arr1_ = jnp.array(arr1)
+        print(arr1_)
         self.assertTrue(bool(jnp.allclose(arr0_, arr1_, atol=atol, rtol=0.0)))
+        return arr1_
 
     def helper_initialization_call(self, path, keep_in_memory):
         space = load_from_path(path)
@@ -87,6 +89,38 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((90.06974029541016, 105.29344177246094, 6.555858135223389),
                         (162.07835388183594, 166.13941955566406, 50.982513427734375)),
                         space.patient089.sdf_npy.bbox, tolerance)
+
+
+    def helper_transform_load(self, mode="ident"):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.initialization(mode=mode, keep_in_memory=False)
+        print(space.explore("full"))
+
+        return space
+    def test_initialization_identity(self):
+        space = self.helper_transform_load(mode="ident")
+
+        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
+        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.ns.bbox)
+        self.cmp_array(((0.0, 0.0, 0.0), (134.0, 183.0, 84.0)), space.patient009.bbox)
+        self.cmp_array(((0.0, 0.0, 0.0), (174.0, 198.0, 90.0)), space.bbox)
+
+    def test_initialization_shift_and_scale(self):
+        space = self.helper_transform_load(mode="shift_and_scale")
+
+        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
+        self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.ns.bbox)
+        self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.bbox)
+        self.cmp_array(((-0.76, -0.78, -0.83), (0.76, 0.78, 0.83)), space.bbox)
+
+    def test_initialization_to_cube(self):
+        space = self.helper_transform_load(mode="to_cube")
+
+        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
+        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.ns.bbox)
+        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.bbox)
+        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.bbox)
+
 
 
 if __name__ == '__main__':
