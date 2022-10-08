@@ -2,12 +2,14 @@ import fnmatch
 import os
 from typing import *
 
+import jax
 from anytree import NodeMixin, Resolver, RenderTree, PostOrderIter
 from anytree.exporter import JsonExporter, DictExporter
 from anytree.importer import JsonImporter, DictImporter
 from colorama import Fore
 
 import nndt
+from math_core import train_test_split
 
 NODE_METHOD_DICT = {}
 
@@ -343,6 +345,126 @@ def load_from_path(root_path,
             add_values(lst, os.path.join(root, fl), fl)
 
     return space
+
+def load_from_file_lists(name_list,
+              mesh_list: Optional[Sequence[str]] = None,
+              sdt_list: Optional[Sequence[str]] = None,
+              test_size: Optional[float] = None) -> Space:
+
+
+    if mesh_list is not None:
+            assert (len(name_list) == len(mesh_list))
+    if sdt_list is not None:
+        assert (len(name_list) == len(sdt_list))
+    # if sdfpkl_list is not None:
+    #     assert (len(name_list) == len(sdfpkl_list))
+
+    if test_size is None:
+        space = Space("main")
+        group = Group("default", parent=space)
+        for ind, name in enumerate(name_list):
+            object_ = Object3D(name, parent=group)
+            if mesh_list is not None:
+                mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
+            if sdt_list is not None:
+                sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
+            # if sdfpkl_list is not None:
+            #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object_)
+    else:
+        assert (0.0 < test_size < 1.0)
+        space = Space("main")
+        rng_key = jax.random.PRNGKey(42)
+        index_train, index_test = train_test_split(range(len(name_list)), rng_key, test_size=test_size)
+
+        group_train = Group("train", parent=space)
+        for ind in index_train:
+            name = name_list[ind]
+            object_ = Object3D(name, parent=group_train)
+            if mesh_list is not None:
+                mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
+            if sdt_list is not None:
+                sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
+            # if sdfpkl_list is not None:
+            #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
+
+        group_test = Group("test", parent=space)
+        for ind in index_test:
+            name = name_list[ind]
+            object_ = Object3D(name, parent=group_train)
+            if mesh_list is not None:
+                mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
+            if sdt_list is not None:
+                sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
+            # if sdfpkl_list is not None:
+            #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
+
+    return space
+
+
+
+# def load_data(name_list,
+#               mesh_list: Optional[Sequence[str]] = None,
+#               sdt_list: Optional[Sequence[str]] = None,
+#               sdfpkl_list: Optional[Sequence[str]] = None,
+#               test_size: Optional[float] = None) -> Space:
+#     if mesh_list is not None:
+#         assert (len(name_list) == len(mesh_list))
+#     if sdt_list is not None:
+#         assert (len(name_list) == len(sdt_list))
+#     if sdfpkl_list is not None:
+#         assert (len(name_list) == len(sdfpkl_list))
+#
+#     if test_size is None:
+#         space = Space("main")
+#         group = Group("default", parent=space)
+#         for ind, name in enumerate(name_list):
+#             object = Object(name, parent=group)
+#             if mesh_list is not None:
+#                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
+#             if sdt_list is not None:
+#                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
+#             if sdfpkl_list is not None:
+#                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
+#     else:
+#         assert (0.0 < test_size < 1.0)
+#         space = Space("main")
+#         index_train, index_test = train_test_split(range(len(name_list)),
+#                                                    test_size=test_size,
+#                                                    random_state=42)
+#
+#         group_train = Group("train", parent=space)
+#         for ind in index_train:
+#             name = name_list[ind]
+#             object = Object(name, parent=group_train)
+#             if mesh_list is not None:
+#                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
+#             if sdt_list is not None:
+#                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
+#             if sdfpkl_list is not None:
+#                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
+#
+#         group_test = Group("test", parent=space)
+#         for ind in index_test:
+#             name = name_list[ind]
+#             object = Object(name, parent=group_test)
+#             if mesh_list is not None:
+#                 mesh_source = MeshSource("mesh", mesh_list[ind], parent=object)
+#             if sdt_list is not None:
+#                 sdt_source = SDTSource("sdt", sdt_list[ind], parent=object)
+#             if sdfpkl_list is not None:
+#                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
+#
+#     return space
+
+
+
+
+
+
+
+
+
+
 
 
 DICT_NODETYPE_CLASS = {'UNDEFINED': None,
