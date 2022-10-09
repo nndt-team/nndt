@@ -50,15 +50,15 @@ def _name_to_safename(name: str) -> str:
                 raise ValueError(f'{name} cannot be safely renamed.')
     return safe_name
 
-
-def _children_filter_for_explore_default(children):
-    ret = [v for v in children if isinstance(v, AbstractTreeElement)]
-    return ret
-
-
-def _children_filter_for_explore_source(children):
-    ret = [v for v in children if isinstance(v, AbstractBBoxNode)]
-    return ret
+#
+# def _children_filter_for_explore_default(children):
+#     ret = [v for v in children if isinstance(v, AbstractTreeElement)]
+#     return ret
+#
+#
+# def _children_filter_for_explore_source(children):
+#     ret = [v for v in children if isinstance(v, AbstractBBoxNode)]
+#     return ret
 
 
 class AbstractTreeElement(NodeMixin):
@@ -148,15 +148,8 @@ class AbstractBBoxNode(AbstractTreeElement):
 
     @node_method("print(default|source|full)")
     def print(self, mode: Optional[str] = "default"):
-        if mode is None or (mode == "default"):
-            ret = RenderTree(self, childiter=_children_filter_for_explore_default).__str__()
-        elif mode == "source" or mode == "sources":
-            ret = RenderTree(self, childiter=_children_filter_for_explore_source).__str__()
-        elif mode == "full":
-            ret = RenderTree(self).__str__()
-        else:
-            raise NotImplementedError(f"{mode} is not implemented for the explore method. ")
-        return ret
+        from space2.print_tree import _pretty_print
+        return _pretty_print(self, mode)
 
 
 class AbstractLoader:

@@ -29,7 +29,6 @@ class Space(AbstractBBoxNode):
         from nndt.space2 import to_json
         return to_json(self)
 
-    @node_method("init()")
     def init(self):
         for node in PostOrderIter(self):
             if isinstance(node, AbstractTreeElement):

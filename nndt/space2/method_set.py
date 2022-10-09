@@ -28,7 +28,7 @@ class MethodNode(AbstractTreeElement):
         self.docstring = docstring if docstring is not None else name
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.docstring}' + Fore.RESET
+        return self._print_color + f'{self.docstring}' + Fore.RESET
 
 
 class MethodSetNode(AbstractTreeElement):
