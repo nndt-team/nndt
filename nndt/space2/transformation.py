@@ -9,18 +9,15 @@ from colorama import Fore
 from nndt.space2 import AbstractBBoxNode, node_method
 
 
-class AbstractTransformation(NodeMixin):
+class AbstractTransformation(AbstractBBoxNode):
 
     def __init__(self, name: str,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
-        super(AbstractTransformation, self).__init__()
+        super(AbstractTransformation, self).__init__(name,
+                 bbox=bbox, _print_color=Fore.RED, _nodetype='T',
+                 parent=parent)
 
-        self.name = name
-        self.parent = parent
-        self.bbox = bbox
-        self._print_color = Fore.RED
-        self._nodetype = 'T'
         self._transform_type = "unknown_transform"
 
     def __len__(self):
