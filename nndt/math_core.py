@@ -5,7 +5,7 @@ import jax.numpy as jnp
 from jax.random import KeyArray
 
 
-def take_each_n(array, count=1, step=1, shift=0):
+def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
     """Takes elements from an array along an axis
     
     An advanced range iterator that takes data according to the index and starts 

@@ -12,7 +12,7 @@ from nndt.space.repr_mesh import SaveMesh
 
 class IteratorWithTimeMeasurements:
     """Iter on BasicVizualization object and shows work duration"""
-    
+
     def __init__(self, basic_viz, epochs):
         self.basic_viz = basic_viz
         self.time_start = time.time()
