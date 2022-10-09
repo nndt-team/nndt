@@ -99,8 +99,8 @@ class AbstractTreeElement(NodeMixin):
 
             #from nndt.space2 import initialize_method_node
             #initialize_method_node(self)
-            if hasattr(self, "_NodeMixin__children"):
-                sorted(self._NodeMixin__children, key=lambda child: child.name)
+            #if hasattr(self, "_NodeMixin__children"):
+            #    sorted(self._NodeMixin__children, key=lambda child: child.name)
 
     def _post_detach(self, parent):
         if parent is not None:

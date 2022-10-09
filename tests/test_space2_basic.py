@@ -21,6 +21,25 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
+        print(space.print())
+
+    def test_no_double_init(self):
+        space = load_from_path(PATH_TEST_STRUCTURE)
+        space.init()
+        print(text1 := space.print())
+        space.init()
+        print(text2 := space.print())
+        self.assertEqual(text1, text2)
+
+        space = load_from_path(PATH_TEST_ACDC)
+        space.init()
+        print(text1 := space.print())
+        space.init()
+        print(text2 := space.print())
+        self.assertEqual(text1, text2)
+    def test_load_from_path(self):
+        space = load_from_path(PATH_TEST_STRUCTURE)
+        space.preload()
         space.init()
         print(space.print())
 

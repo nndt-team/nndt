@@ -1,4 +1,4 @@
-from anytree import PostOrderIter
+from anytree import PostOrderIter, PreOrderIter
 from anytree.exporter import DictExporter, JsonExporter
 from colorama import Fore
 
@@ -47,6 +47,10 @@ class Space(AbstractBBoxNode):
             for child in self.children:
                 if isinstance(child, (Object3D, Group)):
                     self.bbox = update_bbox(self.bbox, child.bbox)
+
+            # Keep alphabetical order of any nodes
+            for node in PreOrderIter(self):
+                node._NodeMixin__children_or_empty.sort(key=lambda d: d.name, reverse=False)
 
 
     def _initialization(self, *kargs, **kvargs):
