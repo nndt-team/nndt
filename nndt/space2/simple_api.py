@@ -7,11 +7,11 @@ from anytree.exporter import DictExporter, JsonExporter
 from anytree.importer import DictImporter, JsonImporter
 
 from nndt.math_core import train_test_split
-from nndt.space2.space import Space
+from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
+from nndt.space2.filesource_and_loader import FileSource
 from nndt.space2.group import Group
 from nndt.space2.object3D import Object3D
-from nndt.space2.filesource_and_loader import FileSource
-from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
+from nndt.space2.space import Space
 
 
 def _attribute_filter(attrs):
@@ -75,8 +75,6 @@ def load_from_file_lists(name_list,
         assert (len(name_list) == len(mesh_list))
     if sdt_list is not None:
         assert (len(name_list) == len(sdt_list))
-    # if sdfpkl_list is not None:
-    #     assert (len(name_list) == len(sdfpkl_list))
 
     if test_size is None:
         space = Space("main")
@@ -87,8 +85,6 @@ def load_from_file_lists(name_list,
                 mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
             if sdt_list is not None:
                 sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
-            # if sdfpkl_list is not None:
-            #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object_)
     else:
         assert (0.0 < test_size < 1.0)
         space = Space("main")
@@ -103,8 +99,6 @@ def load_from_file_lists(name_list,
                 mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
             if sdt_list is not None:
                 sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
-            # if sdfpkl_list is not None:
-            #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
 
         group_test = Group("test", parent=space)
         for ind in index_test:
@@ -114,10 +108,9 @@ def load_from_file_lists(name_list,
                 mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
             if sdt_list is not None:
                 sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
-            # if sdfpkl_list is not None:
-            #     sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
 
     return space
+
 
 def load_space(filepath: str):
     if not os.path.exists(filepath):
@@ -137,6 +130,7 @@ def from_json(json: str):
     space = json_imp.import_(json)
     return space
 
+
 def _nodecls_function(parent=None, **attrs):
     if '_nodetype' not in attrs:
         raise ValueError('_nodetype is not located in some node of space file')
@@ -155,10 +149,12 @@ def save_space(space: Space, filepath: str):
     with open(filepath_with_ext, 'w', encoding='utf-8') as fl:
         fl.write(space.to_json())
 
+
 def to_json(space: Space):
     dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
     json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
     return json_exp.export(space)
+
 
 DICT_NODETYPE_CLASS = {'UNDEFINED': AbstractTreeElement,
                        'S': Space,
@@ -167,4 +163,3 @@ DICT_NODETYPE_CLASS = {'UNDEFINED': AbstractTreeElement,
                        'FS': FileSource,
                        }
 DICT_CLASS_NODETYPE = {(v, k) for k, v in DICT_NODETYPE_CLASS.items()}
-

@@ -3,7 +3,6 @@ from typing import *
 
 import jax.numpy as jnp
 import numpy as onp
-from anytree import NodeMixin
 from colorama import Fore
 
 from nndt.space2 import AbstractBBoxNode, node_method
@@ -15,8 +14,8 @@ class AbstractTransformation(AbstractBBoxNode):
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(AbstractTransformation, self).__init__(name,
-                 bbox=bbox, _print_color=Fore.RED, _nodetype='T',
-                 parent=parent)
+                                                     bbox=bbox, _print_color=Fore.RED, _nodetype='T',
+                                                     parent=parent)
 
         self._transform_type = "unknown_transform"
 
@@ -44,9 +43,6 @@ class AbstractTransformation(AbstractBBoxNode):
         if parent is not None:
             setattr(parent, self.name, self)
 
-        #from nndt.space2 import initialize_method_node
-        #initialize_method_node(self)
-
     def _post_detach(self, parent):
         if parent is not None:
             if hasattr(parent, self.name):
@@ -67,6 +63,7 @@ class AbstractTransformation(AbstractBBoxNode):
     @abstractmethod
     def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         pass
+
 
 class IdentityTransform(AbstractTransformation):
 
@@ -92,6 +89,7 @@ class IdentityTransform(AbstractTransformation):
     @node_method("sdt_ps2ns")
     def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return sdt
+
 
 class ShiftAndScaleTransform(AbstractTransformation):
 
@@ -126,6 +124,7 @@ class ShiftAndScaleTransform(AbstractTransformation):
     @node_method("sdt_ps2ns")
     def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return sdt / self.scale_ps2ns
+
 
 class ToNormalCubeTransform(AbstractTransformation):
 

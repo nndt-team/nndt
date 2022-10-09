@@ -3,25 +3,24 @@ from typing import Optional
 import jax
 import jax.numpy as jnp
 import numpy as onp
-from anytree import NodeMixin
+import vtk
 from colorama import Fore
 from jax.random import PRNGKeyArray
+from vtkmodules.util.numpy_support import numpy_to_vtk
 
 from nndt.math_core import grid_in_cube2, uniform_in_cube, take_each_n
-from nndt.space2 import node_method
 from nndt.space2 import FileSource
+from nndt.space2 import node_method
+from nndt.space2.abstracts import AbstractTreeElement, AbstractBBoxNode
 from nndt.space2.transformation import AbstractTransformation
 
-import vtk
-from vtkmodules.util.numpy_support import vtk_to_numpy, numpy_to_vtk
-
-from nndt.space2.abstracts import NODE_METHOD_DICT, AbstractTreeElement, AbstractBBoxNode
 
 def _get_class_hierarchy(obj):
     class_hierarchy = [obj.__class__]
     while len(class_hierarchy[-1].__bases__) > 0:
         class_hierarchy = class_hierarchy + [class_hierarchy[-1].__bases__[0]]
     return class_hierarchy
+
 
 class MethodNode(AbstractTreeElement):
     def __init__(self, name: str, docstring: Optional[str], parent=None):
@@ -33,16 +32,12 @@ class MethodNode(AbstractTreeElement):
 
 
 class MethodSetNode(AbstractTreeElement):
-    def __init__(self, name: str, parent=None,):
+    def __init__(self, name: str, parent=None, ):
         super(MethodSetNode, self).__init__(name, _print_color=Fore.YELLOW, _nodetype='MS', parent=parent)
-
 
     def _post_attach(self, parent):
         if parent is not None:
             setattr(parent, self.name, self)
-
-        #from nndt.space2 import initialize_method_node
-        #initialize_method_node(self)
 
     def _post_detach(self, parent):
         if parent is not None:
@@ -132,6 +127,7 @@ class MeshNode(MethodSetNode):
         ret_array = self.transform.xyz_ps2ns(array)
 
         return index_set, ret_array
+
 
 class SDTNode(MethodSetNode):
     def __init__(self, object_3d: AbstractBBoxNode,

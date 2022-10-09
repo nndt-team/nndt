@@ -11,6 +11,7 @@ FILE_TMP2 = "./test_file2.space"
 PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
 
+
 class MethodSetTestCase(unittest.TestCase):
 
     def helper_sampling_presence(self, path):

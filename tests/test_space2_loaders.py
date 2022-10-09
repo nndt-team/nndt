@@ -1,6 +1,5 @@
 import unittest
 
-import jax
 import jax.numpy as jnp
 
 from nndt.space2 import load_from_path
@@ -10,6 +9,7 @@ FILE_TMP2 = "./test_file2.space"
 
 PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
+
 
 class LoadersTestCase(unittest.TestCase):
 
@@ -76,20 +76,19 @@ class LoadersTestCase(unittest.TestCase):
 
         self.cmp_array(((58.81672286987305, 111.76485443115234, 6.518979072570801),
                         (133.49337768554688, 182.3278045654297, 83.50870513916016)),
-                        space.patient009.sdf_npy.bbox, tolerance)
+                       space.patient009.sdf_npy.bbox, tolerance)
         self.cmp_array(((44.65834426879883, 120.142333984375, 6.617307186126709),
                         (119.0753173828125, 197.04644775390625, 89.1721420288086)),
-                        space.patient029.sdf_npy.bbox, tolerance)
+                       space.patient029.sdf_npy.bbox, tolerance)
         self.cmp_array(((98.19243621826172, 77.09327697753906, 11.006719589233398),
                         (173.4209747314453, 149.07855224609375, 60.4520378112793)),
-                        space.patient049.sdf_npy.bbox, tolerance)
+                       space.patient049.sdf_npy.bbox, tolerance)
         self.cmp_array(((68.10173034667969, 108.21791076660156, 7.120966911315918),
                         (125.36803436279297, 155.4543914794922, 54.33668899536133)),
-                        space.patient069.sdf_npy.bbox, tolerance)
+                       space.patient069.sdf_npy.bbox, tolerance)
         self.cmp_array(((90.06974029541016, 105.29344177246094, 6.555858135223389),
                         (162.07835388183594, 166.13941955566406, 50.982513427734375)),
-                        space.patient089.sdf_npy.bbox, tolerance)
-
+                       space.patient089.sdf_npy.bbox, tolerance)
 
     def helper_transform_load(self, mode="ident"):
         space = load_from_path(PATH_TEST_ACDC)
@@ -97,6 +96,7 @@ class LoadersTestCase(unittest.TestCase):
         print(space.print("full"))
 
         return space
+
     def test_preload_identity(self):
         space = self.helper_transform_load(mode="ident")
 
@@ -120,7 +120,6 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.ns.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.bbox)
-
 
 
 if __name__ == '__main__':

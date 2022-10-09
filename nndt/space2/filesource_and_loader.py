@@ -1,5 +1,4 @@
 import os
-from abc import abstractmethod
 
 import jax.numpy as jnp
 import vtk
@@ -23,18 +22,9 @@ class FileSource(AbstractBBoxNode):
     def __repr__(self):
         star_bool = self._loader.is_load if self._loader is not None else False
         star = "^" if star_bool else ""
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + \
+               Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
 
-    # def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
-    #     from nndt.space2 import DICT_LOADERTYPE_CLASS
-    #     if self.loader_type not in DICT_LOADERTYPE_CLASS:
-    #         raise NotImplementedError(f'{self.loader_type} is unknown loader')
-    #
-    #     self._loader = DICT_LOADERTYPE_CLASS[self.loader_type](filepath=self.filepath)
-    #     self._loader.load_data()
-    #     self.bbox = self._loader.calc_bbox()
-    #     if not keep_in_memory:
-    #         self._loader.unload_data()
 
 class EmptyLoader(AbstractLoader):
 

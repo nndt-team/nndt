@@ -17,11 +17,13 @@ NODE_METHOD_DICT = {}
 DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80,
                           "FS": 60, "T": 50, "MS": 40, "M": 30}
 
+
 def _get_class_hierarchy(obj):
     class_hierarchy = [obj.__class__]
     while len(class_hierarchy[-1].__bases__) > 0:
         class_hierarchy = class_hierarchy + [class_hierarchy[-1].__bases__[0]]
     return class_hierarchy
+
 
 def node_method(docstring=None):
     def decorator_wrapper(fn):
@@ -38,23 +40,26 @@ def node_method(docstring=None):
     return decorator_wrapper
 
 
-def _name_to_safename(name: str, obj: object = object()) -> str:
+def _name_to_safename(name: str) -> str:
     safe_name = re.sub('\W|^(?=\d)', '_', name)
-    if (safe_name in FORBIDDEN_NAME):
+    if safe_name in FORBIDDEN_NAME:
         safe_name = safe_name + '_'
-        if (safe_name in FORBIDDEN_NAME):
+        if safe_name in FORBIDDEN_NAME:
             safe_name = safe_name + '_'
-            if (safe_name in FORBIDDEN_NAME):
+            if safe_name in FORBIDDEN_NAME:
                 raise ValueError(f'{name} cannot be safely renamed.')
     return safe_name
 
+
 def _children_filter_for_explore_default(children):
-    ret = [v for v in children if isinstance(v, (AbstractTreeElement))]
+    ret = [v for v in children if isinstance(v, AbstractTreeElement)]
     return ret
+
 
 def _children_filter_for_explore_source(children):
     ret = [v for v in children if isinstance(v, AbstractBBoxNode)]
     return ret
+
 
 class AbstractTreeElement(NodeMixin):
     """
@@ -70,7 +75,7 @@ class AbstractTreeElement(NodeMixin):
         :param parent: parent node
         """
         super(NodeMixin, self).__init__()
-        self.name = _name_to_safename(name, self)
+        self.name = _name_to_safename(name)
         self.parent = parent
         self._print_color = _print_color
         self._nodetype = _nodetype
@@ -96,7 +101,7 @@ class AbstractTreeElement(NodeMixin):
 
     def _post_attach(self, parent):
         if isinstance(self, AbstractBBoxNode):
-            if (parent is not None):
+            if parent is not None:
                 setattr(parent, self.name, self)
 
     def _post_detach(self, parent):
@@ -112,7 +117,8 @@ class AbstractTreeElement(NodeMixin):
             if class_name in NODE_METHOD_DICT:
                 for fn_name, fn_docs in NODE_METHOD_DICT[class_name].items():
                     if hasattr(self, fn_name) and (fn_name not in [x.name for x in self.children]):
-                        method = MethodNode(fn_name, fn_docs, parent=self)
+                        MethodNode(fn_name, fn_docs, parent=self)
+
 
 class AbstractBBoxNode(AbstractTreeElement):
     """
@@ -133,9 +139,6 @@ class AbstractBBoxNode(AbstractTreeElement):
         super(AbstractBBoxNode, self).__init__(name, _print_color=_print_color, _nodetype=_nodetype, parent=parent)
         self.bbox = bbox
 
-    # def _initialization(self, *kargs, **kvargs):
-    #     pass
-
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
 
@@ -155,7 +158,8 @@ class AbstractBBoxNode(AbstractTreeElement):
             raise NotImplementedError(f"{mode} is not implemented for the explore method. ")
         return ret
 
-class AbstractLoader():
+
+class AbstractLoader:
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
         return (0., 0., 0.), (0., 0., 0.)
@@ -171,4 +175,3 @@ class AbstractLoader():
     @abstractmethod
     def is_load(self) -> bool:
         pass
-

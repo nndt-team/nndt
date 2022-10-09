@@ -1,4 +1,3 @@
-
 def update_bbox(bbox1: ((float, float, float), (float, float, float)),
                 bbox2: ((float, float, float), (float, float, float))):
     (Xmin1, Ymin1, Zmin1), (Xmax1, Ymax1, Zmax1) = bbox1

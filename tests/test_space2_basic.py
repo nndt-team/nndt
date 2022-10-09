@@ -37,11 +37,6 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space.init()
         print(text2 := space.print())
         self.assertEqual(text1, text2)
-    def test_load_from_path(self):
-        space = load_from_path(PATH_TEST_STRUCTURE)
-        space.preload()
-        space.init()
-        print(space.print())
 
     def test_space_models_TEST_STRUCTURE(self):
         space = load_from_path(PATH_TEST_STRUCTURE)

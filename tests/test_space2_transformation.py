@@ -12,6 +12,7 @@ FILE_TMP2 = "./test_file2.space"
 PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
 
+
 class MethodSetTestCase(unittest.TestCase):
 
     def cmp_array(self, arr0, arr1, atol=0.1):
@@ -34,7 +35,6 @@ class MethodSetTestCase(unittest.TestCase):
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret1)
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret2)
         jnp.allclose(jnp.zeros((100, 3)), ret3)
-
 
     def test_sampling_presence(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)

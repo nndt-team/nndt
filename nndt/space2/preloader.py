@@ -43,10 +43,10 @@ class DefaultPreloader:
 
     def _keep_alphabetical_order_of_nodes(self, space: Space):
         for node in PreOrderIter(space):
-            node._NodeMixin__children_or_empty.sort(key=lambda d: (100-DICT_NODETYPE_PRIORITY[d._nodetype], d.name),
+            node._NodeMixin__children_or_empty.sort(key=lambda d: (100 - DICT_NODETYPE_PRIORITY[d._nodetype], d.name),
                                                     reverse=False)
 
-    def _add_sampling_node(self, node : AbstractBBoxNode):
+    def _add_sampling_node(self, node: AbstractBBoxNode):
         SamplingNode(parent=node)
 
     def _update_bbox_bottom_to_up(self, node):
