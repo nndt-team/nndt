@@ -6,7 +6,7 @@ import numpy as onp
 from anytree import NodeMixin
 from colorama import Fore
 
-from nndt.space2 import BBoxNode, node_method
+from nndt.space2 import AbstractBBoxNode, node_method
 
 
 class AbstractTransformation(NodeMixin):
@@ -47,8 +47,8 @@ class AbstractTransformation(NodeMixin):
         if parent is not None:
             setattr(parent, self.name, self)
 
-        from nndt.space2 import initialize_method_node
-        initialize_method_node(self)
+        #from nndt.space2 import initialize_method_node
+        #initialize_method_node(self)
 
     def _post_detach(self, parent):
         if parent is not None:

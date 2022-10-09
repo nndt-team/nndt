@@ -15,6 +15,7 @@ class MethodSetTestCase(unittest.TestCase):
 
     def helper_sampling_presence(self, path):
         space = load_from_path(path)
+        space.preload()
         rng_key = jax.random.PRNGKey(42)
         ret1 = space.sampling.grid()
         ret2 = space.sampling.grid_with_shackle(rng_key, sigma=0.0000001)

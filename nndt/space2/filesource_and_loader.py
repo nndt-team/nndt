@@ -1,27 +1,40 @@
+import os
 from abc import abstractmethod
 
 import jax.numpy as jnp
 import vtk
+from colorama import Fore
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader
 
-class AbstractLoader():
 
-    def calc_bbox(self) -> ((float, float, float), (float, float, float)):
-        return (0., 0., 0.), (0., 0., 0.)
+class FileSource(AbstractBBoxNode):
+    def __init__(self, name, filepath: str, loader_type: str,
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
+                 parent=None):
+        super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
+        if not os.path.exists(filepath):
+            raise FileNotFoundError()
+        self.filepath = filepath
+        self.loader_type = loader_type
+        self._loader = None
 
-    @abstractmethod
-    def load_data(self):
-        pass
+    def __repr__(self):
+        star_bool = self._loader.is_load if self._loader is not None else False
+        star = "^" if star_bool else ""
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
 
-    @abstractmethod
-    def unload_data(self):
-        pass
+    def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
+        from nndt.space2 import DICT_LOADERTYPE_CLASS
+        if self.loader_type not in DICT_LOADERTYPE_CLASS:
+            raise NotImplementedError(f'{self.loader_type} is unknown loader')
 
-    @abstractmethod
-    def is_load(self) -> bool:
-        pass
-
+        self._loader = DICT_LOADERTYPE_CLASS[self.loader_type](filepath=self.filepath)
+        self._loader.load_data()
+        self.bbox = self._loader.calc_bbox()
+        if not keep_in_memory:
+            self._loader.unload_data()
 
 class EmptyLoader(AbstractLoader):
 

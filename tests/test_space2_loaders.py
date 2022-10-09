@@ -20,38 +20,38 @@ class LoadersTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.allclose(arr0_, arr1_, atol=atol, rtol=0.0)))
         return arr1_
 
-    def helper_initialization_call(self, path, keep_in_memory):
+    def helper_preload_call(self, path, keep_in_memory):
         space = load_from_path(path)
-        space.initialization(keep_in_memory=keep_in_memory)
+        space.preload(keep_in_memory=keep_in_memory)
         print(space.print('default'))
         print(space.print('full'))
 
         return space
 
-    def test_initialization_call(self):
-        self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
-        self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
+    def test_preload_call(self):
+        self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
+        self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 
-    def test_initialization_call_and_keep_in_memory(self):
-        self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=True)
-        self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=True)
+    def test_preload_call_and_keep_in_memory(self):
+        self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=True)
+        self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=True)
 
-    def test_initialization_check_access_to_field_mesh(self):
-        space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
+    def test_preload_check_access_to_field_mesh(self):
+        space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
 
         self.assertNotIn('^', space.patient069.colored_obj.print())
         self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
         self.assertIn('^', space.patient069.colored_obj.print())
 
-    def test_initialization_check_access_to_field_text(self):
-        space = self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
+    def test_preload_check_access_to_field_text(self):
+        space = self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 
         self.assertNotIn('^', space.group1.patient11.organ110.data1100_txt.print())
         self.assertIsNotNone(space.group1.patient11.organ110.data1100_txt._loader.text)
         self.assertIn('^', space.group1.patient11.organ110.data1100_txt.print())
 
-    def test_initialization_ps_bbox_in_mesh(self):
-        space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
+    def test_preload_ps_bbox_in_mesh(self):
+        space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
         tolerance = 0.00001
 
         self.cmp_array(((58.81672286987305, 111.76485443115234, 6.518979072570801),
@@ -70,8 +70,8 @@ class LoadersTestCase(unittest.TestCase):
                         (162.07835388183594, 166.13941955566406, 50.982513427734375)),
                        space.patient089.colored_obj.bbox, tolerance)
 
-    def test_initialization_ps_bbox_in_sdt(self):
-        space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
+    def test_preload_ps_bbox_in_sdt(self):
+        space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
         tolerance = 1.1
 
         self.cmp_array(((58.81672286987305, 111.76485443115234, 6.518979072570801),
@@ -93,11 +93,11 @@ class LoadersTestCase(unittest.TestCase):
 
     def helper_transform_load(self, mode="ident"):
         space = load_from_path(PATH_TEST_ACDC)
-        space.initialization(mode=mode, keep_in_memory=False)
+        space.preload(mode=mode, keep_in_memory=False)
         print(space.print("full"))
 
         return space
-    def test_initialization_identity(self):
+    def test_preload_identity(self):
         space = self.helper_transform_load(mode="ident")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
@@ -105,7 +105,7 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((0.0, 0.0, 0.0), (134.0, 183.0, 84.0)), space.patient009.bbox)
         self.cmp_array(((0.0, 0.0, 0.0), (174.0, 198.0, 90.0)), space.bbox)
 
-    def test_initialization_shift_and_scale(self):
+    def test_preload_shift_and_scale(self):
         space = self.helper_transform_load(mode="shift_and_scale")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
@@ -113,7 +113,7 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.bbox)
         self.cmp_array(((-0.76, -0.78, -0.83), (0.76, 0.78, 0.83)), space.bbox)
 
-    def test_initialization_to_cube(self):
+    def test_preload_to_cube(self):
         space = self.helper_transform_load(mode="to_cube")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)

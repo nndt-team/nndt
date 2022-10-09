@@ -20,10 +20,13 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
+        space.init()
+        space.init()
         print(space.print())
 
     def test_space_models_TEST_STRUCTURE(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
+        space.init()
         print(text1 := space.print('source'))
         print(text2 := space.print('default'))
         print(text3 := space.print('full'))
@@ -32,7 +35,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_space_models_ACDC(self):
         space = load_from_path(PATH_TEST_ACDC)
-        space.initialization()
+        space.init()
         print(text1 := space.print('source'))
         print(text2 := space.print('default'))
         print(text3 := space.print('full'))
@@ -41,14 +44,17 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_load_from_path2(self):
         space = load_from_path(PATH_TEST_ACDC)
+        space.init()
         print(space.print())
 
     def test_forbidden_name(self):
-        with self.assertRaises(ValueError) as context:
-            space = Space('children')
+        space = Space('children')
+        space.init()
+        self.assertEqual('children_', space.name)
 
     def test_request_tree_nodes(self):
         space = load_from_path(PATH_TEST_ACDC)
+        space.init()
 
         obj1 = space.patient069
         obj2 = space[0]
@@ -59,6 +65,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_request_tree_nodes2(self):
         space = load_from_path(PATH_TEST_ACDC)
+        space.init()
 
         obj1 = space.patient069.colored_obj
         obj2 = space[0][0]
@@ -71,6 +78,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_print(self):
         space = load_from_path(PATH_TEST_ACDC)
+        space.init()
 
         print(text1 := space.patient069.print())
         print(text2 := space[0].print())
@@ -81,9 +89,11 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def helper_save_space_and_load_space(self, pathname):
         space = load_from_path(pathname)
+        space.init()
         print(text1 := space.print())
         space.save_space(FILE_TMP)
         space2 = load_space(FILE_TMP)
+        space2.init()
         print(text2 := space2.print())
         self.assertEqual(text1, text2)
         space2.save_space(FILE_TMP2)
@@ -97,9 +107,11 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def helper_to_json_and_from_json(self, pathname):
         space = load_from_path(pathname)
+        space.init()
         print(text1 := space.print())
         json1 = space.to_json()
         space2 = from_json(json1)
+        space2.init()
         print(text2 := space2.print())
         self.assertEqual(text1, text2)
         json2 = space2.to_json()
@@ -111,6 +123,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_node_decorator(self):
         space = load_from_path(PATH_TEST_ACDC)
+        space.init()
         print(space.print('full'))
         self.assertTrue(hasattr(space, 'patient009'))
         self.assertTrue(hasattr(space, 'patient029'))

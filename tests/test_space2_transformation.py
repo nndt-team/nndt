@@ -23,6 +23,10 @@ class MethodSetTestCase(unittest.TestCase):
 
     def helper_sampling_presence(self, path):
         space = load_from_path(path)
+        space.preload()
+        print(space.print('default'))
+        space.init()
+        print(space.print('full'))
         rng_key = jax.random.PRNGKey(42)
         ret1 = space.sampling.grid()
         ret2 = space.sampling.grid_with_shackle(rng_key, sigma=0.0000001)
@@ -31,16 +35,14 @@ class MethodSetTestCase(unittest.TestCase):
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret2)
         jnp.allclose(jnp.zeros((100, 3)), ret3)
 
-        print(space.print('default'))
-        print(space.print('full'))
 
     def test_sampling_presence(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)
 
     def helper_transform_load(self, mode="ident"):
         space = load_from_path(PATH_TEST_ACDC)
-        space.initialization(mode=mode, keep_in_memory=False)
-        print(space.print("default"))
+        space.preload(mode=mode, keep_in_memory=False)
+        print(space.print("full"))
 
         return space
 

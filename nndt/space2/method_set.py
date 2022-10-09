@@ -1,3 +1,5 @@
+from typing import Optional
+
 import jax
 import jax.numpy as jnp
 import numpy as onp
@@ -6,34 +8,41 @@ from colorama import Fore
 from jax.random import PRNGKeyArray
 
 from nndt.math_core import grid_in_cube2, uniform_in_cube, take_each_n
-from nndt.space2 import BBoxNode, node_method
-from nndt.space2 import FileSource, Object3D
+from nndt.space2 import node_method
+from nndt.space2 import FileSource
 from nndt.space2.transformation import AbstractTransformation
 
 import vtk
 from vtkmodules.util.numpy_support import vtk_to_numpy, numpy_to_vtk
 
+from nndt.space2.abstracts import NODE_METHOD_DICT, AbstractTreeElement, AbstractBBoxNode
 
-class MethodSetNode(NodeMixin):
-    def __init__(self, name: str, parent=None,
-                 _print_color: str = Fore.RESET,
-                 _nodetype: str = 'MS'):
-        super(MethodSetNode, self).__init__()
+def _get_class_hierarchy(obj):
+    class_hierarchy = [obj.__class__]
+    while len(class_hierarchy[-1].__bases__) > 0:
+        class_hierarchy = class_hierarchy + [class_hierarchy[-1].__bases__[0]]
+    return class_hierarchy
 
-        self.name = name
-        self.parent = parent
-        self._print_color = _print_color
-        self._nodetype = _nodetype
+class MethodNode(AbstractTreeElement):
+    def __init__(self, name: str, docstring: Optional[str], parent=None):
+        super(MethodNode, self).__init__(name, _print_color=Fore.RESET, _nodetype='M', parent=parent)
+        self.docstring = docstring if docstring is not None else name
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.docstring}' + Fore.RESET
+
+
+class MethodSetNode(AbstractTreeElement):
+    def __init__(self, name: str, parent=None,):
+        super(MethodSetNode, self).__init__(name, _print_color=Fore.YELLOW, _nodetype='MS', parent=parent)
+
 
     def _post_attach(self, parent):
         if parent is not None:
             setattr(parent, self.name, self)
 
-        from nndt.space2 import initialize_method_node
-        initialize_method_node(self)
+        #from nndt.space2 import initialize_method_node
+        #initialize_method_node(self)
 
     def _post_detach(self, parent):
         if parent is not None:
@@ -43,7 +52,7 @@ class MethodSetNode(NodeMixin):
 
 class SamplingNode(MethodSetNode):
 
-    def __init__(self, parent: BBoxNode = None):
+    def __init__(self, parent: AbstractBBoxNode = None):
         super(SamplingNode, self).__init__('sampling', parent=parent)
 
     @node_method("grid(spacing=(D,H,W)) -> xyz[D,H,W,3]")
@@ -72,9 +81,9 @@ class SamplingNode(MethodSetNode):
 
 
 class MeshNode(MethodSetNode):
-    def __init__(self, object_3d: Object3D,
+    def __init__(self, object_3d: AbstractBBoxNode,
                  mesh: FileSource,
-                 transform: AbstractTransformation, parent: BBoxNode = None):
+                 transform: AbstractTransformation, parent: AbstractBBoxNode = None):
         super(MeshNode, self).__init__('mesh', parent=parent)
         self.object_3d = object_3d
         assert (mesh.loader_type == 'mesh_obj')
@@ -125,9 +134,9 @@ class MeshNode(MethodSetNode):
         return index_set, ret_array
 
 class SDTNode(MethodSetNode):
-    def __init__(self, object_3d: Object3D,
+    def __init__(self, object_3d: AbstractBBoxNode,
                  sdt: FileSource,
-                 transform: AbstractTransformation, parent: BBoxNode = None):
+                 transform: AbstractTransformation, parent: AbstractBBoxNode = None):
         super(SDTNode, self).__init__('sdt', parent=parent)
         self.object_3d = object_3d
         assert (sdt.loader_type == 'sdt')

@@ -170,7 +170,8 @@ class BBoxNode(NodeMixin):
         if parent is not None:
             setattr(parent, self.name, self)
 
-        initialize_method_node(self)
+        #initialize_method_node(self)
+        #sorted(self._NodeMixin__children, key=lambda child: child.name)
 
     def _post_detach(self, parent):
         if parent is not None:
@@ -200,7 +201,7 @@ class Space(BBoxNode):
         super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
         self.version = nndt.__version__
 
-        initialize_method_node(self)
+        #initialize_method_node(self)
 
     def save_space(self, filepath: str):
         filepath_with_ext = filepath if filepath.endswith('.space') else filepath + '.space'
@@ -415,28 +416,3 @@ DICT_NODETYPE_CLASS = {'UNDEFINED': None,
 DICT_CLASS_NODETYPE = {(v, k) for k, v in DICT_NODETYPE_CLASS.items()}
 
 
-def load_space(filepath: str):
-    if not os.path.exists(filepath):
-        raise FileNotFoundError()
-
-    dict_imp = DictImporter(nodecls=_nodecls_function)
-    json_imp = JsonImporter(dictimporter=dict_imp)
-    with open(filepath, 'r') as fl:
-        space = json_imp.read(fl)
-
-    return space
-
-
-def from_json(json: str):
-    dict_imp = DictImporter(nodecls=_nodecls_function)
-    json_imp = JsonImporter(dictimporter=dict_imp)
-    space = json_imp.import_(json)
-    return space
-
-
-def update_bbox(bbox1: ((float, float, float), (float, float, float)),
-                bbox2: ((float, float, float), (float, float, float))):
-    (Xmin1, Ymin1, Zmin1), (Xmax1, Ymax1, Zmax1) = bbox1
-    (Xmin2, Ymin2, Zmin2), (Xmax2, Ymax2, Zmax2) = bbox2
-    return ((min(Xmin1, Xmin2), min(Ymin1, Ymin2), min(Zmin1, Zmin2)),
-            (max(Xmax1, Xmax2), max(Ymax1, Ymax2), max(Zmax1, Zmax2)))
