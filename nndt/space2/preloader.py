@@ -1,7 +1,7 @@
 from anytree import PostOrderIter, PreOrderIter
 
 from nndt.space2 import SamplingNode
-from space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, MeshNode, \
+from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, MeshNode, \
     DICT_NODETYPE_PRIORITY
 
 
