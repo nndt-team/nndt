@@ -23,8 +23,8 @@ class LoadersTestCase(unittest.TestCase):
     def helper_initialization_call(self, path, keep_in_memory):
         space = load_from_path(path)
         space.initialization(keep_in_memory=keep_in_memory)
-        print(space.explore('default'))
-        print(space.explore('full'))
+        print(space.print('default'))
+        print(space.print('full'))
 
         return space
 
@@ -39,16 +39,16 @@ class LoadersTestCase(unittest.TestCase):
     def test_initialization_check_access_to_field_mesh(self):
         space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
 
-        self.assertNotIn('^', space.patient069.colored_obj.explore())
+        self.assertNotIn('^', space.patient069.colored_obj.print())
         self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
-        self.assertIn('^', space.patient069.colored_obj.explore())
+        self.assertIn('^', space.patient069.colored_obj.print())
 
     def test_initialization_check_access_to_field_text(self):
         space = self.helper_initialization_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 
-        self.assertNotIn('^', space.group1.patient11.organ110.data1100_txt.explore())
+        self.assertNotIn('^', space.group1.patient11.organ110.data1100_txt.print())
         self.assertIsNotNone(space.group1.patient11.organ110.data1100_txt._loader.text)
-        self.assertIn('^', space.group1.patient11.organ110.data1100_txt.explore())
+        self.assertIn('^', space.group1.patient11.organ110.data1100_txt.print())
 
     def test_initialization_ps_bbox_in_mesh(self):
         space = self.helper_initialization_call(PATH_TEST_ACDC, keep_in_memory=False)
@@ -94,7 +94,7 @@ class LoadersTestCase(unittest.TestCase):
     def helper_transform_load(self, mode="ident"):
         space = load_from_path(PATH_TEST_ACDC)
         space.initialization(mode=mode, keep_in_memory=False)
-        print(space.explore("full"))
+        print(space.print("full"))
 
         return space
     def test_initialization_identity(self):

@@ -66,6 +66,13 @@ class AbstractTransformation(NodeMixin):
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         pass
 
+    @abstractmethod
+    def sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        pass
+
+    @abstractmethod
+    def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        pass
 
 class IdentityTransform(AbstractTransformation):
 
@@ -84,6 +91,13 @@ class IdentityTransform(AbstractTransformation):
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return xyz
 
+    @node_method("sdt_ns2ps")
+    def sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return sdt
+
+    @node_method("sdt_ps2ns")
+    def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return sdt
 
 class ShiftAndScaleTransform(AbstractTransformation):
 
@@ -111,6 +125,13 @@ class ShiftAndScaleTransform(AbstractTransformation):
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return (xyz - jnp.array(self.ns_center)) * self.scale_ps2ns + jnp.array(self.ps_center)
 
+    @node_method("sdt_ns2ps")
+    def sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return sdt * self.scale_ps2ns
+
+    @node_method("sdt_ps2ns")
+    def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return sdt / self.scale_ps2ns
 
 class ToNormalCubeTransform(AbstractTransformation):
 
@@ -134,3 +155,11 @@ class ToNormalCubeTransform(AbstractTransformation):
     @node_method("xyz_ns2ps")
     def xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         return (xyz * self.scale) + self.ps_center
+
+    @node_method("sdt_ns2ps")
+    def sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return sdt * self.scale
+
+    @node_method("sdt_ps2ns")
+    def sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        return sdt / self.scale

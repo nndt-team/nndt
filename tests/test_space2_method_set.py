@@ -23,8 +23,8 @@ class MethodSetTestCase(unittest.TestCase):
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret2)
         jnp.allclose(jnp.zeros((100, 3)), ret3)
 
-        print(space.explore('default'))
-        print(space.explore('full'))
+        print(space.print('default'))
+        print(space.print('full'))
 
     def test_sampling_presence(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)

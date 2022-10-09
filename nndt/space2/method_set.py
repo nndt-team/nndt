@@ -1,13 +1,17 @@
 import jax
 import jax.numpy as jnp
+import numpy as onp
 from anytree import NodeMixin
 from colorama import Fore
 from jax.random import PRNGKeyArray
 
-from nndt.math_core import grid_in_cube2, uniform_in_cube
+from nndt.math_core import grid_in_cube2, uniform_in_cube, take_each_n
 from nndt.space2 import BBoxNode, node_method
 from nndt.space2 import FileSource, Object3D
 from nndt.space2.transformation import AbstractTransformation
+
+import vtk
+from vtkmodules.util.numpy_support import vtk_to_numpy, numpy_to_vtk
 
 
 class MethodSetNode(NodeMixin):
@@ -86,3 +90,53 @@ class MeshNode(MethodSetNode):
     @node_method("xyz2index(ns_index[...,3]) -> ns_xyz[...,1]")
     def xyz2index(self, ns_index: jnp.ndarray) -> jnp.ndarray:
         raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
+
+    @node_method("save_mesh(filepath, {name, array})")
+    def save_mesh(self, filepath: str, name_value: dict):
+        surface = self.mesh._loader.mesh
+
+        for keys, values in name_value.items():
+            if isinstance(values, (onp.ndarray, onp.generic, jnp.ndarray, jnp.generic)):
+                if values.ndim == 1:
+                    data_ = numpy_to_vtk(num_array=values, deep=True, array_type=vtk.VTK_FLOAT)
+                    data_.SetName(keys)
+                    surface.GetPointData().AddArray(data_)
+                else:
+                    raise NotImplementedError
+            elif values is list:
+                data_ = numpy_to_vtk(num_array=values, deep=True, array_type=vtk.VTK_FLOAT)
+                data_.SetName(keys)
+                surface.GetPointData().AddArray(data_)
+            else:
+                raise NotImplementedError
+
+        writer = vtk.vtkXMLPolyDataWriter()
+        writer.SetFileName(filepath)
+        writer.SetInputData(surface)
+        writer.Update()
+        writer.Write()
+
+    @node_method("sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])")
+    def sampling_eachN(self, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
+        index_set, array = take_each_n(self.mesh._loader.points,
+                                       count=count, step=step, shift=shift)
+        ret_array = self.transform.xyz_ps2ns(array)
+
+        return index_set, ret_array
+
+class SDTNode(MethodSetNode):
+    def __init__(self, object_3d: Object3D,
+                 sdt: FileSource,
+                 transform: AbstractTransformation, parent: BBoxNode = None):
+        super(SDTNode, self).__init__('sdt', parent=parent)
+        self.object_3d = object_3d
+        assert (sdt.loader_type == 'sdt')
+        self.sdt = sdt
+        self.transform = transform
+
+    @node_method("xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]")
+    def xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+        ps_xyz = self.transform.xyz_ns2ps(ns_xyz)
+        ps_sdt = self.sdt._loader.request(ps_xyz)
+        ns_sdt = self.transform.sdt_ps2ns(ps_sdt)
+        return ns_sdt

@@ -133,6 +133,31 @@ class SDTLoader(AbstractLoader):
         self._sdt = jnp.load(self.filepath)
         self.is_load = True
 
+    def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
+
+        assert (ps_xyz.ndim >= 1)
+        assert (ps_xyz.shape[-1] == 3)
+
+        if ps_xyz.ndim == 1:
+            p_array_ = ps_xyz[jnp.newaxis, :]
+        else:
+            p_array_ = ps_xyz
+
+        p_array_ = p_array_.reshape((-1, 3))
+
+        x = jnp.clip(p_array_[:, 0], 0, self.sdt.shape[0] - 1).astype(int)
+        y = jnp.clip(p_array_[:, 1], 0, self.sdt.shape[1] - 1).astype(int)
+        z = jnp.clip(p_array_[:, 2], 0, self.sdt.shape[2] - 1).astype(int)
+
+        result = self.sdt[x, y, z]
+
+        ret_shape = list(ps_xyz.shape)
+        ret_shape[-1] = 1
+
+        result = result.reshape(ret_shape)
+
+        return result
+
     def unload_data(self):
         self._sdt = None
         self.is_load = False

@@ -180,12 +180,8 @@ class BBoxNode(NodeMixin):
     def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
         pass
 
-    @node_method("do_nothing()")
-    def do_nothing(self):
-        pass
-
     @node_method("explore(default|source|full)")
-    def explore(self, mode: Optional[str] = "default"):
+    def print(self, mode: Optional[str] = "default"):
         if mode is None or (mode == "default"):
             ret = RenderTree(self, childiter=_children_filter_for_explore).__str__()
         elif mode == "source" or mode == "sources":

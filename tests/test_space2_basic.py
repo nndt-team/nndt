@@ -20,28 +20,28 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
-        print(space.explore())
+        print(space.print())
 
     def test_space_models_TEST_STRUCTURE(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
-        print(text1 := space.explore('source'))
-        print(text2 := space.explore('default'))
-        print(text3 := space.explore('full'))
+        print(text1 := space.print('source'))
+        print(text2 := space.print('default'))
+        print(text3 := space.print('full'))
         self.assertLessEqual(len(text1), len(text2))
         self.assertLessEqual(len(text2), len(text3))
 
     def test_space_models_ACDC(self):
         space = load_from_path(PATH_TEST_ACDC)
         space.initialization()
-        print(text1 := space.explore('source'))
-        print(text2 := space.explore('default'))
-        print(text3 := space.explore('full'))
+        print(text1 := space.print('source'))
+        print(text2 := space.print('default'))
+        print(text3 := space.print('full'))
         self.assertLessEqual(len(text1), len(text2))
         self.assertLessEqual(len(text2), len(text3))
 
     def test_load_from_path2(self):
         space = load_from_path(PATH_TEST_ACDC)
-        print(space.explore())
+        print(space.print())
 
     def test_forbidden_name(self):
         with self.assertRaises(ValueError) as context:
@@ -69,22 +69,22 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(obj1, obj3)
         self.assertEqual(obj1, obj4)
 
-    def test_explore(self):
+    def test_print(self):
         space = load_from_path(PATH_TEST_ACDC)
 
-        print(text1 := space.patient069.explore())
-        print(text2 := space[0].explore())
-        print(text3 := space['patient069'].explore())
+        print(text1 := space.patient069.print())
+        print(text2 := space[0].print())
+        print(text3 := space['patient069'].print())
 
         self.assertEqual(text1, text2)
         self.assertEqual(text1, text3)
 
     def helper_save_space_and_load_space(self, pathname):
         space = load_from_path(pathname)
-        print(text1 := space.explore())
+        print(text1 := space.print())
         space.save_space(FILE_TMP)
         space2 = load_space(FILE_TMP)
-        print(text2 := space2.explore())
+        print(text2 := space2.print())
         self.assertEqual(text1, text2)
         space2.save_space(FILE_TMP2)
         with open(FILE_TMP, 'r') as fl:
@@ -97,10 +97,10 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def helper_to_json_and_from_json(self, pathname):
         space = load_from_path(pathname)
-        print(text1 := space.explore())
+        print(text1 := space.print())
         json1 = space.to_json()
         space2 = from_json(json1)
-        print(text2 := space2.explore())
+        print(text2 := space2.print())
         self.assertEqual(text1, text2)
         json2 = space2.to_json()
         self.assertEqual(json1, json2)
@@ -111,15 +111,13 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def test_node_decorator(self):
         space = load_from_path(PATH_TEST_ACDC)
-        print(space.explore('full'))
-        space.do_nothing()
+        print(space.print('full'))
         self.assertTrue(hasattr(space, 'patient009'))
         self.assertTrue(hasattr(space, 'patient029'))
         self.assertTrue(hasattr(space, 'patient049'))
         self.assertTrue(hasattr(space, 'patient069'))
         self.assertTrue(hasattr(space, 'patient089'))
-        self.assertIn('do_nothing', [x.name for x in space.children])
-        self.assertIn('explore', [x.name for x in space.children])
+        self.assertIn('print', [x.name for x in space.children])
         self.assertIn('patient009', [x.name for x in space.children])
         self.assertIn('patient029', [x.name for x in space.children])
         self.assertIn('patient049', [x.name for x in space.children])

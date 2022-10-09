@@ -31,8 +31,8 @@ class MethodSetTestCase(unittest.TestCase):
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret2)
         jnp.allclose(jnp.zeros((100, 3)), ret3)
 
-        print(space.explore('default'))
-        print(space.explore('full'))
+        print(space.print('default'))
+        print(space.print('full'))
 
     def test_sampling_presence(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)
@@ -40,7 +40,7 @@ class MethodSetTestCase(unittest.TestCase):
     def helper_transform_load(self, mode="ident"):
         space = load_from_path(PATH_TEST_ACDC)
         space.initialization(mode=mode, keep_in_memory=False)
-        print(space.explore("default"))
+        print(space.print("default"))
 
         return space
 
