@@ -110,7 +110,7 @@ class AbstractTreeElement(NodeMixin):
     def _add_method_node(self):
         class_hierarchy = _get_class_hierarchy(self)
         class_hierarchy = list([str(class_.__name__) for class_ in class_hierarchy])
-        from space2 import MethodNode
+        from nndt.space2 import MethodNode
         for class_name in class_hierarchy:
             if class_name in NODE_METHOD_DICT:
                 for fn_name, fn_docs in NODE_METHOD_DICT[class_name].items():

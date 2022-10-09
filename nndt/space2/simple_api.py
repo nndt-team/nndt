@@ -11,7 +11,7 @@ from nndt.space2.space import Space
 from nndt.space2.group import Group
 from nndt.space2.object3D import Object3D
 from nndt.space2.filesource_and_loader import FileSource
-from space2 import AbstractTreeElement, AbstractBBoxNode
+from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
 
 
 def _attribute_filter(attrs):
