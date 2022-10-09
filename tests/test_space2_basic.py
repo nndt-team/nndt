@@ -70,9 +70,9 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
-        obj1 = space.patient069
+        obj1 = space.patient009
         obj2 = space[0]
-        obj3 = space['patient069']
+        obj3 = space['patient009']
 
         self.assertEqual(obj1, obj2)
         self.assertEqual(obj1, obj3)
@@ -81,10 +81,10 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
-        obj1 = space.patient069.colored_obj
+        obj1 = space.patient009.colored_obj
         obj2 = space[0][0]
-        obj3 = space['patient069']['colored_obj']
-        obj4 = space['patient069/colored_obj']
+        obj3 = space['patient009']['colored_obj']
+        obj4 = space['patient009/colored_obj']
 
         self.assertEqual(obj1, obj2)
         self.assertEqual(obj1, obj3)
@@ -94,9 +94,9 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
-        print(text1 := space.patient069.print())
+        print(text1 := space.patient009.print())
         print(text2 := space[0].print())
-        print(text3 := space['patient069'].print())
+        print(text3 := space['patient009'].print())
 
         self.assertEqual(text1, text2)
         self.assertEqual(text1, text3)
