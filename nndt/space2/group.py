@@ -21,10 +21,10 @@ class Group(AbstractBBoxNode):
         """
         super(Group, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='G')
 
-    def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
-        for child in self.children:
-            if isinstance(child, AbstractBBoxNode):
-                self.bbox = update_bbox(self.bbox, child.bbox)
-
-        from nndt.space2 import SamplingNode
-        SamplingNode(parent=self)
+    # def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
+    #     for child in self.children:
+    #         if isinstance(child, AbstractBBoxNode):
+    #             self.bbox = update_bbox(self.bbox, child.bbox)
+    #
+    #     from nndt.space2 import SamplingNode
+    #     SamplingNode(parent=self)

@@ -1,7 +1,6 @@
-import os
-from abc import abstractmethod
-from typing import  Union, Optional
 import re
+from abc import abstractmethod
+from typing import Union, Optional
 
 from anytree import NodeMixin, Resolver, RenderTree
 from colorama import Fore
@@ -14,6 +13,9 @@ FORBIDDEN_NAME = ['separator', 'parent', '__check_loop', '__detach', '__attach',
                  ['name', 'parent', '_print_color', '_nodetype']
 
 NODE_METHOD_DICT = {}
+
+DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80,
+                          "FS": 60, "T": 50, "MS": 40, "M": 30}
 
 def _get_class_hierarchy(obj):
     class_hierarchy = [obj.__class__]
@@ -97,11 +99,6 @@ class AbstractTreeElement(NodeMixin):
             if (parent is not None):
                 setattr(parent, self.name, self)
 
-            #from nndt.space2 import initialize_method_node
-            #initialize_method_node(self)
-            #if hasattr(self, "_NodeMixin__children"):
-            #    sorted(self._NodeMixin__children, key=lambda child: child.name)
-
     def _post_detach(self, parent):
         if parent is not None:
             if hasattr(parent, self.name):
@@ -116,14 +113,6 @@ class AbstractTreeElement(NodeMixin):
                 for fn_name, fn_docs in NODE_METHOD_DICT[class_name].items():
                     if hasattr(self, fn_name) and (fn_name not in [x.name for x in self.children]):
                         method = MethodNode(fn_name, fn_docs, parent=self)
-
-
-    def _initialization(self, *kargs, **kvargs):
-        """Method for initialization of this node tree"""
-        pass
-
-
-
 
 class AbstractBBoxNode(AbstractTreeElement):
     """
@@ -144,8 +133,8 @@ class AbstractBBoxNode(AbstractTreeElement):
         super(AbstractBBoxNode, self).__init__(name, _print_color=_print_color, _nodetype=_nodetype, parent=parent)
         self.bbox = bbox
 
-    def _initialization(self, *kargs, **kvargs):
-        pass
+    # def _initialization(self, *kargs, **kvargs):
+    #     pass
 
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET

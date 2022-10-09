@@ -52,9 +52,6 @@ class AbstractTransformation(AbstractBBoxNode):
             if hasattr(parent, self.name):
                 delattr(parent, self.name)
 
-    def _initialization(self, mode='ident', scale=50, keep_in_memory=False):
-        pass
-
     @abstractmethod
     def xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
         pass

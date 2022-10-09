@@ -40,19 +40,6 @@ class Space(AbstractBBoxNode):
     @node_method("preload(ident|shift_and_scale|to_cube, scale, keep_in_memory=True)")
     def preload(self, mode="ident", scale=50, keep_in_memory=True):
         if not self._is_preload:
-            for node in PostOrderIter(self):
-                if isinstance(node, AbstractBBoxNode):
-                    node._initialization(mode=mode, scale=scale, keep_in_memory=keep_in_memory)
-
-            for child in self.children:
-                if isinstance(child, (Object3D, Group)):
-                    self.bbox = update_bbox(self.bbox, child.bbox)
-
-            # Keep alphabetical order of any nodes
-            for node in PreOrderIter(self):
-                node._NodeMixin__children_or_empty.sort(key=lambda d: d.name, reverse=False)
-
-
-    def _initialization(self, *kargs, **kvargs):
-        from nndt.space2 import SamplingNode
-        SamplingNode(parent=self)
+            from space2.preloader import DefaultPreloader
+            self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory)
+            self.preloader.preload(self)
