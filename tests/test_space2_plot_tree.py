@@ -13,33 +13,33 @@ class MyTestCase(unittest.TestCase):
         if os.path.exists(FILE_TMP_PNG):
             os.remove(FILE_TMP_PNG)
 
-    def test_plot_colored_obj__ident_transform(self):
+    def test_plot_colored_obj__identity_transform(self):
         space = load_from_path(PATH_TEST_ACDC)
-        space.preload(mode="ident", keep_in_memory=False)
+        space.preload(mode="identity", keep_in_memory=False)
         print(space.print("default"))
 
         space.patient009.colored_obj.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
-    def test_plot_sdt_npy__ident_transform(self):
+    def test_plot_sdt_npy__identity_transform(self):
         space = load_from_path(PATH_TEST_ACDC)
-        space.preload(mode="ident", keep_in_memory=False)
+        space.preload(mode="identity", keep_in_memory=False)
         print(space.print("default"))
 
         space.patient009.sdf_npy.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
-    def test_plot_object3D__ident_transform(self):
+    def test_plot_object3D__identity_transform(self):
         space = load_from_path(PATH_TEST_ACDC)
-        space.preload(mode="ident", keep_in_memory=False)
+        space.preload(mode="identity", keep_in_memory=False)
         print(space.print("default"))
 
         space.patient009.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
-    def test_plot_Space__ident_transform(self):
+    def test_plot_Space__identity_transform(self):
         space = load_from_path(PATH_TEST_ACDC)
-        space.preload(mode="ident", keep_in_memory=False)
+        space.preload(mode="identity", keep_in_memory=False)
         print(space.print("default"))
 
         space.plot(filepath=FILE_TMP_PNG)

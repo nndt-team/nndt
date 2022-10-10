@@ -14,7 +14,7 @@ class AbstractTransformation(AbstractBBoxNode):
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         super(AbstractTransformation, self).__init__(name,
-                                                     bbox=bbox, _print_color=Fore.RED, _nodetype='T',
+                                                     bbox=bbox, _print_color=Fore.RED, _nodetype='TR',
                                                      parent=parent)
 
         self._transform_type = "unknown_transform"
@@ -33,7 +33,7 @@ class AbstractTransformation(AbstractBBoxNode):
             raise NotImplementedError()
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._transform_type}' + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f" {self._transform_type}" + Fore.RESET
 
     def _print_bbox(self):
         a = self.bbox
@@ -69,10 +69,10 @@ class IdentityTransform(AbstractTransformation):
 
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  parent=None):
-        super(IdentityTransform, self).__init__("ns", bbox=ps_bbox, parent=parent)
+        super(IdentityTransform, self).__init__("transformation", bbox=ps_bbox, parent=parent)
 
         self.bbox = ps_bbox
-        self._transform_type = "ident"
+        self._transform_type = "identity"
 
     @node_method("transform_xyz_ps2ns(ps_xyz[...,3]) -> ns_xyz[...,3]")
     def transform_xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
@@ -98,7 +98,7 @@ class ShiftAndScaleTransform(AbstractTransformation):
                  ns_center: (float, float, float),
                  scale_ps2ns: float,
                  parent=None):
-        super(ShiftAndScaleTransform, self).__init__("ns", parent=parent)
+        super(ShiftAndScaleTransform, self).__init__("transformation", parent=parent)
 
         self.ps_center = jnp.array(ps_center)
         self.ns_center = jnp.array(ns_center)
@@ -130,7 +130,7 @@ class ToNormalCubeTransform(AbstractTransformation):
 
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  parent=None):
-        super(ToNormalCubeTransform, self).__init__("ns", parent=parent)
+        super(ToNormalCubeTransform, self).__init__("transformation", parent=parent)
 
         self.ps_lower = jnp.array(ps_bbox[0])
         self.ps_upper = jnp.array(ps_bbox[1])

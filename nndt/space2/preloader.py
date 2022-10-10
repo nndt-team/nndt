@@ -8,7 +8,7 @@ from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object
 class DefaultPreloader:
 
     def __init__(self,
-                 mode="ident",
+                 mode="identity",
                  scale=50,
                  keep_in_memory=True):
         self.mode = mode
@@ -71,7 +71,7 @@ class DefaultPreloader:
         if len(sdt_array_list) > 0:
             from nndt.space2.transformation import IdentityTransform, ShiftAndScaleTransform, ToNormalCubeTransform
             ps_bbox = sdt_array_list[0].bbox
-            if self.mode == 'ident':
+            if self.mode == 'identity':
                 transform = IdentityTransform(ps_bbox=ps_bbox,
                                               parent=node)
             elif self.mode == 'shift_and_scale':

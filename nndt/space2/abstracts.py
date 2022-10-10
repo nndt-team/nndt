@@ -15,7 +15,7 @@ FORBIDDEN_NAME = ['separator', 'parent', '__check_loop', '__detach', '__attach',
 NODE_METHOD_DICT = {}
 
 DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80,
-                          "FS": 60, "T": 50, "MS": 40, "M": 30}
+                          "FS": 60, "TR": 50, "MS": 40, "M": 30}
 
 
 def node_method(docstring=None):

@@ -90,7 +90,7 @@ class LoadersTestCase(unittest.TestCase):
                         (162.07835388183594, 166.13941955566406, 50.982513427734375)),
                        space.patient089.sdf_npy.bbox, tolerance)
 
-    def helper_transform_load(self, mode="ident"):
+    def helper_transform_load(self, mode="identity"):
         space = load_from_path(PATH_TEST_ACDC)
         space.preload(mode=mode, keep_in_memory=False)
         print(space.print("full"))
@@ -98,10 +98,10 @@ class LoadersTestCase(unittest.TestCase):
         return space
 
     def test_preload_identity(self):
-        space = self.helper_transform_load(mode="ident")
+        space = self.helper_transform_load(mode="identity")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.ns.bbox)
+        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.transformation.bbox)
         self.cmp_array(((0.0, 0.0, 0.0), (134.0, 183.0, 84.0)), space.patient009.bbox)
         self.cmp_array(((0.0, 0.0, 0.0), (174.0, 198.0, 90.0)), space.bbox)
 
@@ -109,7 +109,7 @@ class LoadersTestCase(unittest.TestCase):
         space = self.helper_transform_load(mode="shift_and_scale")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.ns.bbox)
+        self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.transformation.bbox)
         self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.bbox)
         self.cmp_array(((-0.76, -0.78, -0.83), (0.76, 0.78, 0.83)), space.bbox)
 
@@ -117,7 +117,7 @@ class LoadersTestCase(unittest.TestCase):
         space = self.helper_transform_load(mode="to_cube")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.ns.bbox)
+        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.transformation.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.bbox)
 

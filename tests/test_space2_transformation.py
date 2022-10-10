@@ -39,23 +39,23 @@ class MethodSetTestCase(unittest.TestCase):
     def test_sampling_presence(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)
 
-    def helper_transform_load(self, mode="ident"):
+    def helper_transform_load(self, mode="identity"):
         space = load_from_path(PATH_TEST_ACDC)
         space.preload(mode=mode, keep_in_memory=False)
         print(space.print("full"))
 
         return space
 
-    def test_transform_ident(self):
-        space = self.helper_transform_load(mode="ident")
+    def test_transform_identity(self):
+        space = self.helper_transform_load(mode="identity")
 
         ps_grid = grid_in_cube2(spacing=(2, 2, 2), lower=(59.0, 112.0, 7.0), upper=(134.0, 183.0, 84.0))
         ns_grid = grid_in_cube2(spacing=(2, 2, 2), lower=(59.0, 112.0, 7.0), upper=(134.0, 183.0, 84.0))
 
-        self.assertEqual(7.0, jnp.array(space.patient009.ns.transform_xyz_ps2ns(ps_grid)).min())
-        self.assertEqual(183.0, jnp.array(space.patient009.ns.transform_xyz_ps2ns(ps_grid)).max())
-        self.assertEqual(7.0, jnp.array(space.patient009.ns.transform_xyz_ns2ps(ns_grid)).min())
-        self.assertEqual(183.0, jnp.array(space.patient009.ns.transform_xyz_ns2ps(ns_grid)).max())
+        self.assertEqual(7.0, jnp.array(space.patient009.transformation.transform_xyz_ps2ns(ps_grid)).min())
+        self.assertEqual(183.0, jnp.array(space.patient009.transformation.transform_xyz_ps2ns(ps_grid)).max())
+        self.assertEqual(7.0, jnp.array(space.patient009.transformation.transform_xyz_ns2ps(ns_grid)).min())
+        self.assertEqual(183.0, jnp.array(space.patient009.transformation.transform_xyz_ns2ps(ns_grid)).max())
 
     def test_transform_to_cube(self):
         space = self.helper_transform_load(mode="to_cube")
@@ -63,10 +63,10 @@ class MethodSetTestCase(unittest.TestCase):
         ps_grid = grid_in_cube2(spacing=(2, 2, 2), lower=(59.0, 112.0, 7.0), upper=(134.0, 183.0, 84.0))
         ns_grid = grid_in_cube2(spacing=(2, 2, 2), lower=(-1, -1, -1), upper=(1, 1, 1))
 
-        self.assertEqual(-1., float(jnp.array(space.patient009.ns.transform_xyz_ps2ns(ps_grid)).min()))
-        self.assertEqual(1., float(jnp.array(space.patient009.ns.transform_xyz_ps2ns(ps_grid)).max()))
-        self.assertEqual(7.0, float(jnp.array(space.patient009.ns.transform_xyz_ns2ps(ns_grid)).min()))
-        self.assertEqual(183.0, float(jnp.array(space.patient009.ns.transform_xyz_ns2ps(ns_grid)).max()))
+        self.assertEqual(-1., float(jnp.array(space.patient009.transformation.transform_xyz_ps2ns(ps_grid)).min()))
+        self.assertEqual(1., float(jnp.array(space.patient009.transformation.transform_xyz_ps2ns(ps_grid)).max()))
+        self.assertEqual(7.0, float(jnp.array(space.patient009.transformation.transform_xyz_ns2ps(ns_grid)).min()))
+        self.assertEqual(183.0, float(jnp.array(space.patient009.transformation.transform_xyz_ns2ps(ns_grid)).max()))
 
     def test_transform_shift_and_scale(self):
         space = self.helper_transform_load(mode="shift_and_scale")
@@ -74,10 +74,10 @@ class MethodSetTestCase(unittest.TestCase):
         ps_grid = grid_in_cube2(spacing=(2, 2, 2), lower=(59.0, 112.0, 7.0), upper=(134.0, 183.0, 84.0))
         ns_grid = grid_in_cube2(spacing=(2, 2, 2), lower=(-0.75, -0.71, -0.77), upper=(0.75, 0.71, 0.77))
 
-        self.assertAlmostEqual(-0.7699, float(jnp.array(space.patient009.ns.transform_xyz_ps2ns(ps_grid)).min()), places=2)
-        self.assertAlmostEqual(0.7699, float(jnp.array(space.patient009.ns.transform_xyz_ps2ns(ps_grid)).max()), places=2)
-        self.assertAlmostEqual(7.0, float(jnp.array(space.patient009.ns.transform_xyz_ns2ps(ns_grid)).min()), places=2)
-        self.assertAlmostEqual(183.0, float(jnp.array(space.patient009.ns.transform_xyz_ns2ps(ns_grid)).max()), places=2)
+        self.assertAlmostEqual(-0.7699, float(jnp.array(space.patient009.transformation.transform_xyz_ps2ns(ps_grid)).min()), places=2)
+        self.assertAlmostEqual(0.7699, float(jnp.array(space.patient009.transformation.transform_xyz_ps2ns(ps_grid)).max()), places=2)
+        self.assertAlmostEqual(7.0, float(jnp.array(space.patient009.transformation.transform_xyz_ns2ps(ns_grid)).min()), places=2)
+        self.assertAlmostEqual(183.0, float(jnp.array(space.patient009.transformation.transform_xyz_ns2ps(ns_grid)).max()), places=2)
 
 
 if __name__ == '__main__':

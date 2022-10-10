@@ -91,7 +91,7 @@ class MeshNode(MethodSetNode):
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
-    @node_method("convert_xyz2ind(ns_index[...,3]) -> ns_xyz[...,1]")
+    @node_method("convert_xyz2ind(ns_ind[...,3]) -> ns_xyz[...,1]")
     def convert_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
         raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
 
