@@ -1,29 +1,35 @@
 import warnings
 from typing import *
 
-from anytree import RenderTree, PostOrderIter, PreOrderIter
+import numpy as onp
+import pyvista as pv
+from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
-from space2 import AbstractTreeElement, AbstractBBoxNode, MethodSetNode, AbstractTransformation, FileSource, \
-    MeshObjLoader, SDTLoader, array_to_vert_and_faces, Space, Object3D
+from nndt.space2 import AbstractTreeElement, AbstractBBoxNode, AbstractTransformation, FileSource, \
+    MeshObjLoader, SDTLoader,  Object3D
 
-import pyvista as pv
-import numpy as onp
 
 def _plot_pv_mesh(pl: Plotter, verts, faces, transform):
     verts = transform(verts)
     poly_data = pv.PolyData(var_inp=onp.array(verts), faces=faces)
     pl.add_mesh(poly_data)
+
+
 def _plot_mesh(pl: Plotter, loader: MeshObjLoader, transform):
     obj_mesh = loader.mesh
     pv_mesh = pv.PolyData(obj_mesh)
     verts = pv_mesh.points
     faces = pv_mesh.faces
     _plot_pv_mesh(pl, verts, faces, transform)
+
+
 def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable):
     sdt = loader.sdt
+    from space2 import array_to_vert_and_faces
     verts, faces = array_to_vert_and_faces(sdt, level=0.0, for_vtk_cell_array=True)
     _plot_pv_mesh(pl, verts, faces, transform)
+
 
 def _plot_filesource(pl, node: FileSource, transform: Callable):
     if isinstance(node._loader, MeshObjLoader):
@@ -32,6 +38,7 @@ def _plot_filesource(pl, node: FileSource, transform: Callable):
         _plot_sdt(pl, node._loader, transform)
     else:
         warnings.warn(f"Method .plot() is not implemented for {node._loader.__class__.__name__}")
+
 
 def _plot(node: AbstractTreeElement,
           mode: Optional[str] = "default",
@@ -63,7 +70,6 @@ def _plot(node: AbstractTreeElement,
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
                         _plot_filesource(pl, node_src, transform)
-
 
     if filepath is None:
         pl.show(cpos=cpos)

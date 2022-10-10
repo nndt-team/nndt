@@ -101,7 +101,7 @@ class LoadersTestCase(unittest.TestCase):
         space = self.helper_transform_load(mode="identity")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.transformation.bbox)
+        self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.transform.bbox)
         self.cmp_array(((0.0, 0.0, 0.0), (134.0, 183.0, 84.0)), space.patient009.bbox)
         self.cmp_array(((0.0, 0.0, 0.0), (174.0, 198.0, 90.0)), space.bbox)
 
@@ -109,7 +109,7 @@ class LoadersTestCase(unittest.TestCase):
         space = self.helper_transform_load(mode="shift_and_scale")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.transformation.bbox)
+        self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.transform.bbox)
         self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.bbox)
         self.cmp_array(((-0.76, -0.78, -0.83), (0.76, 0.78, 0.83)), space.bbox)
 
@@ -117,7 +117,7 @@ class LoadersTestCase(unittest.TestCase):
         space = self.helper_transform_load(mode="to_cube")
 
         self.cmp_array(((59.0, 112.0, 7.0), (134.0, 183.0, 84.0)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.transformation.bbox)
+        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.transform.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.bbox)
 

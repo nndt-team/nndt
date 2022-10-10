@@ -58,8 +58,9 @@ class SamplingNode(MethodSetNode):
                                    upper=jnp.array(upper))
         return basic_cube
 
-    @node_method("sampling_grid_with_noise(key, spacing=(D,H,W), sigma) -> xyz[N,3]")
-    def sampling_grid_with_noise(self, rng_key: PRNGKeyArray, spacing: (int, int, int) = (2, 2, 2), sigma=0.1) -> jnp.ndarray:
+    @node_method("sampling_grid_with_noise(key, spacing=(D,H,W), sigma) -> ns_xyz[N,3]")
+    def sampling_grid_with_noise(self, rng_key: PRNGKeyArray, spacing: (int, int, int) = (2, 2, 2),
+                                 sigma=0.1) -> jnp.ndarray:
         assert (sigma > 0.00000001)
         lower, upper = self.parent.bbox
         shift_xyz = jax.random.normal(rng_key, shape=(3,)) * sigma
@@ -91,7 +92,7 @@ class MeshNode(MethodSetNode):
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
-    @node_method("convert_xyz2ind(ns_ind[...,3]) -> ns_xyz[...,1]")
+    @node_method("convert_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
     def convert_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
         raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
 

@@ -2,7 +2,7 @@ from typing import Optional
 
 from anytree import RenderTree
 
-from space2 import AbstractTreeElement, AbstractBBoxNode, MethodSetNode, AbstractTransformation, FileSource
+from nndt.space2 import AbstractTreeElement, AbstractBBoxNode, MethodSetNode, AbstractTransformation, FileSource
 
 
 def _construct_filter(child_classes, not_parent_classes):

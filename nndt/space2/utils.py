@@ -1,8 +1,9 @@
 from typing import *
+
+import jax.numpy as jnp
+import numpy as onp
 from skimage import measure
 
-import numpy as onp
-import jax.numpy as jnp
 
 def update_bbox(bbox1: ((float, float, float), (float, float, float)),
                 bbox2: ((float, float, float), (float, float, float))):
@@ -18,6 +19,7 @@ def save_verts_and_faces_to_obj(filepath: str, verts, faces):
             fl.write(f"v {v[0]} {v[1]} {v[2]}\n")
         for f in faces:
             fl.write(f"f {f[0] + 1} {f[1] + 1} {f[2] + 1}\n")
+
 
 def array_to_vert_and_faces(array: Union[jnp.ndarray, onp.ndarray],
                             level: float = 0.0, for_vtk_cell_array: bool = False):
