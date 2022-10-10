@@ -20,10 +20,15 @@ def save_verts_and_faces_to_obj(filepath: str, verts, faces):
             fl.write(f"f {f[0] + 1} {f[1] + 1} {f[2] + 1}\n")
 
 def array_to_vert_and_faces(array: Union[jnp.ndarray, onp.ndarray],
-                            level: float = 0.0):
+                            level: float = 0.0, for_vtk_cell_array: bool = False):
     level_ = level
     if not (array.min() < level_ < array.max()):
         level_ = (array.max() + array.min()) / 2.
 
-    verts, faces, _, _ = measure.marching_cubes(array, level=level_)
+    verts, faces, _, _ = measure.marching_cubes(onp.array(array), level=level_)
+
+    if for_vtk_cell_array:
+        faces = onp.concatenate([onp.full((faces.shape[0], 1), 3), faces], axis=1)
+        faces = faces.flatten()
+
     return verts, faces
