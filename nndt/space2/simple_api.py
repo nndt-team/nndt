@@ -109,6 +109,7 @@ def load_from_file_lists(name_list,
             if sdt_list is not None:
                 sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
 
+    space.init()
     return space
 
 
@@ -121,6 +122,7 @@ def load_space(filepath: str):
     with open(filepath, 'r') as fl:
         space = json_imp.read(fl)
 
+    space.init()
     return space
 
 
@@ -128,6 +130,8 @@ def from_json(json: str):
     dict_imp = DictImporter(nodecls=_nodecls_function)
     json_imp = JsonImporter(dictimporter=dict_imp)
     space = json_imp.import_(json)
+
+    space.init()
     return space
 
 

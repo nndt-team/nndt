@@ -118,12 +118,12 @@ if __name__ == '__main__':
             sdf_val0 = D1.SDF[:FLAT_SHAPE].reshape(SHAPE)
             sdf_val1 = D1.SDF[FLAT_SHAPE:].reshape(SHAPE)
 
-            viz.sdf_to_obj("SDF_0000_exact", sdf_val0)
-            viz.sdf_to_obj("SDF_0000", model0000, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_0333", model0333, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_0666", model0666, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_1000", model1000, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_1000_exact", sdf_val1)
+            viz.sdt_to_obj("SDF_0000_exact", sdf_val0)
+            viz.sdt_to_obj("SDF_0000", model0000, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_0333", model0333, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_0666", model0666, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_1000", model1000, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_1000_exact", sdf_val1)
 
             viz.save_3D_array("SDF_0000", model0000)
             viz.save_3D_array("SDF_0333", model0333)

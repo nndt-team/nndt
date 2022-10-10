@@ -28,7 +28,7 @@ class MethodNode(AbstractTreeElement):
         self.docstring = docstring if docstring is not None else name
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.docstring}' + Fore.RESET
+        return self._print_color + f'{self.docstring}' + Fore.RESET
 
 
 class MethodSetNode(AbstractTreeElement):
@@ -50,16 +50,17 @@ class SamplingNode(MethodSetNode):
     def __init__(self, parent: AbstractBBoxNode = None):
         super(SamplingNode, self).__init__('sampling', parent=parent)
 
-    @node_method("grid(spacing=(D,H,W)) -> xyz[D,H,W,3]")
-    def grid(self, spacing: (int, int, int) = (2, 2, 2)) -> jnp.ndarray:
+    @node_method("sampling_grid(spacing=(D,H,W)) -> ns_xyz[D,H,W,3]")
+    def sampling_grid(self, spacing: (int, int, int) = (2, 2, 2)) -> jnp.ndarray:
         lower, upper = self.parent.bbox
         basic_cube = grid_in_cube2(spacing=spacing,
                                    lower=jnp.array(lower),
                                    upper=jnp.array(upper))
         return basic_cube
 
-    @node_method("grid_with_shackle(key, N) -> xyz[N,3]")
-    def grid_with_shackle(self, rng_key: PRNGKeyArray, spacing: (int, int, int) = (2, 2, 2), sigma=0.1) -> jnp.ndarray:
+    @node_method("sampling_grid_with_noise(key, spacing=(D,H,W), sigma) -> ns_xyz[N,3]")
+    def sampling_grid_with_noise(self, rng_key: PRNGKeyArray, spacing: (int, int, int) = (2, 2, 2),
+                                 sigma=0.1) -> jnp.ndarray:
         assert (sigma > 0.00000001)
         lower, upper = self.parent.bbox
         shift_xyz = jax.random.normal(rng_key, shape=(3,)) * sigma
@@ -68,8 +69,8 @@ class SamplingNode(MethodSetNode):
                                    upper=jnp.array(upper)) + shift_xyz
         return basic_cube
 
-    @node_method("uniform(key, N) -> xyz[N,3]")
-    def uniform(self, rng_key: PRNGKeyArray, count: int = 100) -> jnp.ndarray:
+    @node_method("sampling_uniform(key, N) -> ns_xyz[N,3]")
+    def sampling_uniform(self, rng_key: PRNGKeyArray, count: int = 100) -> jnp.ndarray:
         lower, upper = self.parent.bbox
         basic_cube = uniform_in_cube(rng_key, count=count, lower=lower, upper=upper)
         return basic_cube
@@ -85,14 +86,14 @@ class MeshNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
-    @node_method("index2xyz(ns_index[...,1]) -> ns_xyz[...,3]")
-    def index2xyz(self, ns_index: jnp.ndarray) -> jnp.ndarray:
-        result_ps = jnp.take(self.mesh._loader.points, ns_index)
-        result_ns = self.transform.xyz_ps2ns(result_ps)
+    @node_method("convert_ind2xyz(ns_ind[...,1]) -> ns_xyz[...,3]")
+    def convert_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
+        result_ps = jnp.take(self.mesh._loader.points, ns_ind)
+        result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
-    @node_method("xyz2index(ns_index[...,3]) -> ns_xyz[...,1]")
-    def xyz2index(self, ns_index: jnp.ndarray) -> jnp.ndarray:
+    @node_method("convert_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
+    def convert_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
         raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
 
     @node_method("save_mesh(filepath, {name, array})")
@@ -120,11 +121,11 @@ class MeshNode(MethodSetNode):
         writer.Update()
         writer.Write()
 
-    @node_method("sampling_eachN(count=N, step=1, shift=0) -> (ns_index[N], ns_xyz[N])")
-    def sampling_eachN(self, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
+    @node_method("sampling_eachN_from_mesh(count=N, step=M, shift=K) -> (ns_ind[N], ns_xyz[N])")
+    def sampling_eachN_from_mesh(self, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
         index_set, array = take_each_n(self.mesh._loader.points,
                                        count=count, step=step, shift=shift)
-        ret_array = self.transform.xyz_ps2ns(array)
+        ret_array = self.transform.transform_xyz_ps2ns(array)
 
         return index_set, ret_array
 
@@ -139,9 +140,9 @@ class SDTNode(MethodSetNode):
         self.sdt = sdt
         self.transform = transform
 
-    @node_method("xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]")
-    def xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
-        ps_xyz = self.transform.xyz_ns2ps(ns_xyz)
+    @node_method("convert_xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]")
+    def convert_xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_sdt = self.sdt._loader.request(ps_xyz)
-        ns_sdt = self.transform.sdt_ps2ns(ps_sdt)
+        ns_sdt = self.transform.transform_sdt_ps2ns(ps_sdt)
         return ns_sdt

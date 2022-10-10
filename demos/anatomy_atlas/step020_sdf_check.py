@@ -42,8 +42,8 @@ if __name__ == '__main__':
                     method1 = space[f'default/{patient}/sdt/repr/xyz2sdt']
                     method2 = space[f'default/{patient}/sdfpkl/repr/xyz2sdt']
 
-                    viz.sdf_to_obj(f"{depth}_{width}_{patient}_sdt", method1(sampling)[:, :, :, 0], level=LEVEL_SHIFT)
-                    viz.sdf_to_obj(f"{depth}_{width}_{patient}_sdf", method2(sampling)[:, :, :, 0], level=LEVEL_SHIFT)
+                    viz.sdt_to_obj(f"{depth}_{width}_{patient}_sdt", method1(sampling)[:, :, :, 0], level=LEVEL_SHIFT)
+                    viz.sdt_to_obj(f"{depth}_{width}_{patient}_sdf", method2(sampling)[:, :, :, 0], level=LEVEL_SHIFT)
 
                 except:
                     pass
