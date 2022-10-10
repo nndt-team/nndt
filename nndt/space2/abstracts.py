@@ -2,7 +2,7 @@ import re
 from abc import abstractmethod
 from typing import Union, Optional
 
-from anytree import NodeMixin, Resolver, RenderTree
+from anytree import NodeMixin, Resolver
 from colorama import Fore
 
 FORBIDDEN_NAME = ['separator', 'parent', '__check_loop', '__detach', '__attach', '__children_or_empty', 'children',
@@ -18,11 +18,7 @@ DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80,
                           "FS": 60, "T": 50, "MS": 40, "M": 30}
 
 
-def _get_class_hierarchy(obj):
-    class_hierarchy = [obj.__class__]
-    while len(class_hierarchy[-1].__bases__) > 0:
-        class_hierarchy = class_hierarchy + [class_hierarchy[-1].__bases__[0]]
-    return class_hierarchy
+
 
 
 def node_method(docstring=None):
@@ -99,16 +95,6 @@ class AbstractTreeElement(NodeMixin):
             if hasattr(parent, self.name):
                 delattr(parent, self.name)
 
-    def _add_method_node(self):
-        class_hierarchy = _get_class_hierarchy(self)
-        class_hierarchy = list([str(class_.__name__) for class_ in class_hierarchy])
-        from nndt.space2 import MethodNode
-        for class_name in class_hierarchy:
-            if class_name in NODE_METHOD_DICT:
-                for fn_name, fn_docs in NODE_METHOD_DICT[class_name].items():
-                    if hasattr(self, fn_name) and (fn_name not in [x.name for x in self.children]):
-                        MethodNode(fn_name, fn_docs, parent=self)
-
 
 class AbstractBBoxNode(AbstractTreeElement):
     """
@@ -143,7 +129,7 @@ class AbstractBBoxNode(AbstractTreeElement):
 
     @node_method("plot(default, filepath=None)")
     def plot(self, mode: Optional[str] = "default",
-                   filepath: Optional[str] = None):
+             filepath: Optional[str] = None):
         from nndt.space2.plot_tree import _plot
         _plot(self, mode, filepath)
 

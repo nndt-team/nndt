@@ -28,10 +28,20 @@ class MethodSetTestCase(unittest.TestCase):
         print(space.print('default'))
         print(space.print('full'))
 
-    def test_sampling_presence(self):
+    def test_sampling_exists_in_the_space(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)
         self.helper_sampling_presence(PATH_TEST_STRUCTURE)
 
+    def test_all_methods_in_Object3D(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload()
+        rng_key = jax.random.PRNGKey(42)
+        ret = space.patient009.grid()
+        self.assertEqual((2, 2, 2, 3), ret.shape)
+        ret = space.patient009.grid(spacing=(5, 5, 5))
+        self.assertEqual((5, 5, 5, 3), ret.shape)
+        ret = space.patient009.grid((5, 5, 5))
+        self.assertEqual((5, 5, 5, 3), ret.shape)
 
 if __name__ == '__main__':
     unittest.main()

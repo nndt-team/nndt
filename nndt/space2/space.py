@@ -3,7 +3,39 @@ from colorama import Fore
 
 import nndt
 from nndt.space2 import AbstractBBoxNode
-from nndt.space2.abstracts import node_method, AbstractTreeElement, DICT_NODETYPE_PRIORITY
+from nndt.space2.abstracts import node_method, AbstractTreeElement, DICT_NODETYPE_PRIORITY, NODE_METHOD_DICT
+
+
+def _get_class_hierarchy(obj):
+    class_hierarchy = [obj.__class__]
+    while len(class_hierarchy[-1].__bases__) > 0:
+        class_hierarchy = class_hierarchy + [class_hierarchy[-1].__bases__[0]]
+    return class_hierarchy
+
+
+def _add_explicit_methods_to_node(node: AbstractTreeElement):
+    class_hierarchy = _get_class_hierarchy(node)
+    class_hierarchy = list([str(class_.__name__) for class_ in class_hierarchy])
+    from nndt.space2 import MethodNode
+    for class_name in class_hierarchy:
+        if class_name in NODE_METHOD_DICT:
+            for fn_name, fn_docs in NODE_METHOD_DICT[class_name].items():
+                if hasattr(node, fn_name) and (fn_name not in [x.name for x in node.children]):
+                    MethodNode(fn_name, fn_docs, parent=node)
+
+
+def _add_method_sets_to_node(node: AbstractTreeElement):
+    from nndt.space2 import MethodSetNode
+    from nndt.space2 import AbstractTransformation
+    from nndt.space2 import MethodNode
+    elements = [child for child in node.children
+                if isinstance(child, (AbstractTransformation, MethodSetNode))]
+    for elem in elements:
+        for fn_name, fn_docs in NODE_METHOD_DICT[str(elem.__class__.__name__)].items():
+            if not hasattr(node, fn_name) and (fn_name not in [x.name for x in node.children]):
+                fun = getattr(elem, fn_name)
+                setattr(node, fn_name, fun)
+                MethodNode(fn_name, fn_docs, parent=node)
 
 
 class Space(AbstractBBoxNode):
@@ -29,10 +61,15 @@ class Space(AbstractBBoxNode):
         from nndt.space2 import to_json
         return to_json(self)
 
+    @node_method("init()")
     def init(self):
         for node in PostOrderIter(self):
             if isinstance(node, AbstractTreeElement):
-                node._add_method_node()
+                _add_explicit_methods_to_node(node)
+
+        for node in PostOrderIter(self):
+            if isinstance(node, AbstractTreeElement):
+                _add_method_sets_to_node(node)
 
         for node in PreOrderIter(self):
             node._NodeMixin__children_or_empty.sort(key=lambda d: (100 - DICT_NODETYPE_PRIORITY[d._nodetype], d.name),
