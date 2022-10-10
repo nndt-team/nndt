@@ -4,6 +4,7 @@ from nndt.space2 import SamplingNode
 from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
     MeshNode, \
     DICT_NODETYPE_PRIORITY
+from nndt.space2 import SDTNode
 
 
 class DefaultPreloader:
@@ -90,6 +91,10 @@ class DefaultPreloader:
             else:
                 raise NotImplementedError(f"{self.mode} is not supported for initialization")
             node.bbox = update_bbox(node.bbox, transform.bbox)
+
+            if len(sdt_array_list) and transform is not None:
+                sdt = sdt_array_list[0]
+                SDTNode(node, sdt, transform, parent=node)
 
         return transform
 
