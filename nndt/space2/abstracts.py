@@ -50,16 +50,6 @@ def _name_to_safename(name: str) -> str:
                 raise ValueError(f'{name} cannot be safely renamed.')
     return safe_name
 
-#
-# def _children_filter_for_explore_default(children):
-#     ret = [v for v in children if isinstance(v, AbstractTreeElement)]
-#     return ret
-#
-#
-# def _children_filter_for_explore_source(children):
-#     ret = [v for v in children if isinstance(v, AbstractBBoxNode)]
-#     return ret
-
 
 class AbstractTreeElement(NodeMixin):
     """
@@ -151,7 +141,7 @@ class AbstractBBoxNode(AbstractTreeElement):
         from nndt.space2.print_tree import _pretty_print
         return _pretty_print(self, mode)
 
-    @node_method("print(default, filepath=None)")
+    @node_method("plot(default, filepath=None)")
     def plot(self, mode: Optional[str] = "default",
                    filepath: Optional[str] = None):
         from nndt.space2.plot_tree import _plot

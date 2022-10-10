@@ -29,5 +29,13 @@ class MyTestCase(unittest.TestCase):
         space.patient009.sdf_npy.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
+    def test_plot_object3D(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload(mode="ident", keep_in_memory=False)
+        print(space.print("default"))
+
+        space.patient009.plot(filepath=FILE_TMP_PNG)
+        self.assertTrue(os.path.exists(FILE_TMP_PNG))
+
 if __name__ == '__main__':
     unittest.main()
