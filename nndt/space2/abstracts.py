@@ -148,8 +148,14 @@ class AbstractBBoxNode(AbstractTreeElement):
 
     @node_method("print(default|source|full)")
     def print(self, mode: Optional[str] = "default"):
-        from space2.print_tree import _pretty_print
+        from nndt.space2.print_tree import _pretty_print
         return _pretty_print(self, mode)
+
+    @node_method("print(default, filepath=None)")
+    def plot(self, mode: Optional[str] = "default",
+                   filepath: Optional[str] = None):
+        from nndt.space2.plot_tree import _plot
+        _plot(self, mode, filepath)
 
 
 class AbstractLoader:

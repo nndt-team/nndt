@@ -35,7 +35,7 @@ class VizualizeTestCase(unittest.TestCase):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
         test_box = np.zeros((100, 100, 100))
         test_box[20:80, 20:80, 20:80] = 1
-        viz.sdf_to_obj("state", test_box, level=0.5)
+        viz.sdt_to_obj("state", test_box, level=0.5)
         self.assertTrue(os.path.exists(f'./{LOG_FOLDER}/state.obj'))
 
     def test_save_3D_array(self):

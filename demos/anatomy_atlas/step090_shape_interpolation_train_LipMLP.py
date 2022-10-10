@@ -96,8 +96,8 @@ if __name__ == '__main__':
                 for i, name in enumerate(name_list):
                     exact = D1.SDF[FLAT_SHAPE*i:FLAT_SHAPE*(i+1)].reshape(SHAPE)
                     predict = predict_sdf[FLAT_SHAPE*i:FLAT_SHAPE*(i+1)].reshape(SHAPE)
-                    viz.sdf_to_obj(f"SDF_exact_{name}", exact, level=LEVEL_SHIFT)
-                    viz.sdf_to_obj(f"SDF_predict_{name}", predict, level=LEVEL_SHIFT)
+                    viz.sdt_to_obj(f"SDF_exact_{name}", exact, level=LEVEL_SHIFT)
+                    viz.sdt_to_obj(f"SDF_predict_{name}", predict, level=LEVEL_SHIFT)
                     viz.save_3D_array(f"SDF_exact_{name}", exact)
                     viz.save_3D_array(f"SDF_predict_{name}", predict)
 
