@@ -18,9 +18,9 @@ class MethodSetTestCase(unittest.TestCase):
         space = load_from_path(path)
         space.preload()
         rng_key = jax.random.PRNGKey(42)
-        ret1 = space.sampling.grid()
-        ret2 = space.sampling.grid_with_shackle(rng_key, sigma=0.0000001)
-        ret3 = space.sampling.uniform(rng_key)
+        ret1 = space.sampling.sampling_grid()
+        ret2 = space.sampling.sampling_grid_with_noise(rng_key, sigma=0.0000001)
+        ret3 = space.sampling.sampling_uniform(rng_key)
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret1)
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret2)
         jnp.allclose(jnp.zeros((100, 3)), ret3)
@@ -32,15 +32,19 @@ class MethodSetTestCase(unittest.TestCase):
         self.helper_sampling_presence(PATH_TEST_ACDC)
         self.helper_sampling_presence(PATH_TEST_STRUCTURE)
 
+class CheckAllMethodsTestCase(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.space = load_from_path(PATH_TEST_ACDC)
+        self.space.preload()
+        print(self.space.print())
+        self.rng_key = jax.random.PRNGKey(42)
     def test_all_methods_in_Object3D(self):
-        space = load_from_path(PATH_TEST_ACDC)
-        space.preload()
-        rng_key = jax.random.PRNGKey(42)
-        ret = space.patient009.grid()
+        ret = self.space.patient009.sampling_grid()
         self.assertEqual((2, 2, 2, 3), ret.shape)
-        ret = space.patient009.grid(spacing=(5, 5, 5))
+        ret = self.space.patient009.sampling_grid(spacing=(5, 5, 5))
         self.assertEqual((5, 5, 5, 3), ret.shape)
-        ret = space.patient009.grid((5, 5, 5))
+        ret = self.space.patient009.sampling_grid((5, 5, 5))
         self.assertEqual((5, 5, 5, 3), ret.shape)
 
 if __name__ == '__main__':

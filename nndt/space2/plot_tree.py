@@ -55,7 +55,7 @@ def _plot(node: AbstractTreeElement,
                 transform_list = [child for child in node_obj.children
                                   if isinstance(child, AbstractTransformation)]
                 if len(transform_list) > 0:
-                    transform = transform_list[0].xyz_ps2ns
+                    transform = transform_list[0].transform_xyz_ps2ns
                 else:
                     transform = default_transform
 
