@@ -69,11 +69,11 @@ def load_from_path(root_path,
     space = Space("space")
 
     def filename_to_loader_type(filename):
-        if fnmatch.fnmatch(filename, template_txt):
+        if (template_txt is not None) and fnmatch.fnmatch(filename, template_txt):
             ret = 'txt'
-        elif fnmatch.fnmatch(filename, template_sdt):
+        elif (template_sdt is not None) and fnmatch.fnmatch(filename, template_sdt):
             ret = 'sdt'
-        elif fnmatch.fnmatch(filename, template_mesh_obj):
+        elif (template_mesh_obj is not None) and fnmatch.fnmatch(filename, template_mesh_obj):
             ret = 'mesh_obj'
         else:
             warnings.warn("Some file in path is ignored")
@@ -95,8 +95,7 @@ def load_from_path(root_path,
                     elif ind == (len(lst) - 1):
                         loader_type = filename_to_loader_type(filename)
                         if loader_type is not None:
-                            current_node_ = FileSource(name_, fullpath, loader_type,
-                                                       parent=current_node_)
+                            current_node_ = FileSource(name_, fullpath, loader_type, parent=current_node_)
 
     for root, dirs, files in os.walk(root_path, topdown=False):
         for fl in files:

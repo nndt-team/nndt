@@ -155,25 +155,47 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertIn('patient089', [x.name for x in space.children])
 
     def test_load_txt(self):
-        space = load_txt(PATH_TEST_STRUCTURE+'/group0/patient00/organ000/data0000.txt')
+        space = load_txt(PATH_TEST_STRUCTURE + '/group0/patient00/organ000/data0000.txt')
         print(space.print('full'))
         self.assertEqual(1, len(space))
         self.assertEqual(1, len(space.default))
         space.preload()
 
     def test_load_sdt(self):
-        space = load_sdt(PATH_TEST_ACDC+'/patient089/sdf.npy')
+        space = load_sdt(PATH_TEST_ACDC + '/patient089/sdf.npy')
         print(space.print('full'))
         self.assertEqual(1, len(space))
         self.assertEqual(1, len(space.default))
         space.preload()
 
     def test_load_mesh_obj(self):
-        space = load_mesh_obj(PATH_TEST_ACDC+'/patient089/colored.obj')
+        space = load_mesh_obj(PATH_TEST_ACDC + '/patient089/colored.obj')
         print(space.print('full'))
         self.assertEqual(1, len(space))
         self.assertEqual(1, len(space.default))
         space.preload()
+
+    def test_load_from_path_None_in_template(self):
+        space = load_from_path(PATH_TEST_ACDC, template_sdt=None)
+        print(tree := space.print('full'))
+        self.assertNotIn('sdf_npy', tree)
+        self.assertIn('colored_obj', tree)
+
+        space = load_from_path(PATH_TEST_ACDC, template_mesh_obj=None)
+        print(tree := space.print('full'))
+        self.assertIn('sdf_npy', tree)
+        self.assertNotIn('colored_obj', tree)
+
+        space = load_from_path(PATH_TEST_ACDC, template_sdt=None, template_mesh_obj=None)
+        print(tree := space.print('full'))
+        self.assertNotIn('sdf_npy', tree)
+        self.assertNotIn('colored_obj', tree)
+
+    def test_preload_empty(self):
+        space = load_from_path(PATH_TEST_ACDC, template_sdt=None, template_mesh_obj=None)
+        space.preload()
+        print(space.print('full'))
+
 
 if __name__ == '__main__':
     unittest.main()
