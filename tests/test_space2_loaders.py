@@ -43,6 +43,17 @@ class LoadersTestCase(unittest.TestCase):
         self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
         self.assertIn('^', space.patient069.colored_obj.print())
 
+    def test_preload_unload_from_memory(self):
+        space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=True)
+
+        self.assertIn('^', space.patient069.print())
+        space.patient069.unload_from_memory()
+        self.assertNotIn('^', space.patient069.print())
+
+        self.assertIn('^', space.print())
+        space.unload_from_memory()
+        self.assertNotIn('^', space.print())
+
     def BROKEN_test_preload_check_access_to_field_text(self):
         space = self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 

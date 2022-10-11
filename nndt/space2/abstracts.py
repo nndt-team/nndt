@@ -2,7 +2,7 @@ import re
 from abc import abstractmethod
 from typing import Union, Optional
 
-from anytree import NodeMixin, Resolver
+from anytree import NodeMixin, Resolver, PostOrderIter
 from colorama import Fore
 
 FORBIDDEN_NAME = ['separator', 'parent', '__check_loop', '__detach', '__attach', '__children_or_empty', 'children',
@@ -134,9 +134,17 @@ class AbstractBBoxNode(AbstractTreeElement):
         from nndt.space2.plot_tree import _plot
         _plot(self, mode, filepath)
 
+    @node_method("unload_from_memory()")
+    def unload_from_memory(self):
+        from space2 import FileSource
+        for node in PostOrderIter(self):
+            if isinstance(node, FileSource) and node._loader is not None:
+                node._loader.unload_data()
+
 
 class IterAccessMixin:
     pass
+
 
 class AbstractLoader:
 
