@@ -60,5 +60,6 @@ class HaikuModulesTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.any(result >= 0.1)))
 
 
+
 if __name__ == '__main__':
     unittest.main()
