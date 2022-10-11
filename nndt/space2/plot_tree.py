@@ -26,7 +26,7 @@ def _plot_mesh(pl: Plotter, loader: MeshObjLoader, transform):
 
 def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable):
     sdt = loader.sdt
-    from space2 import array_to_vert_and_faces
+    from nndt.space2 import array_to_vert_and_faces
     verts, faces = array_to_vert_and_faces(sdt, level=0.0, for_vtk_cell_array=True)
     _plot_pv_mesh(pl, verts, faces, transform)
 
