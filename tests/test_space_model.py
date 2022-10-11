@@ -216,7 +216,7 @@ class MyTestCase(unittest.TestCase):
                                       parent=object)
         print(space.explore())
 
-    def test_create_SphereSDF_from_SphereSDFSource(self):
+    def test_create_SphereSDF_from_SphereSDFSource2(self):
         space = Space("main")
         group = Group("default", parent=space)
         object = Object("test", parent=group)
@@ -229,7 +229,7 @@ class MyTestCase(unittest.TestCase):
         ret = space['default/test/region/repr/xyz2sdt'](xyz)
         self.assertTrue(jnp.allclose(jnp.array([[-1.], [0.], [3.]]), ret))
 
-    def test_create_SphereSDF_from_SphereSDFSource(self):
+    def test_create_SphereSDF_from_SphereSDFSource3(self):
         space = Space("main")
         group = Group("default", parent=space)
         object = Object("test", parent=group)

@@ -5,10 +5,10 @@ import vtk
 from colorama import Fore
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
-from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader, IterAccessMixin
 
 
-class FileSource(AbstractBBoxNode):
+class FileSource(AbstractBBoxNode, IterAccessMixin):
     def __init__(self, name, filepath: str, loader_type: str,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):

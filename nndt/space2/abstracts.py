@@ -65,14 +65,18 @@ class AbstractTreeElement(NodeMixin):
 
         self._resolver = Resolver('name')
 
+    def _container_only_list(self):
+        return [ch for ch in self.children if isinstance(ch, IterAccessMixin)]
+
     def __len__(self):
-        return len(self.children)
+        return len(self._container_only_list())
+
+    def __iter__(self):
+        return iter(self._container_only_list())
 
     def __getitem__(self, request_: Union[int, str]):
-
         if isinstance(request_, int):
-            children_without_methods = [ch for ch in self.children
-                                        if isinstance(ch, AbstractBBoxNode)]
+            children_without_methods = self._container_only_list()
             return children_without_methods[request_]
         elif isinstance(request_, str):
             return self._resolver.get(self, request_)
@@ -130,6 +134,9 @@ class AbstractBBoxNode(AbstractTreeElement):
         from nndt.space2.plot_tree import _plot
         _plot(self, mode, filepath)
 
+
+class IterAccessMixin:
+    pass
 
 class AbstractLoader:
 

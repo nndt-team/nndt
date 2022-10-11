@@ -8,7 +8,7 @@ from anytree.importer import DictImporter, JsonImporter
 
 from nndt.math_core import train_test_split
 from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
-from nndt.space2.filesource_and_loader import FileSource
+from nndt.space2.loader import FileSource
 from nndt.space2.group import Group
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space

@@ -81,6 +81,9 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
+        self.assertEqual(5, len(space))
+        self.assertEqual(2, len(space.patient009))
+
         obj1 = space.patient009.colored_obj
         obj2 = space[0][0]
         obj3 = space['patient009']['colored_obj']

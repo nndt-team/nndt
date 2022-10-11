@@ -1,7 +1,7 @@
 anytree==2.8.0
 colorama==0.4.5
 dm-haiku==0.0.7
-jax==0.3.20
+jax==0.3.17
 optax
 matplotlib>=3.3.0
 numpy
