@@ -54,8 +54,8 @@ class Space(AbstractBBoxNode, IterAccessMixin):
 
     @node_method("save_space(filepath)")
     def save_space(self, filepath: str):
-        from nndt.space2 import save_space
-        return save_space(self, filepath)
+        from nndt.space2 import save_space_to_file
+        return save_space_to_file(self, filepath)
 
     @node_method("to_json()")
     def to_json(self):
