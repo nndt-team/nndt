@@ -37,13 +37,16 @@ def _plot_filesource(pl, node: FileSource, transform: Callable):
     elif isinstance(node._loader, SDTLoader):
         _plot_sdt(pl, node._loader, transform)
     else:
-        warnings.warn(f"Method .plot() is not implemented for {node._loader.__class__.__name__}")
+        warnings.warn(f"node._loader is None or unknown. Something goes wrong.")
 
 
 def _plot(node: AbstractTreeElement,
           mode: Optional[str] = "default",
           filepath: Optional[str] = None, cpos=None,
           level: float = 0.0):
+    if not node.root._is_preload:
+        warnings.warn("This space model is not preloaded. Output image is empty. Call .preload() from the root node to fix!")
+
     if filepath is None:
         pl = pv.Plotter()
     else:
