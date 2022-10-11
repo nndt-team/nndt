@@ -1,46 +1,35 @@
-from nndt.datasets import load_acdc
+from datasets import utils  # TODO: replace utils with datasets.py
+import unittest
+import shutil
+import os
 
-load_acdc()
-#%%
-import gdown
-import zipfile
-import urllib
-import re
-import datasets
-import requests
-
-url = datasets.ACDC_5().url
+DATA_FOLDER = 'ACDC_5'
 
 
-def get_id(url):
-    parts = urllib.parse.urlparse(url)
-    match = re.match(r"/file/d/(?P<id>[^/]*)", parts.path)
-    return match.group("id")
-
-id = get_id(url)
+class DatasetUnavailableCase(unittest.TestCase):
+    def test_download_tests(self):
+        with self.assertRaises(ConnectionError):
+            utils.load('test')
 
 
-url_to_download = "https://drive.google.com/uc?export=download&id=" + id
-#%%
-print(1)
-gdown.download(url_to_download, './a.zip', quiet=True)
-print(2)
-#%%
+class DatasetLoadingCase(unittest.TestCase):
+    def tearDown(self) -> None:
+        shutil.rmtree(f'./{DATA_FOLDER}')
 
-def _extract_zip(from_path: str, to_path: str) -> None:
-    print('Extracting data')
-    with zipfile.ZipFile(
-            from_path, "r", compression=zipfile.ZIP_STORED
-    ) as zip:
-        zip.extractall(to_path)
-#%%
-_extract_zip('./a.zip', './a/')
-#%%
-import requests, zipfile, io
-url = "https://www.dropbox.com/s/m4mz82s5cyotcva/ACDC_5.zip?raw=1"
-r = requests.get(url, stream=True)
-r
-#%%
-z = zipfile.ZipFile(io.BytesIO(r.content))
-z.extractall("./test_dir/")
-#%%
+    def test_download_ACDC(self):
+        utils.load('ACDC_5')
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient009'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient029'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient049'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient069'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient089'))
+        self.assertFalse(os.path.isfile(f'./temp.zip'))
+
+    def test_download_from_dropbox(self):
+        utils.load('test2')
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient009'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient029'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient049'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient069'))
+        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient089'))
+        self.assertFalse(os.path.isfile(f'./temp.zip'))
