@@ -79,6 +79,30 @@ class MethodSetTestCase(unittest.TestCase):
         self.assertAlmostEqual(7.0, float(jnp.array(space.patient009.transform.transform_xyz_ns2ps(ns_grid)).min()), places=2)
         self.assertAlmostEqual(183.0, float(jnp.array(space.patient009.transform.transform_xyz_ns2ps(ns_grid)).max()), places=2)
 
+    def test_transform_inversions(self):
+        space = self.helper_transform_load(mode="identity")
+        a = space.patient009.transform.transform_xyz_ns2ps
+        inv_a = space.patient009.transform.transform_xyz_ps2ns
+        b = space.patient009.transform.transform_xyz_ns2ps
+        inv_b = space.patient009.transform.transform_xyz_ps2ns
+        self.assertEqual((3., 4., 5.), tuple(inv_a(a(jnp.array((3., 4., 5.))))))
+        self.assertEqual((1., 2., 3.), tuple(inv_b(b(jnp.array((1., 2., 3.))))))
+
+        space = self.helper_transform_load(mode="shift_and_scale")
+        a = space.patient009.transform.transform_xyz_ns2ps
+        inv_a = space.patient009.transform.transform_xyz_ps2ns
+        b = space.patient009.transform.transform_xyz_ns2ps
+        inv_b = space.patient009.transform.transform_xyz_ps2ns
+        self.assertEqual((3., 4., 5.), tuple(inv_a(a(jnp.array((3., 4., 5.))))))
+        self.assertEqual((1., 2., 3.), tuple(inv_b(b(jnp.array((1., 2., 3.))))))
+
+        space = self.helper_transform_load(mode="to_cube")
+        a = space.patient009.transform.transform_xyz_ns2ps
+        inv_a = space.patient009.transform.transform_xyz_ps2ns
+        b = space.patient009.transform.transform_xyz_ns2ps
+        inv_b = space.patient009.transform.transform_xyz_ps2ns
+        self.assertEqual((3., 4., 5.), tuple(inv_a(a(jnp.array((3., 4., 5.))))))
+        self.assertEqual((1., 2., 3.), tuple(inv_b(b(jnp.array((1., 2., 3.))))))
 
 if __name__ == '__main__':
     unittest.main()

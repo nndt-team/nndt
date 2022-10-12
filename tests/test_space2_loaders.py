@@ -147,5 +147,6 @@ class LoadersTestCase(unittest.TestCase):
         self.assertEqual(obj1, obj3)
         self.assertEqual(obj1, obj4)
 
+
 if __name__ == '__main__':
     unittest.main()

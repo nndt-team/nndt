@@ -1,10 +1,11 @@
 from anytree import PostOrderIter, PreOrderIter
 
-from nndt.space2 import SamplingNode
+from nndt.space2 import ColorMethodSetNode
+from nndt.space2 import SDTMethodSetNode
+from nndt.space2 import SamplingMethodSetNode
 from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
-    MeshNode, \
+    MeshObjMethodSetNode, \
     DICT_NODETYPE_PRIORITY
-from nndt.space2 import SDTNode
 
 
 class DefaultPreloader:
@@ -49,7 +50,7 @@ class DefaultPreloader:
                                                     reverse=False)
 
     def _add_sampling_node(self, node: AbstractBBoxNode):
-        SamplingNode(parent=node)
+        SamplingMethodSetNode(parent=node)
 
     def _update_bbox_bottom_to_up(self, node):
         for child in node.children:
@@ -94,7 +95,7 @@ class DefaultPreloader:
 
             if len(sdt_array_list) and transform is not None:
                 sdt = sdt_array_list[0]
-                SDTNode(node, sdt, transform, parent=node)
+                SDTMethodSetNode(node, sdt, transform, parent=node)
 
         return transform
 
@@ -104,7 +105,9 @@ class DefaultPreloader:
 
         if len(mesh_obj_array_list) and transform is not None:
             mesh = mesh_obj_array_list[0]
-            MeshNode(node, mesh, transform, parent=node)
+            MeshObjMethodSetNode(node, mesh, transform, parent=node)
+            if mesh._loader.rgba is not None:
+                ColorMethodSetNode(node, mesh, transform, parent=node)
 
     def _init_Object3D(self, node: Object3D):
         transform = self._process_sdt_source(node)

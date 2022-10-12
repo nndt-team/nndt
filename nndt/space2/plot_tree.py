@@ -7,7 +7,7 @@ from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
 from nndt.space2 import AbstractTreeElement, AbstractBBoxNode, AbstractTransformation, FileSource, \
-    MeshObjLoader, SDTLoader,  Object3D
+    MeshObjLoader, SDTLoader, Object3D
 
 
 def _plot_pv_mesh(pl: Plotter, verts, faces, transform):
@@ -45,7 +45,8 @@ def _plot(node: AbstractTreeElement,
           filepath: Optional[str] = None, cpos=None,
           level: float = 0.0):
     if not node.root._is_preload:
-        warnings.warn("This space model is not preloaded. Output image is empty. Call .preload() from the root node to fix!")
+        warnings.warn(
+            "This space model is not preloaded. Output image is empty. Call .preload() from the root node to fix!")
 
     if filepath is None:
         pl = pv.Plotter()

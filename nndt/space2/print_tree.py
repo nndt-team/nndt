@@ -9,10 +9,11 @@ def _construct_filter(child_classes, not_parent_classes):
     def filter_(children):
         ret = [v for v in children
                if isinstance(v, child_classes) and
-                not isinstance(v.parent, not_parent_classes)]
+               not isinstance(v.parent, not_parent_classes)]
         return ret
 
     return filter_
+
 
 def _pretty_print(node: AbstractTreeElement, mode: Optional[str] = "default"):
     if mode is None or (mode == "default"):

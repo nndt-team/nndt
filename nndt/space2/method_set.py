@@ -45,10 +45,10 @@ class MethodSetNode(AbstractTreeElement):
                 delattr(parent, self.name)
 
 
-class SamplingNode(MethodSetNode):
+class SamplingMethodSetNode(MethodSetNode):
 
     def __init__(self, parent: AbstractBBoxNode = None):
-        super(SamplingNode, self).__init__('sampling', parent=parent)
+        super(SamplingMethodSetNode, self).__init__('sampling', parent=parent)
 
     @node_method("sampling_grid(spacing=(D,H,W)) -> ns_xyz[D,H,W,3]")
     def sampling_grid(self, spacing: (int, int, int) = (2, 2, 2)) -> jnp.ndarray:
@@ -76,25 +76,28 @@ class SamplingNode(MethodSetNode):
         return basic_cube
 
 
-class MeshNode(MethodSetNode):
+class MeshObjMethodSetNode(MethodSetNode):
     def __init__(self, object_3d: AbstractBBoxNode,
                  mesh: FileSource,
                  transform: AbstractTransformation, parent: AbstractBBoxNode = None):
-        super(MeshNode, self).__init__('mesh', parent=parent)
+        super(MeshObjMethodSetNode, self).__init__('mesh', parent=parent)
         self.object_3d = object_3d
         assert (mesh.loader_type == 'mesh_obj')
         self.mesh = mesh
         self.transform = transform
 
-    @node_method("surface_ind2xyz(ns_ind[...,1]) -> ns_xyz[...,3]")
+    @node_method("surface_ind2xyz(ns_ind[N,1]) -> ns_xyz[N,3]")
     def surface_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
-        result_ps = jnp.take(self.mesh._loader.points, ns_ind)
+        result_ps = jnp.take(self.mesh._loader.points, ns_ind, axis=0)
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
-    @node_method("surface_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
-    def surface_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
-        raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
+    @node_method("surface_xyz2ind(ns_xyz[N,3]) -> ns_ind[N,1]")
+    def surface_xyz2ind(self, ns_xyz: jnp.ndarray) -> (jnp.ndarray, jnp.ndarray):
+        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
+        ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
+        ns_dist = self.transform.transform_sdt_ps2ns(ps_dist)
+        return jnp.array(ns_dist), jnp.array(ind)
 
     @node_method("save_mesh(filepath, {name, array})")
     def save_mesh(self, filepath: str, name_value: dict):
@@ -130,11 +133,11 @@ class MeshNode(MethodSetNode):
         return index_set, ret_array
 
 
-class SDTNode(MethodSetNode):
+class SDTMethodSetNode(MethodSetNode):
     def __init__(self, object_3d: AbstractBBoxNode,
                  sdt: FileSource,
                  transform: AbstractTransformation, parent: AbstractBBoxNode = None):
-        super(SDTNode, self).__init__('sdt', parent=parent)
+        super(SDTMethodSetNode, self).__init__('sdt', parent=parent)
         self.object_3d = object_3d
         assert (sdt.loader_type == 'sdt')
         self.sdt = sdt
@@ -146,3 +149,27 @@ class SDTNode(MethodSetNode):
         ps_sdt = self.sdt._loader.request(ps_xyz)
         ns_sdt = self.transform.transform_sdt_ps2ns(ps_sdt)
         return ns_sdt
+
+
+class ColorMethodSetNode(MethodSetNode):
+    def __init__(self, object_3d: AbstractBBoxNode,
+                 mesh: FileSource,
+                 transform: AbstractTransformation,
+                 parent: AbstractBBoxNode = None):
+        super(ColorMethodSetNode, self).__init__('mesh_colors', parent=parent)
+        self.object_3d = object_3d
+        assert (mesh.loader_type == 'mesh_obj')
+        self.mesh = mesh
+        self.transform = transform
+
+    @node_method("surface_ind2rgba(ind[N,1]) -> rgba[N,4]")
+    def surface_ind2rgba(self, ind: jnp.ndarray) -> jnp.ndarray:
+        rgba = jnp.take(self.mesh._loader.rgba, ind, axis=0)
+        return rgba
+
+    @node_method("surface_xyz2rgba(ns_xyz[N,3]) -> rgba[N,4]")
+    def surface_xyz2rgba(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
+        ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
+        color = jnp.take(self.mesh._loader.rgba, ind, axis=0)
+        return color
