@@ -1,6 +1,6 @@
 import os
 import warnings
-from typing import NamedTuple, Optional
+from typing import Optional
 
 import jax.numpy as jnp
 import vtk
@@ -69,6 +69,7 @@ class TXTLoader(AbstractLoader):
 
     def is_load(self) -> bool:
         return self.is_load
+
 
 def _load_colors_from_obj(filepath):
     red = []
