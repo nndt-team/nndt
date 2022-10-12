@@ -5,6 +5,7 @@ from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object
     MeshNode, \
     DICT_NODETYPE_PRIORITY
 from nndt.space2 import SDTNode
+from space2 import ColorNode
 
 
 class DefaultPreloader:
@@ -105,6 +106,8 @@ class DefaultPreloader:
         if len(mesh_obj_array_list) and transform is not None:
             mesh = mesh_obj_array_list[0]
             MeshNode(node, mesh, transform, parent=node)
+            if mesh._loader.rgba is not None:
+                ColorNode(node, mesh, parent=node)
 
     def _init_Object3D(self, node: Object3D):
         transform = self._process_sdt_source(node)

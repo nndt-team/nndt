@@ -149,3 +149,32 @@ class SDTNode(MethodSetNode):
         ps_sdt = self.sdt._loader.request(ps_xyz)
         ns_sdt = self.transform.transform_sdt_ps2ns(ps_sdt)
         return ns_sdt
+
+
+class ColorNode(MethodSetNode):
+    def __init__(self, object_3d: AbstractBBoxNode,
+                 mesh: FileSource, parent: AbstractBBoxNode = None):
+        super(ColorNode, self).__init__('mesh', parent=parent)
+        self.object_3d = object_3d
+        assert (mesh.loader_type == 'mesh_obj')
+        self.mesh = mesh
+
+    @node_method("surface_color_ind2red(ind[N,1]) -> red[N,1]")
+    def surface_color_ind2red(self, ind: jnp.ndarray) -> jnp.ndarray:
+        color = jnp.take(self.mesh._loader.rgba.red, ind, axis=0)
+        return color
+
+    @node_method("surface_color_ind2green(ind[N,1]) -> green[N,1]")
+    def surface_color_ind2green(self, ind: jnp.ndarray) -> jnp.ndarray:
+        color = jnp.take(self.mesh._loader.rgba.green, ind, axis=0)
+        return color
+
+    @node_method("surface_color_ind2blue(ind[N,1]) -> blue[N,1]")
+    def surface_color_ind2blue(self, ind: jnp.ndarray) -> jnp.ndarray:
+        color = jnp.take(self.mesh._loader.rgba.blue, ind, axis=0)
+        return color
+
+    @node_method("surface_color_ind2alpha(ind[N,1]) -> alpha[N,1]")
+    def surface_color_ind2alpha(self, ind: jnp.ndarray) -> jnp.ndarray:
+        color = jnp.take(self.mesh._loader.rgba.alpha, ind, axis=0)
+        return color
