@@ -86,13 +86,13 @@ class MeshNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
-    @node_method("surface_ind2xyz(ns_ind[...,1]) -> ns_xyz[...,3]")
+    @node_method("surface_ind2xyz(ns_ind[N,1]) -> ns_xyz[N,3]")
     def surface_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
         result_ps = jnp.take(self.mesh._loader.points, ns_ind, axis=0)
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
-    @node_method("surface_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
+    @node_method("surface_xyz2ind(ns_xyz[N,3]) -> ns_ind[N,1]")
     def surface_xyz2ind(self, ns_xyz: jnp.ndarray) -> (jnp.ndarray, jnp.ndarray):
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
