@@ -45,10 +45,10 @@ class MethodSetNode(AbstractTreeElement):
                 delattr(parent, self.name)
 
 
-class SamplingNode(MethodSetNode):
+class SamplingMethodSetNode(MethodSetNode):
 
     def __init__(self, parent: AbstractBBoxNode = None):
-        super(SamplingNode, self).__init__('sampling', parent=parent)
+        super(SamplingMethodSetNode, self).__init__('sampling', parent=parent)
 
     @node_method("sampling_grid(spacing=(D,H,W)) -> ns_xyz[D,H,W,3]")
     def sampling_grid(self, spacing: (int, int, int) = (2, 2, 2)) -> jnp.ndarray:
@@ -76,11 +76,11 @@ class SamplingNode(MethodSetNode):
         return basic_cube
 
 
-class MeshNode(MethodSetNode):
+class MeshObjMethodSetNode(MethodSetNode):
     def __init__(self, object_3d: AbstractBBoxNode,
                  mesh: FileSource,
                  transform: AbstractTransformation, parent: AbstractBBoxNode = None):
-        super(MeshNode, self).__init__('mesh', parent=parent)
+        super(MeshObjMethodSetNode, self).__init__('mesh', parent=parent)
         self.object_3d = object_3d
         assert (mesh.loader_type == 'mesh_obj')
         self.mesh = mesh
@@ -133,11 +133,11 @@ class MeshNode(MethodSetNode):
         return index_set, ret_array
 
 
-class SDTNode(MethodSetNode):
+class SDTMethodSetNode(MethodSetNode):
     def __init__(self, object_3d: AbstractBBoxNode,
                  sdt: FileSource,
                  transform: AbstractTransformation, parent: AbstractBBoxNode = None):
-        super(SDTNode, self).__init__('sdt', parent=parent)
+        super(SDTMethodSetNode, self).__init__('sdt', parent=parent)
         self.object_3d = object_3d
         assert (sdt.loader_type == 'sdt')
         self.sdt = sdt
@@ -151,10 +151,10 @@ class SDTNode(MethodSetNode):
         return ns_sdt
 
 
-class ColorNode(MethodSetNode):
+class ColorMethodSetNode(MethodSetNode):
     def __init__(self, object_3d: AbstractBBoxNode,
                  mesh: FileSource, parent: AbstractBBoxNode = None):
-        super(ColorNode, self).__init__('mesh', parent=parent)
+        super(ColorMethodSetNode, self).__init__('mesh', parent=parent)
         self.object_3d = object_3d
         assert (mesh.loader_type == 'mesh_obj')
         self.mesh = mesh
