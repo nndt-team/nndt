@@ -78,16 +78,6 @@ class HaikuModulesTestCase(unittest.TestCase):
             return ll(x)
         lLinear = hk.transform(init)
         self.assertIsInstance(lLinear, tuple)
-    #def test_LipMLP_weight_normalization_output_type(self):
-        ##yt
-        #sizes = (64, 64, 64, 64, 64, 64, 64, 64, 1)
-        #def init(x):
-
-       #     lm = LipMLP(output_sizes=sizes)
-       #     return lm(x)
-
-        #lMLP = hk.transform(init)
-        #weight_check = lMLP.weight_normalization
 
 if __name__ == '__main__':
     unittest.main()
