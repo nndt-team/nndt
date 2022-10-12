@@ -88,13 +88,16 @@ class MeshNode(MethodSetNode):
 
     @node_method("surface_ind2xyz(ns_ind[...,1]) -> ns_xyz[...,3]")
     def surface_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
-        result_ps = jnp.take(self.mesh._loader.points, ns_ind)
+        result_ps = jnp.take(self.mesh._loader.points, ns_ind, axis=0)
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
     @node_method("surface_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
-    def surface_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
-        raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
+    def surface_xyz2ind(self, ns_xyz: jnp.ndarray) -> (jnp.ndarray, jnp.ndarray):
+        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
+        ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
+        ns_dist = self.transform.transform_sdt_ps2ns(ps_dist)
+        return jnp.array(ns_dist), jnp.array(ind)
 
     @node_method("save_mesh(filepath, {name, array})")
     def save_mesh(self, filepath: str, name_value: dict):

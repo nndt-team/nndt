@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import vtk
 from colorama import Fore
 from vtkmodules.util.numpy_support import vtk_to_numpy
+from pykdtree.kdtree import KDTree
 
 from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader, IterAccessMixin
 
@@ -74,6 +75,7 @@ class MeshObjLoader(AbstractLoader):
         self.is_load = False
         self._mesh = None
         self._points = None
+        self._kdtree = None
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
         Xmin, Xmax, Ymin, Ymax, Zmin, Zmax = self.mesh.GetBounds()
@@ -91,12 +93,19 @@ class MeshObjLoader(AbstractLoader):
             self.load_data()
         return self._points
 
+    @property
+    def kdtree(self):
+        if not self.is_load:
+            self.load_data()
+        return self._kdtree
+
     def load_data(self):
         reader = vtk.vtkOBJReader()
         reader.SetFileName(self.filepath)
         reader.Update()
         self._mesh = reader.GetOutput()
         self._points = vtk_to_numpy(self._mesh.GetPoints().GetData())
+        self._kdtree = KDTree(self._points)
         self.is_load = True
 
     def unload_data(self):
