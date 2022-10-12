@@ -10,7 +10,7 @@ PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
 
 
-class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
+class BROKEN_SpaceModelBeforeInitializationTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         if os.path.exists(FILE_TMP):

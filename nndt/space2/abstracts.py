@@ -136,7 +136,7 @@ class AbstractBBoxNode(AbstractTreeElement):
 
     @node_method("unload_from_memory()")
     def unload_from_memory(self):
-        from space2 import FileSource
+        from nndt.space2 import FileSource
         for node in PostOrderIter(self):
             if isinstance(node, FileSource) and node._loader is not None:
                 node._loader.unload_data()
