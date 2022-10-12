@@ -52,8 +52,8 @@ class Space(AbstractBBoxNode, IterAccessMixin):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
 
-    @node_method("save_space(filepath)")
-    def save_space(self, filepath: str):
+    @node_method("save_space_to_file(filepath)")
+    def save_space_to_file(self, filepath: str):
         from nndt.space2 import save_space_to_file
         return save_space_to_file(self, filepath)
 

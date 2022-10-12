@@ -1,11 +1,11 @@
-anytree==2.8.0
-colorama==0.4.5
-dm-haiku==0.0.7
-jax==0.3.17
+anytree
+colorama
+dm-haiku
+jax
 optax
-matplotlib>=3.3.0
+matplotlib
 numpy
 scikit-image
 vtk
 tqdm
-pyvista==0.36.1
+pyvista
