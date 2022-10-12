@@ -84,5 +84,15 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), blue)))
         self.assertTrue(bool(jnp.allclose(jnp.array((1., 1., 1.)), alpha)))
 
+    def test_surface_colors_xyz(self):
+        red = self.space.patient009.surface_color_xyz2red(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        green = self.space.patient009.surface_color_xyz2green(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        blue = self.space.patient009.surface_color_xyz2blue(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        alpha = self.space.patient009.surface_color_xyz2alpha(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.937255,)), red)))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), green)))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), blue)))
+        self.assertTrue(bool(jnp.allclose(jnp.array((1.,)), alpha)))
+
 if __name__ == '__main__':
     unittest.main()
