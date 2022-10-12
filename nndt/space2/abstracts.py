@@ -2,7 +2,7 @@ import re
 from abc import abstractmethod
 from typing import Union, Optional
 
-from anytree import NodeMixin, Resolver
+from anytree import NodeMixin, Resolver, PostOrderIter
 from colorama import Fore
 
 FORBIDDEN_NAME = ['separator', 'parent', '__check_loop', '__detach', '__attach', '__children_or_empty', 'children',
@@ -65,14 +65,18 @@ class AbstractTreeElement(NodeMixin):
 
         self._resolver = Resolver('name')
 
+    def _container_only_list(self):
+        return [ch for ch in self.children if isinstance(ch, IterAccessMixin)]
+
     def __len__(self):
-        return len(self.children)
+        return len(self._container_only_list())
+
+    def __iter__(self):
+        return iter(self._container_only_list())
 
     def __getitem__(self, request_: Union[int, str]):
-
         if isinstance(request_, int):
-            children_without_methods = [ch for ch in self.children
-                                        if isinstance(ch, AbstractBBoxNode)]
+            children_without_methods = self._container_only_list()
             return children_without_methods[request_]
         elif isinstance(request_, str):
             return self._resolver.get(self, request_)
@@ -129,6 +133,17 @@ class AbstractBBoxNode(AbstractTreeElement):
              filepath: Optional[str] = None):
         from nndt.space2.plot_tree import _plot
         _plot(self, mode, filepath)
+
+    @node_method("unload_from_memory()")
+    def unload_from_memory(self):
+        from nndt.space2 import FileSource
+        for node in PostOrderIter(self):
+            if isinstance(node, FileSource) and node._loader is not None:
+                node._loader.unload_data()
+
+
+class IterAccessMixin:
+    pass
 
 
 class AbstractLoader:

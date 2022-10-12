@@ -1,9 +1,9 @@
 from colorama import Fore
 
-from nndt.space2.abstracts import AbstractBBoxNode
+from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 
-class Group(AbstractBBoxNode):
+class Group(AbstractBBoxNode, IterAccessMixin):
     """
     Group is an element tree that is a container for other groups and 3D objects
     """

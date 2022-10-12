@@ -1,9 +1,9 @@
 from colorama import Fore
 
-from nndt.space2.abstracts import AbstractBBoxNode
+from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 
-class Object3D(AbstractBBoxNode):
+class Object3D(AbstractBBoxNode, IterAccessMixin):
     def __init__(self, name,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):

@@ -3,7 +3,8 @@ from colorama import Fore
 
 import nndt
 from nndt.space2 import AbstractBBoxNode
-from nndt.space2.abstracts import node_method, AbstractTreeElement, DICT_NODETYPE_PRIORITY, NODE_METHOD_DICT
+from nndt.space2.abstracts import node_method, AbstractTreeElement, DICT_NODETYPE_PRIORITY, NODE_METHOD_DICT, \
+    IterAccessMixin
 
 
 def _get_class_hierarchy(obj):
@@ -38,7 +39,7 @@ def _add_method_sets_to_node(node: AbstractTreeElement):
                 MethodNode(fn_name, fn_docs, parent=node)
 
 
-class Space(AbstractBBoxNode):
+class Space(AbstractBBoxNode, IterAccessMixin):
     def __init__(self, name,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
@@ -51,10 +52,10 @@ class Space(AbstractBBoxNode):
     def __repr__(self):
         return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
 
-    @node_method("save_space(filepath)")
-    def save_space(self, filepath: str):
-        from nndt.space2 import save_space
-        return save_space(self, filepath)
+    @node_method("save_space_to_file(filepath)")
+    def save_space_to_file(self, filepath: str):
+        from nndt.space2 import save_space_to_file
+        return save_space_to_file(self, filepath)
 
     @node_method("to_json()")
     def to_json(self):
@@ -78,6 +79,6 @@ class Space(AbstractBBoxNode):
     @node_method("preload(identity|shift_and_scale|to_cube, scale, keep_in_memory=True)")
     def preload(self, mode="identity", scale=50, keep_in_memory=True):
         if not self._is_preload:
-            from nndt.space2.preloader import DefaultPreloader
+            from nndt.space2.space_preloader import DefaultPreloader
             self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory)
             self.preloader.preload(self)

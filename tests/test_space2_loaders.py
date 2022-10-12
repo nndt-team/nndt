@@ -43,6 +43,17 @@ class LoadersTestCase(unittest.TestCase):
         self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
         self.assertIn('^', space.patient069.colored_obj.print())
 
+    def test_preload_unload_from_memory(self):
+        space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=True)
+
+        self.assertIn('^', space.patient069.print())
+        space.patient069.unload_from_memory()
+        self.assertNotIn('^', space.patient069.print())
+
+        self.assertIn('^', space.print())
+        space.unload_from_memory()
+        self.assertNotIn('^', space.print())
+
     def BROKEN_test_preload_check_access_to_field_text(self):
         space = self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 
@@ -121,6 +132,20 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.bbox)
 
+    def test_request_tree_nodes2(self):
+        space = self.helper_transform_load(mode="identity")
+
+        self.assertEqual(5, len(space))
+        self.assertEqual(2, len(space.patient009))
+
+        obj1 = space.patient009.colored_obj
+        obj2 = space[0][0]
+        obj3 = space['patient009']['colored_obj']
+        obj4 = space['patient009/colored_obj']
+
+        self.assertEqual(obj1, obj2)
+        self.assertEqual(obj1, obj3)
+        self.assertEqual(obj1, obj4)
 
 if __name__ == '__main__':
     unittest.main()

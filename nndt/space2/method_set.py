@@ -86,14 +86,14 @@ class MeshNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
-    @node_method("convert_ind2xyz(ns_ind[...,1]) -> ns_xyz[...,3]")
-    def convert_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
+    @node_method("surface_ind2xyz(ns_ind[...,1]) -> ns_xyz[...,3]")
+    def surface_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
         result_ps = jnp.take(self.mesh._loader.points, ns_ind)
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
         return result_ns
 
-    @node_method("convert_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
-    def convert_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
+    @node_method("surface_xyz2ind(ns_xyz[...,3]) -> ns_ind[...,1]")
+    def surface_xyz2ind(self, ns_index: jnp.ndarray) -> jnp.ndarray:
         raise NotImplementedError("Processing with KDTree is not implemented yet. Sorry.")
 
     @node_method("save_mesh(filepath, {name, array})")
@@ -140,8 +140,8 @@ class SDTNode(MethodSetNode):
         self.sdt = sdt
         self.transform = transform
 
-    @node_method("convert_xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]")
-    def convert_xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+    @node_method("surface_xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]")
+    def surface_xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_sdt = self.sdt._loader.request(ps_xyz)
         ns_sdt = self.transform.transform_sdt_ps2ns(ps_sdt)

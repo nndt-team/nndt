@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import warnings
 from typing import Optional, Sequence
 
 import jax
@@ -8,8 +9,8 @@ from anytree.importer import DictImporter, JsonImporter
 
 from nndt.math_core import train_test_split
 from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
-from nndt.space2.filesource_and_loader import FileSource
 from nndt.space2.group import Group
+from nndt.space2.loader import FileSource
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space
 
@@ -24,6 +25,43 @@ def _children_filter(children):
     return ret
 
 
+def _nodecls_function(parent=None, **attrs):
+    if '_nodetype' not in attrs:
+        raise ValueError('_nodetype is not located in some node of space file')
+
+    if attrs['_nodetype'] == 'FS':
+        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], attrs['filepath'], attrs['loader_type'],
+                                                      parent=parent)
+    else:
+        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], parent=parent)
+
+    return ret
+
+
+def load_txt(fullpath):
+    return load_only_one_file(fullpath, loader_type="txt")
+
+
+def load_sdt(fullpath):
+    return load_only_one_file(fullpath, loader_type="sdt")
+
+
+def load_mesh_obj(fullpath):
+    return load_only_one_file(fullpath, loader_type="mesh_obj")
+
+
+def load_only_one_file(fullpath, loader_type="txt"):
+    if loader_type not in ['txt', 'sdt', 'mesh_obj']:
+        raise ValueError("loader_type is unknown")
+
+    space = Space("space")
+    default = Object3D("default", parent=space)
+    _filesource = FileSource(os.path.basename(fullpath), fullpath, loader_type,
+                             parent=default)
+    space.init()
+    return space
+
+
 def load_from_path(root_path,
                    template_txt='*.txt',
                    template_sdt='*sd[ft]*.npy',
@@ -31,14 +69,15 @@ def load_from_path(root_path,
     space = Space("space")
 
     def filename_to_loader_type(filename):
-        if fnmatch.fnmatch(filename, template_txt):
+        if (template_txt is not None) and fnmatch.fnmatch(filename, template_txt):
             ret = 'txt'
-        elif fnmatch.fnmatch(filename, template_sdt):
+        elif (template_sdt is not None) and fnmatch.fnmatch(filename, template_sdt):
             ret = 'sdt'
-        elif fnmatch.fnmatch(filename, template_mesh_obj):
+        elif (template_mesh_obj is not None) and fnmatch.fnmatch(filename, template_mesh_obj):
             ret = 'mesh_obj'
         else:
-            ret = 'undefined'
+            warnings.warn("Some file in path is ignored")
+            ret = None
         return ret
 
     def add_values(lst, fullpath, filename):
@@ -54,8 +93,9 @@ def load_from_path(root_path,
                     elif ind == (len(lst) - 2):
                         current_node_ = Object3D(name_, parent=current_node_)
                     elif ind == (len(lst) - 1):
-                        current_node_ = FileSource(name_, fullpath, filename_to_loader_type(filename),
-                                                   parent=current_node_)
+                        loader_type = filename_to_loader_type(filename)
+                        if loader_type is not None:
+                            current_node_ = FileSource(name_, fullpath, loader_type, parent=current_node_)
 
     for root, dirs, files in os.walk(root_path, topdown=False):
         for fl in files:
@@ -64,6 +104,7 @@ def load_from_path(root_path,
             lst = line2.split('/')
             add_values(lst, os.path.join(root, fl), fl)
 
+    space.init()
     return space
 
 
@@ -113,7 +154,7 @@ def load_from_file_lists(name_list,
     return space
 
 
-def load_space(filepath: str):
+def read_space_from_file(filepath: str):
     if not os.path.exists(filepath):
         raise FileNotFoundError()
 
@@ -135,20 +176,7 @@ def from_json(json: str):
     return space
 
 
-def _nodecls_function(parent=None, **attrs):
-    if '_nodetype' not in attrs:
-        raise ValueError('_nodetype is not located in some node of space file')
-
-    if attrs['_nodetype'] == 'FS':
-        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], attrs['filepath'], attrs['loader_type'],
-                                                      parent=parent)
-    else:
-        ret = DICT_NODETYPE_CLASS[attrs['_nodetype']](attrs['name'], parent=parent)
-
-    return ret
-
-
-def save_space(space: Space, filepath: str):
+def save_space_to_file(space: Space, filepath: str):
     filepath_with_ext = filepath if filepath.endswith('.space') else filepath + '.space'
     with open(filepath_with_ext, 'w', encoding='utf-8') as fl:
         fl.write(space.to_json())

@@ -81,6 +81,9 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
+        self.assertEqual(5, len(space))
+        self.assertEqual(2, len(space.patient009))
+
         obj1 = space.patient009.colored_obj
         obj2 = space[0][0]
         obj3 = space['patient009']['colored_obj']
@@ -105,12 +108,12 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space = load_from_path(pathname)
         space.init()
         print(text1 := space.print())
-        space.save_space(FILE_TMP)
-        space2 = load_space(FILE_TMP)
+        space.save_space_to_file(FILE_TMP)
+        space2 = read_space_from_file(FILE_TMP)
         space2.init()
         print(text2 := space2.print())
         self.assertEqual(text1, text2)
-        space2.save_space(FILE_TMP2)
+        space2.save_space_to_file(FILE_TMP2)
         with open(FILE_TMP, 'r') as fl:
             with open(FILE_TMP2, 'r') as fl2:
                 self.assertEqual(fl.readlines(), fl2.readlines())
@@ -150,6 +153,48 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertIn('patient049', [x.name for x in space.children])
         self.assertIn('patient069', [x.name for x in space.children])
         self.assertIn('patient089', [x.name for x in space.children])
+
+    def BROKEN_test_load_txt(self):
+        space = load_txt(PATH_TEST_STRUCTURE + '/group0/patient00/organ000/data0000.txt')
+        print(space.print('full'))
+        self.assertEqual(1, len(space))
+        self.assertEqual(1, len(space.default))
+        space.preload()
+
+    def test_load_sdt(self):
+        space = load_sdt(PATH_TEST_ACDC + '/patient089/sdf.npy')
+        print(space.print('full'))
+        self.assertEqual(1, len(space))
+        self.assertEqual(1, len(space.default))
+        space.preload()
+
+    def test_load_mesh_obj(self):
+        space = load_mesh_obj(PATH_TEST_ACDC + '/patient089/colored.obj')
+        print(space.print('full'))
+        self.assertEqual(1, len(space))
+        self.assertEqual(1, len(space.default))
+        space.preload()
+
+    def test_load_from_path_None_in_template(self):
+        space = load_from_path(PATH_TEST_ACDC, template_sdt=None)
+        print(tree := space.print('full'))
+        self.assertNotIn('sdf_npy', tree)
+        self.assertIn('colored_obj', tree)
+
+        space = load_from_path(PATH_TEST_ACDC, template_mesh_obj=None)
+        print(tree := space.print('full'))
+        self.assertIn('sdf_npy', tree)
+        self.assertNotIn('colored_obj', tree)
+
+        space = load_from_path(PATH_TEST_ACDC, template_sdt=None, template_mesh_obj=None)
+        print(tree := space.print('full'))
+        self.assertNotIn('sdf_npy', tree)
+        self.assertNotIn('colored_obj', tree)
+
+    def test_preload_empty(self):
+        space = load_from_path(PATH_TEST_ACDC, template_sdt=None, template_mesh_obj=None)
+        space.preload()
+        print(space.print('full'))
 
 
 if __name__ == '__main__':

@@ -61,5 +61,11 @@ class MyTestCase(unittest.TestCase):
         space.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
+    def test_plot_before_preload(self):
+        with self.assertWarns(Warning):
+            space = load_from_path(PATH_TEST_ACDC)
+            space.plot(filepath=FILE_TMP_PNG)
+        self.assertTrue(os.path.exists(FILE_TMP_PNG))
+
 if __name__ == '__main__':
     unittest.main()
