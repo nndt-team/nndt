@@ -70,14 +70,6 @@ class TXTLoader(AbstractLoader):
     def is_load(self) -> bool:
         return self.is_load
 
-
-class RGBA(NamedTuple):
-    red: jnp.array
-    green: jnp.array
-    blue: jnp.array
-    alpha: jnp.array
-
-
 def _load_colors_from_obj(filepath):
     red = []
     green = []
@@ -99,10 +91,7 @@ def _load_colors_from_obj(filepath):
     blue = jnp.array(blue)
     alpha = jnp.array(alpha)
 
-    return RGBA(red=red,
-                green=green,
-                blue=blue,
-                alpha=alpha)
+    return jnp.column_stack([red, green, blue, alpha])
 
 
 def _load_colors_from_ply(filepath):
@@ -130,10 +119,7 @@ def _load_colors_from_ply(filepath):
     blue = jnp.array(blue) / 255
     alpha = jnp.array(alpha) / 255
 
-    return RGBA(red=red,
-                green=green,
-                blue=blue,
-                alpha=alpha)
+    return jnp.concatenate([red, green, blue, alpha], axis=1)
 
 
 class MeshObjLoader(AbstractLoader):
@@ -168,7 +154,7 @@ class MeshObjLoader(AbstractLoader):
         return self._kdtree
 
     @property
-    def rgba(self) -> Optional[RGBA]:
+    def rgba(self) -> Optional[jnp.ndarray]:
         if not self.is_load:
             self.load_data()
         return self._rgba

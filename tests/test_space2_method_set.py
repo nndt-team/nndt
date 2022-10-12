@@ -32,6 +32,7 @@ class MethodSetTestCase(unittest.TestCase):
         self.helper_sampling_presence(PATH_TEST_ACDC)
         self.helper_sampling_presence(PATH_TEST_STRUCTURE)
 
+
 class CheckAllMethodsTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -61,7 +62,7 @@ class CheckAllMethodsTestCase(unittest.TestCase):
 
     def test_sampling_uniform(self):
         ret = self.space.patient009.sampling_uniform(self.rng_key, 100)
-        self.assertEqual((100,3), ret.shape)
+        self.assertEqual((100, 3), ret.shape)
 
     def test_xyz2ind_ind2xyz(self):
         ns_dist, ind = self.space.patient009.surface_xyz2ind(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
@@ -75,24 +76,19 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         self.assertAlmostEqual(float(ns_dist), float(ns_dist2))
 
     def test_surface_colors(self):
-        red = self.space.patient009.surface_color_ind2red(jnp.array([[0, 1, 2]]))
-        green = self.space.patient009.surface_color_ind2green(jnp.array([[0, 1, 2]]))
-        blue = self.space.patient009.surface_color_ind2blue(jnp.array([[0, 1, 2]]))
-        alpha = self.space.patient009.surface_color_ind2alpha(jnp.array([[0, 1, 2]]))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.937255, 0.937255, 0.937255)), red)))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), green)))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), blue)))
-        self.assertTrue(bool(jnp.allclose(jnp.array((1., 1., 1.)), alpha)))
+        rgba = self.space.patient009.surface_ind2rgba(jnp.array([0, 1, 2]))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.937255, 0.937255, 0.937255)), rgba[:, 0])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), rgba[:, 1])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), rgba[:, 2])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((1., 1., 1.)), rgba[:, 3])))
 
     def test_surface_colors_xyz(self):
-        red = self.space.patient009.surface_color_xyz2red(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
-        green = self.space.patient009.surface_color_xyz2green(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
-        blue = self.space.patient009.surface_color_xyz2blue(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
-        alpha = self.space.patient009.surface_color_xyz2alpha(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.937255,)), red)))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), green)))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), blue)))
-        self.assertTrue(bool(jnp.allclose(jnp.array((1.,)), alpha)))
+        rgba = self.space.patient009.surface_xyz2rgba(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.937255,)), rgba[:, 0])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), rgba[:, 1])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), rgba[:, 2])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((1.,)), rgba[:, 3])))
+
 
 if __name__ == '__main__':
     unittest.main()

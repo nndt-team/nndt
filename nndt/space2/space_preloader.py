@@ -5,7 +5,7 @@ from nndt.space2 import SamplingMethodSetNode
 from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
     MeshObjMethodSetNode, \
     DICT_NODETYPE_PRIORITY
-from space2 import ColorMethodSetNode, ColorMethodXYZSetNode
+from space2 import ColorMethodSetNode
 
 
 class DefaultPreloader:
@@ -107,8 +107,7 @@ class DefaultPreloader:
             mesh = mesh_obj_array_list[0]
             MeshObjMethodSetNode(node, mesh, transform, parent=node)
             if mesh._loader.rgba is not None:
-                ColorMethodSetNode(node, mesh, parent=node)
-                ColorMethodXYZSetNode(node, mesh, transform, parent=node)
+                ColorMethodSetNode(node, mesh, transform, parent=node)
 
     def _init_Object3D(self, node: Object3D):
         transform = self._process_sdt_source(node)
