@@ -4,7 +4,7 @@ from colorama import Fore
 from jax.random import KeyArray
 
 import nndt
-from math_core import train_test_split
+from nndt.math_core import train_test_split
 from nndt.space2 import AbstractBBoxNode
 from nndt.space2 import Group
 from nndt.space2.abstracts import node_method, AbstractTreeElement, DICT_NODETYPE_PRIORITY, NODE_METHOD_DICT, \
@@ -97,7 +97,7 @@ class Space(AbstractBBoxNode, IterAccessMixin):
         train = [child_[i] for i in train_index_list]
         test = [child_[i] for i in test_index_list]
 
-        from space2.space_preloader import _update_bbox_bottom_to_up
+        from nndt.space2.space_preloader import _update_bbox_bottom_to_up
         train_node = Group("train", parent=tree_path)
         for node in train:
             node.parent = train_node
