@@ -8,7 +8,7 @@ from colorama import Fore
 from jax.random import PRNGKeyArray
 from vtkmodules.util.numpy_support import numpy_to_vtk
 
-from nndt.math_core import grid_in_cube2, uniform_in_cube, take_each_n
+from nndt.math_core import grid_in_cube2, uniform_in_cube, take_each_n, grid_in_cube
 from nndt.space2 import FileSource
 from nndt.space2 import node_method
 from nndt.space2.abstracts import AbstractTreeElement, AbstractBBoxNode
@@ -149,6 +149,18 @@ class SDTMethodSetNode(MethodSetNode):
         ps_sdt = self.sdt._loader.request(ps_xyz)
         ns_sdt = self.transform.transform_sdt_ps2ns(ps_sdt)
         return ns_sdt
+
+    @node_method("surface_xyz2localsdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_localsdt[D,H,W,1]")
+    def surface_xyz2localsdt(self, ns_xyz: jnp.ndarray, spacing=(2, 2, 2), scale=1.) -> (jnp.ndarray, jnp.ndarray):
+        ns_cube = grid_in_cube(spacing=spacing, scale=scale, center_shift=(0., 0., 0.))
+        ns_cube = ns_cube + ns_xyz
+        ns_cube = ns_cube.reshape((-1, 3))
+        ps_cube = self.transform.transform_xyz_ns2ps(ns_cube)
+        ps_local_sdt = self.sdt._loader.request(ps_cube)
+        ns_local_sdt = self.transform.transform_sdt_ps2ns(ps_local_sdt)
+        ns_local_sdt = ns_local_sdt.reshape(spacing)[:, :, :, jnp.newaxis]
+        ns_cube = ns_cube.reshape((spacing[0], spacing[1], spacing[2], 3))
+        return ns_cube, ns_local_sdt
 
 
 class ColorMethodSetNode(MethodSetNode):
