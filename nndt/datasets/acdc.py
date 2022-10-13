@@ -4,10 +4,10 @@ class ACDC_5():
             'https://drive.google.com/file/d/1wOYib-CBGcx_x-ap0eBu6mstHbICLxKG/view?usp=sharing',
             'https://www.dropbox.com/s/m4mz82s5cyotcva/ACDC_5.zip?raw=1'
         ]
+        self.hash = '877684e505bf97c3a31cb4876f79e862'
 
 
-# TODO: find another way to test load functions
-class ACDC_TEST:
+class _ACDC_TEST:
     def __init__(self):
         self.urls = [
             'https://drive.google.com/file',
@@ -16,18 +16,13 @@ class ACDC_TEST:
             'https://a',
             'https://www.dropbox.com/s/m'
         ]
+        self.hash = '877684e505bf97c3a31cb4876f79e862'
+        self.wrong_hash = '877684e505bf97c3a31cb4876f79e862  '
 
 
-class ACDC_TEST2:
+class _ACDC_TEST2:
     def __init__(self):
         self.urls = [
             'https://www.dropbox.com/s/m4mz82s5cyotcva/ACDC_5.zip?raw=1'
         ]
-
-
-class AMOS_10():
-    url = ''
-
-
-class AMOS_100():
-    url = ''
+        self.hash = '877684e505bf97c3a31cb4876f79e862'

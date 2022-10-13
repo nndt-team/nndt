@@ -1,35 +1,45 @@
-from datasets import utils  # TODO: replace utils with datasets.py
+from nndt.datasets import utils
 import unittest
 import shutil
 import os
 
-DATA_FOLDER = 'ACDC_5'
-
-
-class DatasetUnavailableCase(unittest.TestCase):
-    def test_download_tests(self):
-        with self.assertRaises(ConnectionError):
-            utils.load('test')
+DATASETS_FOLDER = '.datasets'
+DATA_FOLDER = DATASETS_FOLDER + '/ACDC_5'
 
 
 class DatasetLoadingCase(unittest.TestCase):
     def tearDown(self) -> None:
-        shutil.rmtree(f'./{DATA_FOLDER}')
+        if os.path.exists(f'./{DATASETS_FOLDER}'):
+            shutil.rmtree(f'./{DATASETS_FOLDER}')
+
+    def test_download_tests(self):
+        with self.assertRaises(ConnectionError):
+            utils.load('test')
 
     def test_download_ACDC(self):
         utils.load('ACDC_5')
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient009'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient029'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient049'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient069'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient089'))
-        self.assertFalse(os.path.isfile(f'./temp.zip'))
+        self.assertTrue(
+            len(os.listdir(f'./{DATA_FOLDER}/')) == 5
+        )
+        self.assertFalse(
+            os.path.isfile(f'./{DATA_FOLDER}/temp.zip')
+        )
+
 
     def test_download_from_dropbox(self):
         utils.load('test2')
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient009'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient029'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient049'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient069'))
-        self.assertTrue(os.path.exists(f'./{DATA_FOLDER}/patient089'))
-        self.assertFalse(os.path.isfile(f'./temp.zip'))
+        self.assertTrue(
+            len(os.listdir(f'./{DATA_FOLDER}/')) == 5
+        )
+        self.assertFalse(
+            os.path.isfile(f'./{DATA_FOLDER}/temp.zip')
+        )
+
+
+    def test_random_name(self):
+        with self.assertRaises(ValueError):
+            utils.load('abcds')
+
+    def test_wrong_hash(self):
+        with self.assertRaises(ConnectionError):
+            utils.load('test_hash')
