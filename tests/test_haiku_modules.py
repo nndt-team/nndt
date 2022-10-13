@@ -61,7 +61,7 @@ class HaikuModulesTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.all(result >= 0.)))
         self.assertTrue(bool(jnp.any(result >= 0.1)))
 
-   def test_LipMLP_output_type(self):
+    def test_LipMLP_output_type(self):
         def init(x):
             lm = LipMLP(output_sizes=(64, 64, 64, 64, 64, 64, 64, 64, 1))
             return lm(x)
@@ -79,5 +79,5 @@ class HaikuModulesTestCase(unittest.TestCase):
         lLinear = hk.transform(init)
         self.assertIsInstance(lLinear, tuple)
 
-if __name__ == '__main__':
-    unittest.main()
+    if __name__ == '__main__':
+        unittest.main()
