@@ -75,6 +75,18 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         ns_dist2 = jnp.linalg.norm(point_xyz - jnp.array([2., 2., 2.]))
         self.assertAlmostEqual(float(ns_dist), float(ns_dist2))
 
+    def test_surface_xyz2localsdt(self):
+        ns_xyz, ns_local_sdt = self.space.patient009.surface_xyz2localsdt(jnp.array([[0., 0., 0.]]),
+                                                                          spacing=(2, 2, 2),
+                                                                          scale=2.)
+        ns_xyz2 = jnp.array([[-1., -1., -1.], [-1., -1., 1.], [-1., 1., -1.], [-1., 1., 1.],
+                             [1., -1., -1.], [1., -1., 1.], [1., 1., -1.], [1., 1., 1.]])
+        ns_sdt = self.space.patient009.surface_xyz2sdt(ns_xyz2)
+        self.assertEqual((2, 2, 2, 1), ns_local_sdt.shape)
+        self.assertEqual((2, 2, 2, 3), ns_xyz.shape)
+        self.assertTrue(bool(jnp.allclose(ns_sdt.reshape((2, 2, 2, 1)), ns_local_sdt)))
+        self.assertTrue(bool(jnp.allclose(ns_xyz2.reshape((2, 2, 2, 3)), ns_xyz)))
+
     def test_surface_colors(self):
         rgba = self.space.patient009.surface_ind2rgba(jnp.array([0, 1, 2]))
         self.assertTrue(bool(jnp.allclose(jnp.array((0.937255, 0.937255, 0.937255)), rgba[:, 0])))
