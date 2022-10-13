@@ -272,7 +272,7 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
 
 
 def train_test_split(array: jnp.array,
-                     rng: jax.random.PRNGKey,
+                     rng: KeyArray,
                      test_size: float = 0.3) -> (list, list):
     indices = jnp.arange(len(array))
 

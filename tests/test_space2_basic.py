@@ -196,6 +196,19 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space.preload()
         print(space.print('full'))
 
+    def test_test_train_split(self):
+        rng_key = jax.random.PRNGKey(42)
+
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload()
+        print(space.print('default'))
+        self.assertEqual(5, len(space))
+        space.test_train_split(rng_key, space, test_size=0.4)
+        self.assertEqual(2, len(space.test))
+        self.assertEqual(3, len(space.train))
+        print(space.print('default'))
+        self.assertEqual(space.bbox, update_bbox(space.test.bbox, space.train.bbox))
+
 
 if __name__ == '__main__':
     unittest.main()

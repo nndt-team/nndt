@@ -8,6 +8,12 @@ from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object
     DICT_NODETYPE_PRIORITY
 
 
+def _update_bbox_bottom_to_up(node):
+    for child in node.children:
+        if isinstance(child, AbstractBBoxNode):
+            node.bbox = update_bbox(node.bbox, child.bbox)
+
+
 class DefaultPreloader:
 
     def __init__(self,
@@ -52,18 +58,13 @@ class DefaultPreloader:
     def _add_sampling_node(self, node: AbstractBBoxNode):
         SamplingMethodSetNode(parent=node)
 
-    def _update_bbox_bottom_to_up(self, node):
-        for child in node.children:
-            if isinstance(child, AbstractBBoxNode):
-                node.bbox = update_bbox(node.bbox, child.bbox)
-
     def _init_Space(self, node: Space):
-        self._update_bbox_bottom_to_up(node)
+        _update_bbox_bottom_to_up(node)
         self._add_sampling_node(node)
         node.init()
 
     def _init_Group(self, node: Group):
-        self._update_bbox_bottom_to_up(node)
+        _update_bbox_bottom_to_up(node)
         self._add_sampling_node(node)
 
     def _process_sdt_source(self, node: Object3D):
