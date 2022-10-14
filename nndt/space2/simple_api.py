@@ -4,8 +4,10 @@ import warnings
 from typing import Optional, Sequence
 
 import jax
+import jax.numpy as jnp
 from anytree.exporter import DictExporter, JsonExporter
 from anytree.importer import DictImporter, JsonImporter
+from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
 from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
@@ -186,6 +188,28 @@ def to_json(space: Space):
     dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
     json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
     return json_exp.export(space)
+
+
+def split_node_test_train(rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3):
+    child_ = tree_path._container_only_list()
+    indices = jnp.arange(len(child_))
+
+    train_index_list, test_index_list = train_test_split(indices, rng=rng_key, test_size=test_size)
+    train = [child_[i] for i in train_index_list]
+    test = [child_[i] for i in test_index_list]
+
+    from nndt.space2.space_preloader import _update_bbox_bottom_to_up
+    train_node = Group("train", parent=tree_path)
+    for node in train:
+        node.parent = train_node
+    _update_bbox_bottom_to_up(train_node)
+    test_node = Group("test", parent=tree_path)
+    for node in test:
+        node.parent = test_node
+    _update_bbox_bottom_to_up(test_node)
+
+    tree_path.root.init()
+    return tree_path.root
 
 
 DICT_NODETYPE_CLASS = {'UNDEFINED': AbstractTreeElement,

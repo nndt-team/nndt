@@ -86,25 +86,3 @@ class Space(AbstractBBoxNode, IterAccessMixin):
             from nndt.space2.space_preloader import DefaultPreloader
             self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory)
             self.preloader.preload(self)
-
-    @node_method("test_train_split(rng_kay, tree_path, test_size=0.3)")
-    def test_train_split(self, rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3):
-        assert (tree_path.root == self)
-        child_ = tree_path._container_only_list()
-        indices = jnp.arange(len(child_))
-
-        train_index_list, test_index_list = train_test_split(indices, rng=rng_key, test_size=test_size)
-        train = [child_[i] for i in train_index_list]
-        test = [child_[i] for i in test_index_list]
-
-        from nndt.space2.space_preloader import _update_bbox_bottom_to_up
-        train_node = Group("train", parent=tree_path)
-        for node in train:
-            node.parent = train_node
-        _update_bbox_bottom_to_up(train_node)
-        test_node = Group("test", parent=tree_path)
-        for node in test:
-            node.parent = test_node
-        _update_bbox_bottom_to_up(test_node)
-
-        self.init()
