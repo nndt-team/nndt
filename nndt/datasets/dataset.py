@@ -1,5 +1,4 @@
 import os
-import warnings
 from pathlib import Path
 from nndt import datasets
 from nndt.datasets.utils import _extract_zip_file, _download_from_url, _download_from_google, _check_md5
