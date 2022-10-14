@@ -8,65 +8,6 @@ import urllib.request
 import zipfile
 import gdown
 import hashlib
-from pathlib import Path
-
-from acdc import ACDC_5, _ACDC_TEST, _ACDC_TEST2
-
-
-def load(dataset: str, to_path: str = None) -> None:
-    if dataset == 'ACDC_5':
-        urls = ACDC_5().urls
-        hash = ACDC_5().hash
-
-    elif dataset == 'test':
-        urls = _ACDC_TEST().urls
-        hash = _ACDC_TEST().hash
-
-        dataset = 'ACDC_5'
-    elif dataset == 'test2':
-        urls = _ACDC_TEST2().urls
-        hash = _ACDC_TEST2().hash
-
-        dataset = 'ACDC_5'
-    elif dataset == 'test_hash':
-        urls = ACDC_5().urls
-        hash = _ACDC_TEST().wrong_hash
-
-        dataset = 'ACDC_5'
-    else:
-        raise ValueError("Please choose a dataset from datasets.list_of_datasets")
-
-    if to_path is None:
-        to_path = f'./.datasets/{dataset}/'
-
-    Path(to_path).mkdir(parents=True, exist_ok=True)
-    complete = False
-
-    for idx in range(len(urls)):
-        url = urls[idx]
-        if 'drive.google' in url:
-            try:
-                z = _download_from_google(url, to_path)
-                assert _check_md5(z, hash)
-                _extract_zip_file(z, to_path)
-            except Exception as e:
-                continue
-        else:
-            try:
-                print('Downloading...')
-                z = _download_from_url(url, to_path)
-                assert _check_md5(z, hash)
-                _extract_zip_file(z, to_path)
-            except Exception as e:
-                continue
-        complete = True
-        os.remove(z)
-        print('Loading complete')
-        break
-    if not complete:
-        raise ConnectionError("Looks like you can't reach any mirror, "
-                              "please report this issue to: https://github.com/KonstantinUshenin/nndt")
-
 
 def _download_from_url(url: str, path_to: str, chunk_size: int = 32768) -> str:
     path_to = path_to + 'temp.zip'
