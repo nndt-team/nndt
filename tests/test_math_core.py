@@ -1,6 +1,7 @@
 import unittest
 
 from nndt.math_core import *
+from nndt.primitive_sdf import sdf_primitive_sphere
 
 
 class MathCoreTestCase(unittest.TestCase):
@@ -51,8 +52,8 @@ class MathCoreTestCase(unittest.TestCase):
 
     def test_sdf_primitive_sphere2(self):
         vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere(
-                        center=(1., 1., 1.),
-                        radius=float(jnp.sqrt(1**2 + 1**2 + 1**2)))
+            center=(1., 1., 1.),
+            radius=float(jnp.sqrt(1 ** 2 + 1 ** 2 + 1 ** 2)))
         xyz = jnp.array([[0., 0., 0.]])
 
         self.assertTrue(bool(jnp.allclose(jnp.array([0., 0., 0.]),
@@ -65,12 +66,12 @@ class MathCoreTestCase(unittest.TestCase):
                                           vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
 
     def test_train_test_split(self):
-        array = jnp.array([i*i for i in range(10)])
+        array = jnp.array([i * i for i in range(10)])
         rng = jax.random.PRNGKey(2)
         test_size = 0.2
         train_data_indices, test_data_indices = train_test_split(array, rng, test_size)
 
-        self.assertEqual(test_size, len(test_data_indices)/len(array))
+        self.assertEqual(test_size, len(test_data_indices) / len(array))
         self.assertEqual(list, type(train_data_indices))
         self.assertEqual(list, type(test_data_indices))
         self.assertEqual([ind for ind in train_data_indices if ind not in test_data_indices], train_data_indices)
@@ -85,6 +86,7 @@ class MathCoreTestCase(unittest.TestCase):
 
 def assert_sum_equal_one(values):
     jnp.allclose(1., jnp.sum(values, axis=-1))
+
 
 class BarycentricGridTestCase(unittest.TestCase):
 
@@ -102,8 +104,8 @@ class BarycentricGridTestCase(unittest.TestCase):
 
     def test_linear(self):
         # l1*e1 + (1-l1)*e2
-        coords = barycentric_grid(order = (1, -1),
-                                  spacing = (0, 3))
+        coords = barycentric_grid(order=(1, -1),
+                                  spacing=(0, 3))
         assert_sum_equal_one(coords)
 
         jnp.allclose(jnp.array([[0., 1.],
@@ -112,9 +114,9 @@ class BarycentricGridTestCase(unittest.TestCase):
 
     def test_linear_inverted(self):
         # (1-l1)*e1 + l1*e2
-        coords = barycentric_grid(order = (-1, 1),
-                                  spacing = (0, 3),
-                                  filter_negative = True)
+        coords = barycentric_grid(order=(-1, 1),
+                                  spacing=(0, 3),
+                                  filter_negative=True)
 
         assert_sum_equal_one(coords)
 
@@ -124,9 +126,9 @@ class BarycentricGridTestCase(unittest.TestCase):
 
     def test_ternary(self):
         # l1*e1 + (1-(l1+l2))*e2 + l2*e3
-        coords = barycentric_grid(order = (1, 0, 2),
-                                  spacing = (0, 3, 3),
-                                  filter_negative = True)
+        coords = barycentric_grid(order=(1, 0, 2),
+                                  spacing=(0, 3, 3),
+                                  filter_negative=True)
 
         assert_sum_equal_one(coords)
 
@@ -139,9 +141,9 @@ class BarycentricGridTestCase(unittest.TestCase):
 
     def test_ternary_without_negative_filter(self):
         # l1*e1 + (1-(l1+l2))*e2 + l2*e3
-        coords = barycentric_grid(order = (1, 0, 2),
-                                  spacing = (0, 3, 3),
-                                  filter_negative = False)
+        coords = barycentric_grid(order=(1, 0, 2),
+                                  spacing=(0, 3, 3),
+                                  filter_negative=False)
 
         assert_sum_equal_one(coords)
 
@@ -157,9 +159,9 @@ class BarycentricGridTestCase(unittest.TestCase):
 
     def test_replenishment_without_negative_filter(self):
         # l1*e1 + (1-l1)*(1-l2)*e2 + l2*e3
-        coords = barycentric_grid(order = (1, (-1,-2), 2),
-                                  spacing = (0, 3, 3),
-                                  filter_negative = False)
+        coords = barycentric_grid(order=(1, (-1, -2), 2),
+                                  spacing=(0, 3, 3),
+                                  filter_negative=False)
 
         assert_sum_equal_one(coords)
 
@@ -175,9 +177,9 @@ class BarycentricGridTestCase(unittest.TestCase):
 
     def test_square(self):
         # (1-l1)*(1-l2)*e1 + (1-l1)*l2*e2 + l1*(1-l2)*e3 + l1*l2*e4
-        coords = barycentric_grid(order = ((-1, -2), (-1, 2), (1, -2), (1, 2)),
-                                  spacing = (0, 3, 3),
-                                  filter_negative = True)
+        coords = barycentric_grid(order=((-1, -2), (-1, 2), (1, -2), (1, 2)),
+                                  spacing=(0, 3, 3),
+                                  filter_negative=True)
 
         assert_sum_equal_one(coords)
 
