@@ -1,4 +1,5 @@
-from abc import ABC
+from abc import abstractmethod
+from typing import Callable
 
 import jax
 
@@ -50,11 +51,39 @@ def fun2vec_and_grad(prim):
     return vec_prim, vec_prim_x, vec_prim_y, vec_prim_z
 
 
-class AbstractSDF(ABC):
+class AbstractSDF:
+
+    def __init__(self):
+        tpl = fun2vec_and_grad(self.get_fun())
+        self._vec_fun = tpl[0]
+        self._vec_fun_x = tpl[1]
+        self._vec_fun_y = tpl[2]
+        self._vec_fun_z = tpl[3]
+
+    @abstractmethod
+    def get_fun(self):
+        pass
 
     @property
+    @abstractmethod
     def bbox(self) -> ((float, float, float), (float, float, float)):
         return (0., 0., 0.), (0., 0., 0.)
+
+    @property
+    def vec_fun(self) -> Callable:
+        return self._vec_fun
+
+    @property
+    def vec_fun_dx(self) -> Callable:
+        return self._vec_fun_x
+
+    @property
+    def vec_fun_dy(self) -> Callable:
+        return self._vec_fun_y
+
+    @property
+    def vec_fun_dz(self) -> Callable:
+        return self._vec_fun_z
 
 
 class SphereSDF(AbstractSDF):
@@ -63,19 +92,14 @@ class SphereSDF(AbstractSDF):
         assert (radius > 0.)
         self.center = center
         self.radius = radius
-        tpl = fun2vec_and_grad(self.get_pure)
-        self.vec_prim = tpl[0]
-        self.vec_prim_x = tpl[1]
-        self.vec_prim_y = tpl[2]
-        self.vec_prim_z = tpl[3]
+        super(SphereSDF, self).__init__()
 
-    @property
     def bbox(self) -> ((float, float, float), (float, float, float)):
         min_ = (self.center[0] - self.radius), (self.center[1] - self.radius), (self.center[2] - self.radius)
         max_ = (self.center[0] + self.radius), (self.center[1] + self.radius), (self.center[2] + self.radius)
         return min_, max_
 
-    def get_pure(self):
+    def get_fun(self):
         center = self.center
         radius = self.radius
 
