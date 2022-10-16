@@ -11,7 +11,7 @@
 
 [Wiki](https://github.com/KonstantinUshenin/nndt/wiki) | [Change logs](https://github.com/KonstantinUshenin/nndt/blob/v0.0.1rc/CHANGELOG.md)
 
-This is experimental library. Description will come soon!
+This is experimental library for unusual neural network applications. Description and docs will come soon!
 
 ## Install
  
