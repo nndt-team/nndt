@@ -41,4 +41,3 @@ class ImpRepr(AbstractBBoxNode, IterAccessMixin):
     @node_method("purefun_vec_sdf_dz()")
     def purefun_vec_sdf_dz(self):
         return self.abstract_sdf.vec_fun_dz
-

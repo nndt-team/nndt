@@ -7,6 +7,7 @@ FILE_TMP_PNG = "./test_file.png"
 
 PATH_TEST_ACDC = './acdc_for_test'
 
+
 class MyTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
@@ -66,6 +67,7 @@ class MyTestCase(unittest.TestCase):
             space = load_from_path(PATH_TEST_ACDC)
             space.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
+
 
 if __name__ == '__main__':
     unittest.main()

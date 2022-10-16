@@ -1,7 +1,7 @@
 from anytree import NodeMixin
 
-from nndt.space2.utils import update_bbox
 from nndt.space2.abstracts import AbstractBBoxNode
+from nndt.space2.utils import update_bbox
 
 
 def update_bbox_from_children(node):
