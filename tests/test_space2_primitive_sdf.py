@@ -1,7 +1,10 @@
 import unittest
 
+import nndt.space2 as spc
 from nndt.primitive_sdf import *
 import jax.numpy as jnp
+
+PATH_TEST_ACDC = './acdc_for_test'
 
 class PrimitiveSDFTestCase(unittest.TestCase):
 
@@ -39,6 +42,22 @@ class PrimitiveSDFTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.allclose(jnp.array([-2., -2., -2.]),
                                           vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]))))
 
+    def test_add_sphere(self):
+        self.space = spc.load_from_path(PATH_TEST_ACDC)
+        self.space.preload('shift_and_scale')
+        space = spc.add_sphere(self.space,
+                               "for_test",
+                               center=(1., 1., 1.),
+                               radius=1.)
+        space.for_test.sphere.unload_from_memory()
+        self.assertTrue(bool(jnp.allclose(jnp.array([0.]),
+                                          space.for_test.surface_xyz2sdt((jnp.array([2., 1., 1.]))))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([0.]),
+                                          space.for_test.surface_xyz2sdt((jnp.array([1., 2., 1.]))))))
+        self.assertTrue(bool(jnp.allclose(jnp.array([0.]),
+                                          space.for_test.surface_xyz2sdt((jnp.array([1., 1., 2.]))))))
+        self.assertTrue(((0., 0., 0.), (2., 2., 2.)), space.for_test.bbox)
+        print(space.print('full'))
 
 if __name__ == '__main__':
     unittest.main()

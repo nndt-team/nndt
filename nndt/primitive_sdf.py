@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Callable
 
 import jax
+import jax.numpy as jnp
 
 
 def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
@@ -85,6 +86,21 @@ class AbstractSDF:
     def vec_fun_dz(self) -> Callable:
         return self._vec_fun_z
 
+    def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
+        assert (ps_xyz.shape[-1] == 3)
+
+        ret_shape = list(ps_xyz.shape)
+        ret_shape[-1] = 1
+        ret_shape = tuple(ret_shape)
+
+        x = ps_xyz[..., 0].flatten()
+        y = ps_xyz[..., 1].flatten()
+        z = ps_xyz[..., 2].flatten()
+        dist = self._vec_fun(x, y, z)
+        dist = dist.reshape(ret_shape)
+
+        return dist
+
 
 class SphereSDF(AbstractSDF):
 
@@ -94,6 +110,7 @@ class SphereSDF(AbstractSDF):
         self.radius = radius
         super(SphereSDF, self).__init__()
 
+    @property
     def bbox(self) -> ((float, float, float), (float, float, float)):
         min_ = (self.center[0] - self.radius), (self.center[1] - self.radius), (self.center[2] - self.radius)
         max_ = (self.center[0] + self.radius), (self.center[1] + self.radius), (self.center[2] + self.radius)

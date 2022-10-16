@@ -15,6 +15,11 @@ from nndt.space2.group import Group
 from nndt.space2.loader import FileSource
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space
+from nndt.primitive_sdf import SphereSDF
+from nndt.space2.transformation import IdentityTransform
+from nndt.space2.implicit_representation import ImpRepr
+from nndt.space2.method_set import SDTMethodSetNode,SamplingMethodSetNode
+from nndt.space2.tree_utils import update_bbox_with_float_over_tree
 
 
 def _attribute_filter(attrs):
@@ -210,6 +215,26 @@ def split_node_test_train(rng_key: KeyArray, tree_path: AbstractBBoxNode, test_s
 
     tree_path.root.init()
     return tree_path.root
+
+
+def add_sphere(tree_path: AbstractBBoxNode,
+                         name,
+                         center: (float, float, float),
+                         radius:float):
+    assert (isinstance(tree_path, (Space, Group)))
+
+    sph = SphereSDF(center=center, radius=radius)
+
+    obj = Object3D(name, bbox=sph.bbox, parent=tree_path)
+    transform = IdentityTransform(ps_bbox=sph.bbox, parent=obj)
+    ir = ImpRepr("sphere", sph, parent=obj)
+    ms = SDTMethodSetNode(obj, ir, transform, parent=obj)
+    smp = SamplingMethodSetNode(parent=obj)
+
+    update_bbox_with_float_over_tree(obj)
+    tree_path.root.init()
+    return tree_path.root
+
 
 
 DICT_NODETYPE_CLASS = {'UNDEFINED': AbstractTreeElement,

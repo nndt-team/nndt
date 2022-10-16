@@ -1,7 +1,7 @@
 from colorama import Fore
 
-from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 from nndt.primitive_sdf import AbstractSDF
+from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 
 class ImpRepr(AbstractBBoxNode, IterAccessMixin):
@@ -17,3 +17,7 @@ class ImpRepr(AbstractBBoxNode, IterAccessMixin):
                                       _nodetype='IR')
 
         self.abstract_sdf = abstract_sdf
+
+        # This is a place for improvement
+        # I name this variable _loader, for compatibility with SDTMethodSetNode
+        self._loader = abstract_sdf
