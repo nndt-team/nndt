@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 import jax
 import jax.numpy as jnp
@@ -13,6 +13,7 @@ from nndt.space2 import FileSource
 from nndt.space2 import node_method
 from nndt.space2.abstracts import AbstractTreeElement, AbstractBBoxNode
 from nndt.space2.transformation import AbstractTransformation
+from nndt.space2.implicit_representation import ImpRepr
 
 
 def _get_class_hierarchy(obj):
@@ -134,12 +135,14 @@ class MeshObjMethodSetNode(MethodSetNode):
 
 
 class SDTMethodSetNode(MethodSetNode):
-    def __init__(self, object_3d: AbstractBBoxNode,
-                 sdt: FileSource,
-                 transform: AbstractTransformation, parent: AbstractBBoxNode = None):
+    def __init__(self,
+                 object_3d: AbstractBBoxNode,
+                 sdt: Union[FileSource, ImpRepr],
+                 transform: AbstractTransformation,
+                 parent: AbstractBBoxNode = None):
         super(SDTMethodSetNode, self).__init__('sdt', parent=parent)
         self.object_3d = object_3d
-        assert (sdt.loader_type == 'sdt')
+        assert (isinstance(sdt, ImpRepr) or sdt.loader_type == 'sdt')
         self.sdt = sdt
         self.transform = transform
 
