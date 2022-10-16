@@ -4,6 +4,7 @@ import warnings
 import jax
 import jax.numpy as jnp
 import optax
+from packaging import version
 from tqdm import tqdm
 
 import nndt
@@ -13,8 +14,6 @@ from nndt.space.sources import SDTSource, SDFPKLSource
 from nndt.space.utils import downup_update_bbox
 from nndt.space.vtk_wrappers import *
 from nndt.trainable_task import SimpleSDF
-
-from packaging import version
 
 
 class AbstractSDXRepr(AbstractRegion, ExtendedNodeMixin, UnloadMixin):
@@ -220,7 +219,6 @@ class TrainSDT2SDF(AbstractMethod, ExtendedNodeMixin):
 
 
 class SDFRepr(AbstractSDXRepr):
-
     MAGIC_CORRECTION = 0.503  # This is absolutely magic coefficient that reduce error between bboxes to 0.49075 mm
 
     def __init__(self, parent: SDFPKLSource,
@@ -263,14 +261,15 @@ class SDFRepr(AbstractSDXRepr):
 
     def ns_xyz2sdt(self, ns_xyz: onp.ndarray) -> onp.ndarray:
         ret_shape = list(ns_xyz.shape)
-        ret_shape[-1] = 1; ret_shape = tuple(ret_shape)
+        ret_shape[-1] = 1;
+        ret_shape = tuple(ret_shape)
 
-        ns_xyz_flat = ns_xyz.reshape((-1,3))
+        ns_xyz_flat = ns_xyz.reshape((-1, 3))
         rng = jax.random.PRNGKey(42)
         ns_sdf = self.F.vec_sdf(self.trainable_params, rng,
-                              ns_xyz_flat[:, 0],
-                              ns_xyz_flat[:, 1],
-                              ns_xyz_flat[:, 2])
+                                ns_xyz_flat[:, 0],
+                                ns_xyz_flat[:, 1],
+                                ns_xyz_flat[:, 2])
 
         ns_sdf = ns_sdf.reshape(ret_shape)
         return ns_sdf
@@ -299,13 +298,13 @@ class SDFRepr(AbstractSDXRepr):
         task = SimpleSDF(**trainable_task_)
 
         sdf_repr = SDFRepr(parent=source,
-                           trainable_task = task,
-                           trainable_params = params_,
-                           physical_center = repr_["physical_center"],
-                           physical_bbox = repr_["physical_bbox"],
-                           normed_center = repr_["normed_center"],
-                           normed_bbox = repr_["normed_bbox"],
-                           scale_physical2normed = repr_["scale_physical2normed"])
+                           trainable_task=task,
+                           trainable_params=params_,
+                           physical_center=repr_["physical_center"],
+                           physical_bbox=repr_["physical_bbox"],
+                           normed_center=repr_["normed_center"],
+                           normed_bbox=repr_["normed_bbox"],
+                           scale_physical2normed=repr_["scale_physical2normed"])
 
         downup_update_bbox(sdf_repr)
 

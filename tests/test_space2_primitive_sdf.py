@@ -2,9 +2,9 @@ import unittest
 
 import nndt.space2 as spc
 from nndt.primitive_sdf import *
-import jax.numpy as jnp
 
 PATH_TEST_ACDC = './acdc_for_test'
+
 
 class PrimitiveSDFTestCase(unittest.TestCase):
 
@@ -58,6 +58,7 @@ class PrimitiveSDFTestCase(unittest.TestCase):
                                           space.for_test.surface_xyz2sdt((jnp.array([1., 1., 2.]))))))
         self.assertTrue(((0., 0., 0.), (2., 2., 2.)), space.for_test.bbox)
         print(space.print('full'))
+
 
 if __name__ == '__main__':
     unittest.main()

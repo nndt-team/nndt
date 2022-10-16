@@ -2,11 +2,10 @@ import jax
 import jax.numpy as jnp
 import optax
 
+import nndt.space2 as spc
 from nndt.math_core import grid_in_cube2
 from nndt.trainable_task import ApproximateSDF
 from nndt.vizualize import BasicVizualization
-
-import nndt.space2 as spc
 
 LEARNING_RATE = 0.006
 EPOCHS = 8001

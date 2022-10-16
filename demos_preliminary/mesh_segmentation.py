@@ -1,16 +1,13 @@
-import os
-
 import jax
 import jax.numpy as jnp
 import numpy as onp
 import optax
 from tqdm import tqdm
 
-from nndt.trainable_task import SurfaceSegmentation
-from nndt.vizualize import BasicVizualization
-
 import nndt.space2 as spc
 from nndt.space2 import split_node_test_train
+from nndt.trainable_task import SurfaceSegmentation
+from nndt.vizualize import BasicVizualization
 
 LEARNING_RATE = 0.001
 EPOCHS = 1601

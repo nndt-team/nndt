@@ -12,8 +12,8 @@ from nndt.math_core import grid_in_cube2, uniform_in_cube, take_each_n, grid_in_
 from nndt.space2 import FileSource
 from nndt.space2 import node_method
 from nndt.space2.abstracts import AbstractTreeElement, AbstractBBoxNode
-from nndt.space2.transformation import AbstractTransformation
 from nndt.space2.implicit_representation import ImpRepr
+from nndt.space2.transformation import AbstractTransformation
 
 
 def _get_class_hierarchy(obj):

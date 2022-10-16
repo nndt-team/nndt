@@ -45,6 +45,7 @@ if __name__ == '__main__':
     xyz_test = space.domain.sampling_grid(spacing=SHAPE).reshape((-1, 3))
     DT = Eikonal3D.DATA(X=xyz_test[:, 0], Y=xyz_test[:, 1], Z=xyz_test[:, 2])
 
+
     @jax.jit
     def train_step(params, rng, opt_state, D1):
 
