@@ -1,10 +1,7 @@
 import jax
 import optax
 
-from nndt.space.loaders import preload_all_possible
-from nndt.space.regions import *
-from nndt.space.sources import *
-from nndt.space.utils import downup_update_bbox
+import nndt.space2 as spc
 from nndt.trainable_task import Eikonal3D
 from nndt.vizualize import BasicVizualization
 
@@ -17,18 +14,13 @@ LOG_FOLDER = f'./{EXP_NAME}/'
 
 if __name__ == '__main__':
 
-    space = Space("main")
-    object = Object("all", parent=space)
-    domain = SphereSDFSource("domain", center=(0., 0., 0.), radius=2., parent=object)
-    init_reg = SphereSDFSource("init_reg", center=(1., 0., 0.), radius=1., parent=object)
+    space = spc.Space("main")
+    space = spc.add_sphere(space, "domain", center=(0., 0., 0.), radius=2.)
+    space = spc.add_sphere(space, "init_reg", center=(1., 0., 0.), radius=1.)
+    print(space.print())
 
-    preload_all_possible(space)
-    downup_update_bbox(space['all/domain/repr/'])
-    downup_update_bbox(space['all/init_reg/repr/'])
-    print(space.explore())
-
-    domain_sdf_ = space['all/domain/repr/pure_sdf']()
-    init_reg_sdf_ = space['all/init_reg/repr/pure_sdf']()
+    domain_sdf_ = space.domain.purefun_sdf()
+    init_reg_sdf_ = space.init_reg.purefun_sdf()
 
     task = Eikonal3D(domain_sdf_, init_reg_sdf_)
 
@@ -47,12 +39,11 @@ if __name__ == '__main__':
 
     # Batch
     rng_key, subkey = jax.random.split(rng_key)
-    xyz = space['sampling_grid_with_shackle'](subkey, spacing=SHAPE, sigma=0.1).reshape((-1, 3))
+    xyz = space.domain.sampling_grid_with_noise(subkey, spacing=SHAPE, sigma=0.1).reshape((-1, 3))
     D1 = Eikonal3D.DATA(X=xyz[:, 0], Y=xyz[:, 1], Z=xyz[:, 2])
 
-    xyz_test = space['sampling_grid'](spacing=SHAPE).reshape((-1, 3))
+    xyz_test = space.domain.sampling_grid(spacing=SHAPE).reshape((-1, 3))
     DT = Eikonal3D.DATA(X=xyz_test[:, 0], Y=xyz_test[:, 1], Z=xyz_test[:, 2])
-
 
     @jax.jit
     def train_step(params, rng, opt_state, D1):
@@ -72,7 +63,7 @@ if __name__ == '__main__':
 
         if epoch % 100 == 0:
             rng_key, subkey = jax.random.split(rng_key)
-            xyz = space['sampling_grid_with_shackle'](subkey, spacing=SHAPE, sigma=0.1).reshape((-1, 3))
+            xyz = space.domain.sampling_grid_with_noise(subkey, spacing=SHAPE, sigma=0.1).reshape((-1, 3))
             D1 = Eikonal3D.DATA(X=xyz[:, 0], Y=xyz[:, 1], Z=xyz[:, 2])
 
         if viz.is_print_on_epoch(epoch):
