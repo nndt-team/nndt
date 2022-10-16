@@ -113,17 +113,18 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
 
 
 def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
-    """Presents view of barycentric_grid formula with various parameters
+    """Helper for barycentric_grid function.
+    This method prints an iteration polynomial for the barycentric coordinates.
 
     Parameters
     ----------
     order : Sequence[Union[int, Sequence[int]]], optional
-        oder of params (defaults is (1, -1))
+        Order of iterators (defaults is (1, -1), like for the linear interpolation)
 
     Returns
     -------
     str
-        view of formula
+        Text representation of the polynomial
     """
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
 
@@ -158,21 +159,27 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
 def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
                      spacing: Sequence[int] = (0, 3),
                      filter_negative: bool = True):
-    """Makes a barycentyc grid
+    """Analog of nested `for` cycles in barycentric coordinates.
+    In 1D case without free variable this is linear interpolation.
+    In 2D case with free variable this is list of ternary plot points.
+    In ND case this works like a uniform grid inside N-simplex.
+    If this simplex is defined on the basis vectors of space.
 
     Parameters
     ----------
     order : (Sequence[Union[int, Sequence[int]]], optional)
-        order of parameters (defaults is (1, -1))
+        Order of iterator in the polynomial (defaults is (1, -1), like for the linear interpolation)
     spacing : (Sequence[int], optional)
-        _description_. (defaults is (0, 3))
+        This is grid spacing for each iterated variable.
+        N-value in some position is equivalent to jnp.linspace(0,1,N).
+        Zero element must be zero, because this is a technical definition for free variable.
     filter_negative : (bool, optional)
-        complite negative values (defaults is True)
+        Filter values outside the simple (defaults is True)
 
     Returns
     -------
-    jnp.array 
-        _description_
+    jnp.ndarray
+        List of vectors inside the simplex. Vectors have len(spacing) components.
     """
     assert (len(order) >= 2), "The `order` parameter must include more than 1 iterator."
     assert (len(spacing) >= 2), "The `spacing` parameter must include more than 1 iterator."
@@ -237,9 +244,27 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     return ret
 
 
-def train_test_split(array: jnp.array,
+def train_test_split(array: jnp.ndarray,
                      rng: KeyArray,
                      test_size: float = 0.3) -> (list, list):
+    """
+    Split array to test and train subset. This is analog of `model_selection.train_test_split` in sklearn.
+
+    Parameters
+    ----------
+    array: jnp.ndarray :
+        Array for split
+    rng : KeyArray :
+        Jax key for a random generator
+    test_size: float:
+        Percent of test subset in the array
+
+    Returns
+    ----------
+    (list, list)
+        List of indexes for test and train subsets
+    """
+    assert(0. <= test_size <= 1.)
     indices = jnp.arange(len(array))
 
     test_index_list = [index for index in
