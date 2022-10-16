@@ -55,20 +55,25 @@ def fun2vec_and_grad(prim):
 class AbstractSDF:
 
     def __init__(self):
-        tpl = fun2vec_and_grad(self.get_fun())
+        self._fun = self._get_fun()
+        tpl = fun2vec_and_grad(self._fun)
         self._vec_fun = tpl[0]
         self._vec_fun_x = tpl[1]
         self._vec_fun_y = tpl[2]
         self._vec_fun_z = tpl[3]
 
     @abstractmethod
-    def get_fun(self):
+    def _get_fun(self):
         pass
 
     @property
     @abstractmethod
     def bbox(self) -> ((float, float, float), (float, float, float)):
         return (0., 0., 0.), (0., 0., 0.)
+
+    @property
+    def fun(self) -> Callable:
+        return self._fun
 
     @property
     def vec_fun(self) -> Callable:
@@ -116,7 +121,7 @@ class SphereSDF(AbstractSDF):
         max_ = (self.center[0] + self.radius), (self.center[1] + self.radius), (self.center[2] + self.radius)
         return min_, max_
 
-    def get_fun(self):
+    def _get_fun(self):
         center = self.center
         radius = self.radius
 

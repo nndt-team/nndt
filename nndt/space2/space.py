@@ -33,8 +33,9 @@ def _add_method_sets_to_node(node: AbstractTreeElement):
     from nndt.space2 import MethodSetNode
     from nndt.space2 import AbstractTransformation
     from nndt.space2 import MethodNode
+    from space2 import ImpRepr
     elements = [child for child in node.children
-                if isinstance(child, (AbstractTransformation, MethodSetNode))]
+                if isinstance(child, (AbstractTransformation, MethodSetNode, ImpRepr))]
     for elem in elements:
         for fn_name, fn_docs in NODE_METHOD_DICT[str(elem.__class__.__name__)].items():
             if not hasattr(node, fn_name) and (fn_name not in [x.name for x in node.children]):
