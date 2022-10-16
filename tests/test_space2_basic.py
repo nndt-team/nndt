@@ -203,7 +203,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space.preload()
         print(space.print('default'))
         self.assertEqual(5, len(space))
-        space.test_train_split(rng_key, space, test_size=0.4)
+        space = split_node_test_train(rng_key, space, test_size=0.4)
         self.assertEqual(2, len(space.test))
         self.assertEqual(3, len(space.train))
         print(space.print('default'))
