@@ -3,10 +3,9 @@
 
 ## NNDT 0.0.2 (16 Oct 2022)
 * **The partial becomes complete; the crooked, straight; the empty, full; the worn out, new.**
-* Space model is fully rewritten
+* Space model (`space`) is fully rewritten as `space2`. `space` is still available, but will be removed soon.
 * Visualization of tree and 3D object via `.plot()` and `.print()`
-* Short and easy import
-* Conversion of signed distance tensor to signed distance function using MLP training
+* Short and easy import for `space2`.
 * 30 methods are available in the second version of the space model:
   * Available as functions (12)
     * Space model loaders (6): `load_from_path`, `load_from_file_lists`, `load_only_one_file`, `load_txt`, `load_sdt`, `load_mesh_obj`
@@ -20,8 +19,13 @@
     * Surface data (6): `.surface_ind2rgba`, `.surface_ind2xyz`, `.surface_xyz2ind`, `.surface_xyz2localsdt`, `.surface_xyz2rgba`, `.surface_xyz2sdt`
     * Transformations (4): `.transform_sdt_ns2ps`, `.transform_sdt_ps2ns`, `.transform_xyz_ns2ps`, `.transform_xyz_ps2ns`
     * Save (1): `.save_mesh`
-* One real demo (still on space model of the first version)
+* New haiku modules: MLP with Lipschitz regularization (LipMLP, LipLinear)
+* Functions for iteration over N-simplex with barycentric coordinated in `math_core.py`
+* Serialization and deserialization of the `space2` model
+* Conversion of signed distance tensor to signed distance function using MLP training (still on space model of the first version)
+* One real demo for a research paper (still on space model of the first version)
   * Shape interpolation for building of Computation anatomy atlas
+* Draft of documentation in some places
 * Code quality and team
   * CI pipeline for new pull requests
   * 73% of code coverage in CodeCov
