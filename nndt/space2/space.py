@@ -33,7 +33,7 @@ def _add_method_sets_to_node(node: AbstractTreeElement):
     from nndt.space2 import MethodSetNode
     from nndt.space2 import AbstractTransformation
     from nndt.space2 import MethodNode
-    from space2 import ImpRepr
+    from nndt.space2 import ImpRepr
     elements = [child for child in node.children
                 if isinstance(child, (AbstractTransformation, MethodSetNode, ImpRepr))]
     for elem in elements:
