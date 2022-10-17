@@ -62,43 +62,43 @@ class MyTestCase(unittest.TestCase):
 
         self.assertTrue(onp.allclose((((-0.9467665481567383, -0.9056295013427734, -0.9056295013427734),
                                        (0.9467665481567383, 0.9056295013427734, 0.9056295013427734))),
-                                    space["default/patient009/mesh/repr"]._bbox, rtol=0., atol=1.e-2
-                                    ))
+                                     space["default/patient009/mesh/repr"]._bbox, rtol=0., atol=1.e-2
+                                     ))
         self.assertTrue(onp.allclose(((-0.9467665481567383, -0.9056295013427734, -0.9056295013427734),
                                       (0.9467665481567383, 0.9056295013427734, 0.9056295013427734)),
-                                    space["default/patient009"]._bbox, rtol=0., atol=1.e-2
-                                    ))
+                                     space["default/patient009"]._bbox, rtol=0., atol=1.e-2
+                                     ))
         self.assertTrue(onp.allclose(((-0.9522853851318359, -0.96994, -0.96994),
                                       (0.9522853851318359, 0.9699400000000002, 0.9699400000000002)),
-                                    space["default"]._bbox, rtol=0., atol=1.e-2
-                                    ))
+                                     space["default"]._bbox, rtol=0., atol=1.e-2
+                                     ))
         self.assertTrue(onp.allclose(((-0.9522853851318359, -0.96994, -0.96994),
                                       (0.9522853851318359, 0.9699400000000002, 0.9699400000000002)),
-                                    space._bbox, rtol=0., atol=1.e-2
-                                    ))
+                                     space._bbox, rtol=0., atol=1.e-2
+                                     ))
 
     def test_sampling_from_bbox(self):
         space = load_data(self.name_list, self.mesh_list, self.sdt_list)
         preload_all_possible(space)
         print(space.explore())
 
-        sampling = space["default/patient009/mesh/repr/sampling_grid"](spacing=(2,2,2))
-        self.assertEqual((2,2,2,3), sampling.shape)
+        sampling = space["default/patient009/mesh/repr/sampling_grid"](spacing=(2, 2, 2))
+        self.assertEqual((2, 2, 2, 3), sampling.shape)
         self.assertAlmostEqual(-0.9467, float(sampling.min()), places=2)
         self.assertAlmostEqual(0.9467, float(sampling.max()), places=2)
 
-        sampling = space["default/patient009/sampling_grid"](spacing=(2,2,2))
-        self.assertEqual((2,2,2,3), sampling.shape)
+        sampling = space["default/patient009/sampling_grid"](spacing=(2, 2, 2))
+        self.assertEqual((2, 2, 2, 3), sampling.shape)
         self.assertAlmostEqual(-0.9467, float(sampling.min()), places=2)
         self.assertAlmostEqual(0.9467, float(sampling.max()), places=2)
 
-        sampling = space["default/sampling_grid"](spacing=(2,2,2))
-        self.assertEqual((2,2,2,3), sampling.shape)
+        sampling = space["default/sampling_grid"](spacing=(2, 2, 2))
+        self.assertEqual((2, 2, 2, 3), sampling.shape)
         self.assertAlmostEqual(-0.9699, float(sampling.min()), places=2)
         self.assertAlmostEqual(0.9699, float(sampling.max()), places=2)
 
-        sampling = space["sampling_grid"](spacing=(2,2,2))
-        self.assertEqual((2,2,2,3), sampling.shape)
+        sampling = space["sampling_grid"](spacing=(2, 2, 2))
+        self.assertEqual((2, 2, 2, 3), sampling.shape)
         self.assertAlmostEqual(-0.9699, float(sampling.min()), places=2)
         self.assertAlmostEqual(0.9699, float(sampling.max()), places=2)
 
@@ -144,7 +144,6 @@ class MyTestCase(unittest.TestCase):
         points = space["default/patient009/mesh/repr"].surface_mesh2.mesh.GetNumberOfPoints()
         self.assertTrue(onp.allclose(onp.ones(points), alpha))
 
-
     def test_xyz2local_sdt(self):
         space = load_data(self.name_list, self.mesh_list, self.sdt_list)
         preload_all_possible(space)
@@ -152,11 +151,11 @@ class MyTestCase(unittest.TestCase):
 
         self.assertIsNotNone(space["default/patient009/sdt/repr/xyz2local_sdt"])
 
-        local, sdt = space["default/patient009/sdt/repr/xyz2local_sdt"]((0.,0.,0.), spacing=(5,5,5), scale=10)
-        self.assertEqual((5,5,5,3), local.shape)
+        local, sdt = space["default/patient009/sdt/repr/xyz2local_sdt"]((0., 0., 0.), spacing=(5, 5, 5), scale=10)
+        self.assertEqual((5, 5, 5, 3), local.shape)
         self.assertEqual(-5, local.min())
         self.assertEqual(5, local.max())
-        self.assertEqual((5,5,5,1), sdt.shape)
+        self.assertEqual((5, 5, 5, 1), sdt.shape)
 
     def test_save_mesh(self):
         space = load_data(self.name_list, self.mesh_list, self.sdt_list)
@@ -175,7 +174,7 @@ class MyTestCase(unittest.TestCase):
         key = jax.random.PRNGKey(0)
         method = space["default/patient009/sampling_uniform"]
         xyz = method(key, 100)
-        self.assertEqual((100,3), xyz.shape)
+        self.assertEqual((100, 3), xyz.shape)
         self.assertTrue(-1. < float(xyz.min()) < -0.70)
         self.assertTrue(0.70 < float(xyz.max()) < 1.)
 
@@ -186,15 +185,15 @@ class MyTestCase(unittest.TestCase):
 
         key = jax.random.PRNGKey(0)
         method = space["default/patient009/sampling_grid_with_shackle"]
-        xyz = method(key, spacing=(2,2,2), sigma=0.000001)
-        self.assertEqual((2,2,2,3), xyz.shape)
+        xyz = method(key, spacing=(2, 2, 2), sigma=0.000001)
+        self.assertEqual((2, 2, 2, 3), xyz.shape)
         self.assertTrue(-1. < float(xyz.min()) < -0.70)
         self.assertTrue(0.70 < float(xyz.max()) < 1.)
 
-        xyz = method(key, spacing=(2,2,2), sigma=10)
-        self.assertEqual((2,2,2,3), xyz.shape)
+        xyz = method(key, spacing=(2, 2, 2), sigma=10)
+        self.assertEqual((2, 2, 2, 3), xyz.shape)
         self.assertTrue(float(xyz.min()) < -5)
-        self.assertTrue(5< float(xyz.max()))
+        self.assertTrue(5 < float(xyz.max()))
 
     def test_create_SphereSDFSource(self):
         space = Space("main")
@@ -216,7 +215,7 @@ class MyTestCase(unittest.TestCase):
                                       parent=object)
         print(space.explore())
 
-    def test_create_SphereSDF_from_SphereSDFSource(self):
+    def test_create_SphereSDF_from_SphereSDFSource2(self):
         space = Space("main")
         group = Group("default", parent=space)
         object = Object("test", parent=group)
@@ -229,7 +228,7 @@ class MyTestCase(unittest.TestCase):
         ret = space['default/test/region/repr/xyz2sdt'](xyz)
         self.assertTrue(jnp.allclose(jnp.array([[-1.], [0.], [3.]]), ret))
 
-    def test_create_SphereSDF_from_SphereSDFSource(self):
+    def test_create_SphereSDF_from_SphereSDFSource3(self):
         space = Space("main")
         group = Group("default", parent=space)
         object = Object("test", parent=group)
@@ -255,6 +254,7 @@ class MyTestCase(unittest.TestCase):
         def construct():
             prim = prim_
             vec_prim = hk.vmap(prim, split_rng=False)
+
             def init(X, Y, Z):
                 return vec_prim(X, Y, Z)
 
@@ -267,6 +267,7 @@ class MyTestCase(unittest.TestCase):
         ret = nn(params, rng_key, xyz[:, 0], xyz[:, 1], xyz[:, 2])
         print(ret)
         self.assertTrue(jnp.allclose(jnp.array([-1., 0., 3.]), ret))
+
 
 if __name__ == '__main__':
     unittest.main()

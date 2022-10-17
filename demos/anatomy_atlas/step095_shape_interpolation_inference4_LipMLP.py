@@ -48,4 +48,4 @@ if __name__ == '__main__':
         # if (c[0] == 0) or (c[0] == 1):
         #     viz.sdf_to_obj(f"SDF3_{c[0]}_{c[1]_{c[2]}}", predict_sdf, level=0.06)
         # else:
-        viz.sdf_to_obj(f"SDF4_{c[0]}_{c[1]}_{c[2]}_{c[4]}", predict_sdf, level=0.06)
+        viz.sdt_to_obj(f"SDF4_{c[0]}_{c[1]}_{c[2]}_{c[4]}", predict_sdf, level=0.06)

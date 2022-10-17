@@ -7,10 +7,11 @@
 [![License](https://img.shields.io/github/license/KonstantinUshenin/nndt)](https://github.com/KonstantinUshenin/nndt/blob/main/LICENSE)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/KonstantinUshenin/nndt)
+[![PEP8](https://img.shields.io/badge/code%20style-pep8-blue.svg)](https://www.python.org/dev/peps/pep-0008/)
 
 [Wiki](https://github.com/KonstantinUshenin/nndt/wiki) | [Change logs](https://github.com/KonstantinUshenin/nndt/blob/v0.0.1rc/CHANGELOG.md)
 
-There will be some awesome library.
+This is experimental library for unusual neural network applications. Description and docs will come soon!
 
 ## Install
  

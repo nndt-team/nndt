@@ -47,4 +47,4 @@ if __name__ == '__main__':
                                 xyz[:, 2],
                                 jnp.zeros(xyz.shape[0]), P).reshape(SHAPE)
 
-        viz.sdf_to_obj(f"SDF2_{c[0]}", predict_sdf, level=LEVEL_SHIFT)
+        viz.sdt_to_obj(f"SDF2_{c[0]}", predict_sdf, level=LEVEL_SHIFT)

@@ -16,12 +16,14 @@ class SDTSource(FileSource, ExtendedNodeMixin):
         self.name = name
         self.parent = parent
 
+
 class SDFPKLSource(FileSource, ExtendedNodeMixin):
 
     def __init__(self, name, filepath, parent=None):
         super(SDFPKLSource, self).__init__(filepath)
         self.name = name
         self.parent = parent
+
 
 class SphereSDFSource(AbstractSource, ExtendedNodeMixin):
 

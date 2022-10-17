@@ -5,7 +5,7 @@ import jax.numpy as jnp
 from jax.random import KeyArray
 
 
-def take_each_n(array, count=1, step=1, shift=0):
+def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
     """Takes elements from an array along an axis
     
     An advanced range iterator that takes data according to the index and starts 
@@ -112,25 +112,19 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
     return jnp.hstack([x, y, z])
 
 
-def sdf_primitive_sphere(center=(0., 0., 0.), radius=1.):
-    def prim(x: float, y: float, z: float):
-        sdf = (x - center[0]) ** 2 + (y - center[1]) ** 2 + (z - center[2]) ** 2 - radius ** 2
-        return sdf
-
-    vec_prim = jax.vmap(prim)
-
-    prim_x = jax.grad(prim, argnums=0)
-    prim_y = jax.grad(prim, argnums=1)
-    prim_z = jax.grad(prim, argnums=2)
-
-    vec_prim_x = jax.vmap(prim_x)
-    vec_prim_y = jax.vmap(prim_y)
-    vec_prim_z = jax.vmap(prim_z)
-
-    return vec_prim, vec_prim_x, vec_prim_y, vec_prim_z
-
-
 def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
+    """Presents view of barycentric_grid formula with various parameters
+
+    Parameters
+    ----------
+    order : Sequence[Union[int, Sequence[int]]], optional
+        oder of params (defaults is (1, -1))
+
+    Returns
+    -------
+    str
+        view of formula
+    """
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
 
     polynomial = ""
@@ -148,9 +142,9 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
             elif iter_ < 0:
                 expr += f"(1-l{-iter_})*"
                 expr_sub += f"(1-l{-iter_})+"
-            if ind_iter == len(code)-1:
+            if ind_iter == len(code) - 1:
                 expr = expr[:-1]
-        polynomial += f"{expr}*e{ind_code+1} + "
+        polynomial += f"{expr}*e{ind_code + 1} + "
         polynomial_sub += f"{expr_sub}"
         if ind_code == len(order_adv) - 1:
             polynomial = polynomial[:-3]
@@ -164,23 +158,37 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
 def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
                      spacing: Sequence[int] = (0, 3),
                      filter_negative: bool = True):
-    assert ((len(order) >= 2),
-            "The `order` parameter must include more than 1 iterator.")
-    assert ((len(spacing) >= 2),
-            "The `spacing` parameter must include more than 1 iterator.")
-    assert (((spacing[0] == 0) or (spacing[0] is None)),
-            "First value in spacing must be 0, because zero iterator is not used.")
+    """Makes a barycentyc grid
+
+    Parameters
+    ----------
+    order : (Sequence[Union[int, Sequence[int]]], optional)
+        order of parameters (defaults is (1, -1))
+    spacing : (Sequence[int], optional)
+        _description_. (defaults is (0, 3))
+    filter_negative : (bool, optional)
+        complite negative values (defaults is True)
+
+    Returns
+    -------
+    jnp.array 
+        _description_
+    """
+    assert (len(order) >= 2), "The `order` parameter must include more than 1 iterator."
+    assert (len(spacing) >= 2), "The `spacing` parameter must include more than 1 iterator."
+    assert ((spacing[0] == 0) or (spacing[0] is None)), \
+        "First value in spacing must be 0, because zero iterator is not used."
 
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
     flat_flat_order = [element for x in order_adv for element in x]
 
-    assert (jnp.max(jnp.abs(jnp.array(flat_flat_order))) > len(spacing),
-            "Index of iterator in `order` overcomes the number of iterators in `spacing`.")
-    assert (jnp.sum(jnp.array(flat_flat_order) == 0) > 1,
-            "Only one 0 is possible in `order`. Zero shows replenished coefficient.")
+    assert float(jnp.max(jnp.abs(jnp.array(flat_flat_order)))) < len(spacing), \
+        "Index of iterator in `order` overcomes the number of iterators in `spacing`."
+    assert float(jnp.sum(jnp.array(flat_flat_order) == 0)) <= 1, \
+        "Only one 0 is possible in `order`. Zero shows replenished coefficient."
 
     lin_spaces = [[0., 0.]] + [jnp.linspace(0, 1, s) for s in spacing[1:]]
-    iter_list = [0]*len(spacing)
+    iter_list = [0] * len(spacing)
     ret = []
 
     while iter_list[0] < 1:
@@ -223,13 +231,22 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
         for ind in reversed(range(len(iter_list))):
             if iter_list[ind] >= len(lin_spaces[ind]):
                 iter_list[ind] = 0
-                iter_list[ind-1] += 1
+                iter_list[ind - 1] += 1
 
     ret = jnp.array(ret)
     return ret
 
 
+def train_test_split(array: jnp.array,
+                     rng: KeyArray,
+                     test_size: float = 0.3) -> (list, list):
+    indices = jnp.arange(len(array))
 
+    test_index_list = [index for index in
+                       jax.random.choice(key=rng,
+                                         a=indices,
+                                         replace=False,
+                                         shape=[int(len(indices) * test_size)]).tolist()]
+    train_index_list = [index for index in indices.tolist() if index not in test_index_list]
 
-
-
+    return train_index_list, test_index_list

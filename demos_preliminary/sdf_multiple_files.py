@@ -2,13 +2,13 @@ import jax
 import jax.numpy as jnp
 import optax
 
+import nndt.space2 as spc
 from nndt.math_core import grid_in_cube2
-from nndt.space.loaders import load_data, preload_all_possible
 from nndt.trainable_task import ApproximateSDF
 from nndt.vizualize import BasicVizualization
 
 LEARNING_RATE = 0.006
-EPOCHS = 9001
+EPOCHS = 8001
 SHAPE = (64, 64, 64)
 FLAT_SHAPE = SHAPE[0] * SHAPE[1] * SHAPE[2]
 EXP_NAME = 'sdf_multiple_files'
@@ -17,26 +17,19 @@ LEVEL_SHIFT = 0.03
 
 
 def load_batch(patient_name_list, spacing=(2, 2, 2)):
-    patient_name_list = patient_name_list
-    num_of_obj = len(patient_name_list)
-    print("Patients: ")
-    print(patient_name_list)
-    mesh_list = [f"../tests/acdc_for_test/{p}/colored.obj" for p in patient_name_list]
-    sdt_list = [f"../tests/acdc_for_test/{p}/sdf.npy" for p in patient_name_list]
-
-    space = load_data(patient_name_list, mesh_list, sdt_list)
-    preload_all_possible(space)
-    print(space.explore())
+    space = spc.load_from_path('../tests/acdc_for_test/')
+    space.preload('shift_and_scale')
+    print(space.print())
 
     batch = None
     for code, patient in enumerate(patient_name_list):
 
-        xyz = space[f'sampling_grid'](spacing=spacing)
+        xyz = space[patient].sampling_grid(spacing=spacing)
         xyz_flat = xyz.reshape((-1, 3))
-        sdf_flat = jnp.squeeze(space[f'default/{patient}/sdt/repr/xyz2sdt'](xyz_flat))
+        sdf_flat = jnp.squeeze(space[patient].surface_xyz2sdt(xyz_flat))
         xyz_flat = jnp.array(xyz_flat)
 
-        p_array = jnp.array(jnp.zeros((sdf_flat.shape[0], num_of_obj)))
+        p_array = jnp.array(jnp.zeros((sdf_flat.shape[0], len(patient_name_list))))
         p_array = p_array.at[:, code].set(1.)
 
         DATA = ApproximateSDF.DATA(X=xyz_flat[:, 0],
@@ -118,12 +111,12 @@ if __name__ == '__main__':
             sdf_val0 = D1.SDF[:FLAT_SHAPE].reshape(SHAPE)
             sdf_val1 = D1.SDF[FLAT_SHAPE:].reshape(SHAPE)
 
-            viz.sdf_to_obj("SDF_0000_exact", sdf_val0)
-            viz.sdf_to_obj("SDF_0000", model0000, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_0333", model0333, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_0666", model0666, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_1000", model1000, level=LEVEL_SHIFT)
-            viz.sdf_to_obj("SDF_1000_exact", sdf_val1)
+            viz.sdt_to_obj("SDF_0000_exact", sdf_val0)
+            viz.sdt_to_obj("SDF_0000", model0000, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_0333", model0333, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_0666", model0666, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_1000", model1000, level=LEVEL_SHIFT)
+            viz.sdt_to_obj("SDF_1000_exact", sdf_val1)
 
             viz.save_3D_array("SDF_0000", model0000)
             viz.save_3D_array("SDF_0333", model0333)
