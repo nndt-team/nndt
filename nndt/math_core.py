@@ -250,3 +250,28 @@ def train_test_split(array: jnp.array,
     train_index_list = [index for index in indices.tolist() if index not in test_index_list]
 
     return train_index_list, test_index_list
+
+
+def rotation_matrix(yaw, pitch, roll):
+    """
+    Construct rotation natrix from three rotational angle
+
+    :param yaw:
+        The yaw in radian
+    :param pitch:
+        The pitch in radian
+    :param roll:
+        The roll in radian
+    :return:
+    """
+    Rz = jnp.array([[jnp.cos(yaw), -jnp.sin(yaw), 0.],
+                    [jnp.sin(yaw), jnp.cos(yaw), 0.],
+                    [0., 0., 1.]])
+    Ry = jnp.array([[jnp.cos(yaw), 0, jnp.sin(yaw)],
+                    [0, 1, 0],
+                    [-jnp.sin(yaw), 0., jnp.cos(yaw)]])
+    Rx = jnp.array([[1., 0., 0.],
+                    [0., jnp.cos(roll), -jnp.sin(roll)],
+                    [0., jnp.sin(roll), jnp.cos(roll)]])
+
+    return Rz @ Ry @ Rx

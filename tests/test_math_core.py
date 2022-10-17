@@ -193,6 +193,13 @@ class BarycentricGridTestCase(unittest.TestCase):
                                 [0.0, 0.0, 0.5, 0.5],
                                 [0.0, 0.0, 0.0, 1.0]]), coords)
 
+    def test_rotation_matrix(self):
+        self.assertTrue(jnp.allclose(rotation_matrix(0., 0., 0.), jnp.eye(3)))
+        M = rotation_matrix(34., 34., 424.)
+        self.assertTrue(abs(float(jnp.dot(M[0], M[1]))) < 0.0000001)
+        self.assertTrue(abs(float(jnp.dot(M[1], M[2]))) < 0.0000001)
+        self.assertTrue(abs(float(jnp.dot(M[0], M[2]))) < 0.0000001)
+
 
 if __name__ == '__main__':
     unittest.main()
