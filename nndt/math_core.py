@@ -250,3 +250,21 @@ def train_test_split(array: jnp.array,
     train_index_list = [index for index in indices.tolist() if index not in test_index_list]
 
     return train_index_list, test_index_list
+
+
+def scale_xyz(xyz, scale=(1., 1., 1.)):
+    """
+    Scale array of points
+    :param xyz:
+    :param scale:
+    :return:
+    """
+    assert(xyz.shape[-1] == 3)
+    scale = jnp.array(scale)
+
+    ret_shape = xyz.shape
+    xyz = xyz.reshape((-1, 3))
+    xyz = scale*xyz
+
+    xyz = xyz.reshape(ret_shape)
+    return xyz

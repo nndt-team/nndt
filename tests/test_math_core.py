@@ -193,6 +193,9 @@ class BarycentricGridTestCase(unittest.TestCase):
                                 [0.0, 0.0, 0.5, 0.5],
                                 [0.0, 0.0, 0.0, 1.0]]), coords)
 
+    def test_scale_xyz(self):
+        xyz = jnp.array([0., 0., 0.])
+        assert (jnp.allclose(scale_xyz(xyz), xyz))
 
 if __name__ == '__main__':
     unittest.main()
