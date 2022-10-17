@@ -10,3 +10,5 @@ vtk
 tqdm
 pyvista
 pykdtree
+requests
+gdown
