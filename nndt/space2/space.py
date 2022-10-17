@@ -55,16 +55,28 @@ class Space(AbstractBBoxNode, IterAccessMixin):
 
     @node_method("save_space_to_file(filepath)")
     def save_space_to_file(self, filepath: str):
+        """Writes Space in file
+
+        Args:
+            filepath (str): file name
+        """
         from nndt.space2 import save_space_to_file
         return save_space_to_file(self, filepath)
 
     @node_method("to_json()")
     def to_json(self):
+        """Converts Space to json format
+
+        Returns:
+            json: space in json format
+        """
         from nndt.space2 import to_json
         return to_json(self)
 
     @node_method("init()")
     def init(self):
+        """Makes initialization for Space
+        """
         for node in PostOrderIter(self):
             if isinstance(node, AbstractTreeElement):
                 _add_explicit_methods_to_node(node)
@@ -79,6 +91,13 @@ class Space(AbstractBBoxNode, IterAccessMixin):
 
     @node_method("preload(identity|shift_and_scale|to_cube, scale, keep_in_memory=True)")
     def preload(self, mode="identity", scale=50, keep_in_memory=True):
+        """Makes preload for Space if it was not done. Otherwise does nothing
+
+        Args:
+            mode (str, optional): Mode. Defaults to "identity".
+            scale (int, optional): Scale. Defaults to 50.
+            keep_in_memory (bool, optional): Keep in memory. Defaults to True.
+        """
         if not self._is_preload:
             from nndt.space2.space_preloader import DefaultPreloader
             self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory)
