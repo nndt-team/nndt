@@ -5,11 +5,10 @@ import jax.numpy as jnp
 from jax.random import KeyArray
 
 
-def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
-    """Takes elements from an array along an axis
-    
-    An advanced range iterator that takes data according to the index and starts 
+def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
+    """An advanced range iterator that takes data according to the index and starts
     from the beginning of the array if the index is greater than the array length.
+    Takes elements from an array along the zero axis.
     
     Parameters
     ----------
@@ -18,14 +17,14 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
     count : int, optional
         The number of elements to take (default is 1)
     step : int, optional
-        The stepwise movement along the array after each selected index
+        The step of iterator
     shift : int, optional
-        The starting index of the array element to take (default is 0)
+        Index shift for the first index (default is 0)
 
     Returns
     -------
-    ndarray
-        an array of indices used in selecting elements from the source array
+    (ndarray, ndarray)
+        an array of indices used in selecting elements from the source array and
         an array of elements taken from the source array
     """
 
@@ -34,13 +33,14 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
     return index_set, jnp.take(array, index_set, axis=0)
 
 
-def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)):
-    """Samples points from a 3D cube according to a uniform grid
+def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)) -> jnp.ndarray:
+    """Points of the uniform grid that is defined inside a bounding box
+    with center in the `center_shift` and `scale` size
     
     Parameters
     ----------
     spacing : tuple, optional
-        A tuple of ints of step-lengths of the grid (default is (2, 2, 2))
+        Number of sections along X, Y, and Z axes (default is (2, 2, 2))
     scale : float, optional
         The scaling factor (default is 2.)
     center_shift : tuple, optional
@@ -49,7 +49,7 @@ def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)):
     Returns
     -------
     ndarray
-        mesh-grid of the sampled points from the 3D cube
+        3D mesh-grid with shape (spacing[0], spacing[1], spacing[2], 3)
     """
 
     center_shift_ = jnp.array(center_shift)
@@ -60,22 +60,22 @@ def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)):
     return scale * (cube - 0.5) + center_shift_
 
 
-def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)):
-    """Samples points from a 3D cube
+def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
+    """Points of the uniform grid that is defined inside a (lower, upper) bounding box
     
     Parameters
     ----------
     spacing : tuple, optional
-        A tuple of ints of step-lengths of the grid (default is (4, 4, 4))
-    lower : tuple, optional
-        A tuple of ints of start values of the grid (default is (-2, -2, -2))
-    upper : tuple, optional
-        A tuple of ints of stop values of the grid (default is (2, 2, 2))
+        Number of sections along X, Y, and Z axes (default is (4, 4, 4))
+    lower: tuple, optional
+        position of lower point for the bounding box  (default is (-2, -2, -2)
+    upper: tuple, optional
+        position of upper point for the bounding box (default is (2, 2, 2)
 
     Returns
     -------
     ndarray
-        multi-dimensional mesh-grid
+        3D mesh-grid with shape (spacing[0], spacing[1], spacing[2], 3)
     """
     cube = jnp.mgrid[lower[0]:upper[0]:spacing[0] * 1j,
            lower[1]:upper[1]:spacing[1] * 1j,
@@ -84,27 +84,24 @@ def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)):
     return cube
 
 
-def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)):
-    """Randomly samples points from a 3d cube and stacks the arrays horizontally
+def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
+    """Uniform distribution inside a (lower, upper) bounding box
     
     Parameters
     ----------
     rng_key: KeyArray
-        A PRNGKey used as the random key.
+        Jax key for a random generator
     count: int, optional
-        Length of array of random points to sample (default is 100)
+        Size of sampling (default is 100)
     lower: tuple, optional 
-        tuple of ints broadcast-compatible with ``shape``, a minimum 
-        (inclusive) value for the range (default is (-2, -2, -2)
+        position of lower point for the bounding box  (default is (-2, -2, -2)
     upper: tuple, optional
-        tuple of ints broadcast-compatible with  ``shape``, a maximum
-        (exclusive) value for the range (default is (2, 2, 2)
+        position of upper point for the bounding box (default is (2, 2, 2)
 
     Returns
     -------
     ndarray
-        a horizontally stacked array (shape is (`count`, 3)) of random floating 
-        points between the specified range of coordinates (lower and upper)
+        Array of random points (shape is (`count`, 3))
     """
     x = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[0], maxval=upper[0])
     y = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[1], maxval=upper[1])
