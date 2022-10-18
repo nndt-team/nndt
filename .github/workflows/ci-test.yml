@@ -38,6 +38,7 @@ jobs:
           pip install pytest
           pip install pytest-cov
           pytest --cov=./ --cov-report=xml
+          pytest --cov=tests/test_space2_OLD --cov-report=xml
         # run: python -m unittest discover tests
 
       - name: Upload coverage to Codecov

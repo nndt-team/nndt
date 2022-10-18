@@ -3,6 +3,7 @@ import unittest
 import haiku as hk
 
 from nndt.space2 import *
+from nndt.space.sources import SphereSDFSource
 
 
 class MyTestCase(unittest.TestCase):
