@@ -1,5 +1,6 @@
 import re
 from abc import abstractmethod
+from functools import wraps
 from typing import Union, Optional
 
 from anytree import NodeMixin, Resolver, PostOrderIter
@@ -18,13 +19,15 @@ DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80, "IR": 70,
                           "FS": 60, "TR": 50, "MS": 40, "M": 30}
 
 
-def node_method(docstring=None):
+def node_method(helpstr=None):
+
     def decorator_wrapper(fn):
         classname = str(fn.__qualname__).split('.')[0]
         if classname not in NODE_METHOD_DICT:
             NODE_METHOD_DICT[classname] = {}
-        NODE_METHOD_DICT[classname][str(fn.__name__)] = docstring
+        NODE_METHOD_DICT[classname][str(fn.__name__)] = helpstr
 
+        @wraps(fn)
         def wrapper(*args, **kwargs):
             return fn(*args, **kwargs)
 
@@ -125,6 +128,18 @@ class AbstractBBoxNode(AbstractTreeElement):
 
     @node_method("print(default|source|full)")
     def print(self, mode: Optional[str] = "default"):
+        """
+        Print tree of objects
+
+        Params
+        ______
+        :param mode:
+            "default" print 3D objects and methods
+            "source" print only space, groups, and file-sources
+            "full" print all nodes of the tree
+        :return:
+            tree representation string
+        """
         from nndt.space2.print_tree import _pretty_print
         return _pretty_print(self, mode)
 
