@@ -254,10 +254,16 @@ def train_test_split(array: jnp.array,
 
 def scale_xyz(xyz, scale=(1., 1., 1.)):
     """
-    Scale array of points
-    :param xyz:
-    :param scale:
-    :return:
+    Scale array of points to the `scale` factor.
+
+    Parameters
+    ----------
+    :param xyz: Array of points
+    :param scale: The scale factor
+
+    Returns
+    -------
+    :return: Scaled array of points with shape equal to shape of `xyz` array
     """
     assert(xyz.shape[-1] == 3)
     scale = jnp.array(scale)
