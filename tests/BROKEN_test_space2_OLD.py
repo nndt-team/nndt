@@ -5,7 +5,7 @@ import haiku as hk
 from nndt.space2 import *
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase: # (unittest.TestCase):
 
     def setUp(self):
         self.name_list = os.listdir('./acdc_for_test')
