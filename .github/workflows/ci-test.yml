@@ -34,10 +34,11 @@ jobs:
         run: 7z x tests/acdc_for_test.7z
 
       - name: Generate coverage report
-        run: |
-          pip install pytest
-          pip install pytest-cov
-          pytest --cov=./ --cov-report=xml
+        # run: |
+        #   pip install pytest
+        #   pip install pytest-cov
+        #   pytest --cov=./ --cov-report=xml
+        run: python -m unittest discover tests
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
