@@ -2,8 +2,18 @@ from typing import *
 
 import jax.numpy as jnp
 import numpy as onp
+import numpy as onp
 from skimage import measure
 
+
+def calc_ret_shape(array: Union[jnp.ndarray, onp.ndarray], last_axis: int):
+    # if len(array.shape) == 1:
+    #     ret_shape = (array.shape[0], last_axis)
+    # else:
+    ret_shape = list(array.shape)
+    ret_shape[-1] = last_axis
+    ret_shape = tuple(ret_shape)
+    return ret_shape
 
 def update_bbox(bbox1: ((float, float, float), (float, float, float)),
                 bbox2: ((float, float, float), (float, float, float))):
