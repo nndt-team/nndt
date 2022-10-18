@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 
-from nndt.datasets import ACDC
+from nndt.datasets.acdc import ACDC
 
 DATASETS_FOLDER = '.datasets'
 DATA_FOLDER = DATASETS_FOLDER + '/ACDC_5'
