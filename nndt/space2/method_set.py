@@ -187,6 +187,16 @@ class ColorMethodSetNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
+    @node_method("surface_xyz() -> xyz[N,3]")
+    def surface_xyz(self) -> jnp.ndarray:
+        xyz = self.mesh._loader.points
+        return xyz
+
+    @node_method("surface_rgba() -> xyz[N,4]")
+    def surface_rgba(self) -> jnp.ndarray:
+        rgba = self.mesh._loader.rgba
+        return rgba
+
     @node_method("surface_ind2rgba(ind[..,1]) -> rgba[..,4]")
     def surface_ind2rgba(self, ind: jnp.ndarray) -> jnp.ndarray:
         if ind.shape[-1] != 1:
