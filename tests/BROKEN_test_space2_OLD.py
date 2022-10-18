@@ -5,7 +5,7 @@ import haiku as hk
 from nndt.space2 import *
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase: # (unittest.TestCase):
 
     def setUp(self):
         self.name_list = os.listdir('./acdc_for_test')
@@ -22,7 +22,7 @@ class MyTestCase(unittest.TestCase):
     #     space = Space("_main")
     #     group = Group("_default", parent=space)
     #     for ind, name in enumerate(self.name_list):
-    #         object = Object3D(name, parent=group)
+    #         object = Object(name, parent=group)
     #         mesh_source = MeshSource("mesh", self.mesh_list[ind], parent=object)
     #         sdt_source = SDTSource("sdt", self.sdt_list[ind], parent=object)
     #
@@ -193,7 +193,7 @@ class MyTestCase(unittest.TestCase):
     def test_create_SphereSDFSource(self):
         space = Space("main")
         group = Group("default", parent=space)
-        object = Object3D("test", parent=group)
+        object = Object("test", parent=group)
         mesh_source = SphereSDFSource("region",
                                       center=(0., 0., 0.),
                                       radius=2.,
@@ -203,7 +203,7 @@ class MyTestCase(unittest.TestCase):
     def test_create_SphereSDF_from_SphereSDFSource(self):
         space = Space("main")
         group = Group("default", parent=space)
-        object = Object3D("test", parent=group)
+        object = Object("test", parent=group)
         mesh_source = SphereSDFSource("region",
                                       center=(0., 0., 0.),
                                       radius=2.,
@@ -213,7 +213,7 @@ class MyTestCase(unittest.TestCase):
     def test_create_SphereSDF_from_SphereSDFSource(self):
         space = Space("main")
         group = Group("default", parent=space)
-        object = Object3D("test", parent=group)
+        object = Object("test", parent=group)
         mesh_source = SphereSDFSource("region",
                                       parent=object)
         space.initialization('shift_and_scale')
@@ -226,7 +226,7 @@ class MyTestCase(unittest.TestCase):
     def test_create_SphereSDF_from_SphereSDFSource(self):
         space = Space("main")
         group = Group("default", parent=space)
-        object = Object3D("test", parent=group)
+        object = Object("test", parent=group)
         mesh_source = SphereSDFSource("region",
                                       parent=object)
         space.initialization('shift_and_scale')
@@ -240,7 +240,7 @@ class MyTestCase(unittest.TestCase):
     def test_SphereSDF_PureSDF(self):
         space = Space("main")
         group = Group("default", parent=space)
-        object = Object3D("test", parent=group)
+        object = Object("test", parent=group)
         mesh_source = SphereSDFSource("region",
                                       parent=object)
         space.initialization('shift_and_scale')
