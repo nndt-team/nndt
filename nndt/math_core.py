@@ -6,9 +6,10 @@ from jax.random import KeyArray
 
 
 def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
-    """An advanced range iterator that takes data according to the index and starts
-    from the beginning of the array if the index is greater than the array length.
-    Takes elements from an array along the zero axis.
+    """An advanced range iterator that iterates over data and selects elements according to their index.
+    If during iteration the index becomes greater than the array length,
+     the iteration continues from the beginning of the array.
+    This function selects elements from an array along the axis zero, which is the first dimension.
     
     Parameters
     ----------
@@ -24,8 +25,8 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, j
     Returns
     -------
     (ndarray, ndarray)
-        an array of indices used in selecting elements from the source array and
-        an array of elements taken from the source array
+        an array of indices of the elements taken from the source array
+        an array of elements from the source array corresponding to the selected indices
     """
 
     _, index_set = jnp.divmod(shift + jnp.arange(0, count, dtype=int) * step, array.shape[0])
@@ -34,15 +35,15 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, j
 
 
 def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)) -> jnp.ndarray:
-    """Points of the uniform grid that is defined inside a bounding box
-    with center in the `center_shift` and `scale` size
+    """Draw samples from the uniform grid that is defined inside a bounding box
+    with center in the `center_shift` and size of `scale`
     
     Parameters
     ----------
     spacing : tuple, optional
         Number of sections along X, Y, and Z axes (default is (2, 2, 2))
     scale : float, optional
-        The scaling factor (default is 2.)
+        The scaling factor which defines the size of bounding box (default is 2.)
     center_shift : tuple, optional
         A tuple of ints of coordinates by which to modify the center of the cube (default is (0., 0., 0.))
 
@@ -61,7 +62,7 @@ def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)) -> jnp.
 
 
 def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
-    """Points of the uniform grid that is defined inside a (lower, upper) bounding box
+    """Draw samples from the uniform grid that is defined inside a (lower, upper) bounding box
     
     Parameters
     ----------
@@ -85,7 +86,7 @@ def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp
 
 
 def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
-    """Uniform distribution inside a (lower, upper) bounding box
+    """Draw samples from uniform distribution inside a (lower, upper) bounding box
     
     Parameters
     ----------
@@ -110,13 +111,13 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
 
 
 def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
-    """Helper for barycentric_grid function.
+    """Helper for 'barycentric_grid' function.
     This method prints an iteration polynomial for the barycentric coordinates.
 
     Parameters
     ----------
     order : Sequence[Union[int, Sequence[int]]], optional
-        Order of iterators (defaults is (1, -1), like for the linear interpolation)
+        Order of iterators (defaults is (1, -1), as for the linear interpolation)
 
     Returns
     -------
@@ -165,7 +166,7 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     Parameters
     ----------
     order : (Sequence[Union[int, Sequence[int]]], optional)
-        Order of iterator in the polynomial (defaults is (1, -1), like for the linear interpolation)
+        Order of iterator in the polynomial (defaults is (1, -1), as for the linear interpolation)
     spacing : (Sequence[int], optional)
         This is grid spacing for each iterated variable.
         N-value in some position is equivalent to jnp.linspace(0,1,N).
@@ -176,7 +177,7 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     Returns
     -------
     jnp.ndarray
-        List of vectors inside the simplex. Vectors have len(spacing) components.
+        List of vectors inside the simplex. All the vectors have len(spacing) components.
     """
     assert (len(order) >= 2), "The `order` parameter must include more than 1 iterator."
     assert (len(spacing) >= 2), "The `spacing` parameter must include more than 1 iterator."
@@ -261,7 +262,7 @@ def train_test_split(array: jnp.ndarray,
     (list, list)
         List of indexes for test and train subsets
     """
-    assert(0. <= test_size <= 1.)
+    assert (0. <= test_size <= 1.)
     indices = jnp.arange(len(array))
 
     test_index_list = [index for index in
