@@ -12,7 +12,7 @@ from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
 
 
 class IteratorWithTimeMeasurements:
-    """Iterator for recording of time and epoch number"""
+    """Iterator that records and prints the epoch number and time spent from the start of iterations"""
 
     def __init__(self, basic_viz, epochs):
         self.basic_viz = basic_viz
@@ -50,15 +50,13 @@ class IteratorWithTimeMeasurements:
 
 class BasicVizualization:
     """
-    Simple MLOps class for store train history and visualization of intermediate results
+    Simple MLOps class for storing the train history and visualization of intermediate results
     """
 
     def __init__(self, folder: str,
                  experiment_name: Optional[str] = None,
                  print_on_each_epoch=20):
         """
-        Simple MLOps class for store train history and visualization of intermediate results
-
         :param folder: folder for store results
         :param experiment_name: name for an experiments
         :param print_on_each_epoch: this parameter helps to control intermediate result output
@@ -92,7 +90,7 @@ class BasicVizualization:
                 self._records[k].append(v)
 
     def is_print_on_epoch(self, epoch):
-        """Check if this is the epoch for print results
+        """Check if this is the right epoch to print results
 
         Parameters
         ----------
@@ -107,7 +105,7 @@ class BasicVizualization:
         return (epoch % self.print_on_each_epoch) == 0
 
     def draw_loss(self, name, history):
-        """Saves the training history in .jpg
+        """Save the training history in .jpg
 
         Parameters
         ----------
@@ -136,7 +134,7 @@ class BasicVizualization:
         pickle.dump(state, open(os.path.join(self.folder, f"{name}.pkl"), 'wb'))
 
     def save_txt(self, name, summary):
-        """Saves string data to .txt file
+        """Save string data to .txt file
 
         Parameters
         ----------
@@ -183,7 +181,7 @@ class BasicVizualization:
         save_method(os.path.join(self.folder, f"{name}.vtp"), dict_)
 
     def save_3D_array(self, name, array, section_img=True):
-        """Saves 3D array to file and section of this array as images
+        """Save 3D array to a file and section of this array as images
 
         Parameters
         ----------
