@@ -1,7 +1,7 @@
-from typing import *
 import os
 import pickle
 import time
+from typing import *
 
 import jax.numpy as jnp
 import matplotlib.pylab as plt

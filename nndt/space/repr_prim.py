@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 
-from nndt.math_core import sdf_primitive_sphere
+from nndt.primitive_sdf import sdf_primitive_sphere
 from nndt.space.abstracts import *
 from nndt.space.sources import SphereSDFSource
 

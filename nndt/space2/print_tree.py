@@ -2,7 +2,8 @@ from typing import Optional
 
 from anytree import RenderTree
 
-from nndt.space2 import AbstractTreeElement, AbstractBBoxNode, MethodSetNode, AbstractTransformation, FileSource
+from nndt.space2 import AbstractTreeElement, AbstractBBoxNode, MethodSetNode, AbstractTransformation, FileSource, \
+    ImpRepr
 
 
 def _construct_filter(child_classes, not_parent_classes):
@@ -19,7 +20,10 @@ def _pretty_print(node: AbstractTreeElement, mode: Optional[str] = "default"):
     if mode is None or (mode == "default"):
         ret = RenderTree(node,
                          childiter=_construct_filter((AbstractTreeElement,),
-                                                     (MethodSetNode, AbstractTransformation, FileSource))).__str__()
+                                                     (MethodSetNode,
+                                                      AbstractTransformation,
+                                                      FileSource,
+                                                      ImpRepr))).__str__()
     elif mode == "source" or mode == "sources":
         ret = RenderTree(node,
                          childiter=_construct_filter((AbstractBBoxNode,),

@@ -5,6 +5,8 @@ import jax
 import jax.numpy as jnp
 
 from nndt.haiku_modules import DescConv
+from nndt.haiku_modules import LipMLP
+from nndt.haiku_modules import LipLinear
 
 
 class HaikuModulesTestCase(unittest.TestCase):
@@ -59,6 +61,23 @@ class HaikuModulesTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.all(result >= 0.)))
         self.assertTrue(bool(jnp.any(result >= 0.1)))
 
+    def test_LipMLP_output_type(self):
+        def init(x):
+            lm = LipMLP(output_sizes=(64, 64, 64, 64, 64, 64, 64, 64, 1))
+            return lm(x)
 
-if __name__ == '__main__':
-    unittest.main()
+        lMLP = hk.transform(init)
+
+        self.assertIsInstance(lMLP, tuple)
+
+    def test_LipLinear_output_type(self):
+        def init(x):
+            ll = LipLinear(output_size=(32, 32, 32, 32, 32, 32, 32, 1),
+                           name="lip_mlp_%d" % 2,
+                           activation=jax.nn.tanh)
+            return ll(x)
+        lLinear = hk.transform(init)
+        self.assertIsInstance(lLinear, tuple)
+
+    if __name__ == '__main__':
+        unittest.main()

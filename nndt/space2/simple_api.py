@@ -4,15 +4,22 @@ import warnings
 from typing import Optional, Sequence
 
 import jax
+import jax.numpy as jnp
 from anytree.exporter import DictExporter, JsonExporter
 from anytree.importer import DictImporter, JsonImporter
+from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
+from nndt.primitive_sdf import SphereSDF
 from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
 from nndt.space2.group import Group
+from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.loader import FileSource
+from nndt.space2.method_set import SDTMethodSetNode, SamplingMethodSetNode
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space
+from nndt.space2.transformation import IdentityTransform
+from nndt.space2.tree_utils import update_bbox_with_float_over_tree
 
 
 def _attribute_filter(attrs):
@@ -186,6 +193,47 @@ def to_json(space: Space):
     dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
     json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
     return json_exp.export(space)
+
+
+def split_node_test_train(rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3):
+    child_ = tree_path._container_only_list()
+    indices = jnp.arange(len(child_))
+
+    train_index_list, test_index_list = train_test_split(indices, rng=rng_key, test_size=test_size)
+    train = [child_[i] for i in train_index_list]
+    test = [child_[i] for i in test_index_list]
+
+    from nndt.space2.space_preloader import _update_bbox_bottom_to_up
+    train_node = Group("train", parent=tree_path)
+    for node in train:
+        node.parent = train_node
+    _update_bbox_bottom_to_up(train_node)
+    test_node = Group("test", parent=tree_path)
+    for node in test:
+        node.parent = test_node
+    _update_bbox_bottom_to_up(test_node)
+
+    tree_path.root.init()
+    return tree_path.root
+
+
+def add_sphere(tree_path: AbstractBBoxNode,
+               name,
+               center: (float, float, float),
+               radius: float):
+    assert (isinstance(tree_path, (Space, Group)))
+
+    sph = SphereSDF(center=center, radius=radius)
+
+    obj = Object3D(name, bbox=sph.bbox, parent=tree_path)
+    transform = IdentityTransform(ps_bbox=sph.bbox, parent=obj)
+    ir = ImpRepr("sphere", sph, parent=obj)
+    ms = SDTMethodSetNode(obj, ir, transform, parent=obj)
+    smp = SamplingMethodSetNode(parent=obj)
+
+    update_bbox_with_float_over_tree(obj)
+    tree_path.root.init()
+    return tree_path.root
 
 
 DICT_NODETYPE_CLASS = {'UNDEFINED': AbstractTreeElement,
