@@ -88,6 +88,12 @@ class MeshObjMethodSetNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
+    @node_method("surface_xyz() -> xyz[N,3]")
+    def surface_xyz(self) -> jnp.ndarray:
+        ps_xyz = self.mesh._loader.points
+        ns_xyz = self.transform.transform_xyz_ps2ns(ps_xyz)
+        return ns_xyz
+
     @node_method("surface_ind2xyz(ns_ind[..,1]) -> ns_xyz[..,3]")
     def surface_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
         ret_shape = calc_ret_shape(ns_ind, 3)
@@ -186,11 +192,6 @@ class ColorMethodSetNode(MethodSetNode):
         assert (mesh.loader_type == 'mesh_obj')
         self.mesh = mesh
         self.transform = transform
-
-    @node_method("surface_xyz() -> xyz[N,3]")
-    def surface_xyz(self) -> jnp.ndarray:
-        xyz = self.mesh._loader.points
-        return xyz
 
     @node_method("surface_rgba() -> xyz[N,4]")
     def surface_rgba(self) -> jnp.ndarray:
