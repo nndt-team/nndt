@@ -1,5 +1,5 @@
-from .acdc import ACDC
-from .utils import *
+from nndt.datasets.acdc import ACDC
+from nndt.datasets.utils import *
 list_of_datasets = [
     'ACDC',
 ]
