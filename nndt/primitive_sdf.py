@@ -102,8 +102,8 @@ class AbstractSDF:
         y = ps_xyz[..., 1].flatten()
         z = ps_xyz[..., 2].flatten()
         dist = self._vec_fun(x, y, z)
-        dist = dist.reshape(ret_shape)
 
+        dist = dist.reshape(ret_shape)
         return dist
 
 

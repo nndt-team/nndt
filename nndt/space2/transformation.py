@@ -74,20 +74,52 @@ class IdentityTransform(AbstractTransformation):
         self.bbox = ps_bbox
         self._transform_type = "identity"
 
-    @node_method("transform_xyz_ps2ns(ps_xyz[...,3]) -> ns_xyz[...,3]")
+    @node_method("transform_xyz_ps2ns(ps_xyz[..,3]) -> ns_xyz[..,3]")
     def transform_xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms xyz physical space to normalized space
+
+        Args:
+            xyz (Union[onp.ndarray, jnp.ndarray]): xyz in physical space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: xyz in normalized space.
+        """
         return xyz
 
-    @node_method("transform_xyz_ns2ps(ns_xyz[...,3]) -> ps_xyz[...,3]")
+    @node_method("transform_xyz_ns2ps(ns_xyz[..,3]) -> ps_xyz[..,3]")
     def transform_xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms xyz normalized space to physical space
+
+        Args:
+            xyz (Union[onp.ndarray, jnp.ndarray]): xyz in normalized space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: xyz in physical space.
+        """
         return xyz
 
-    @node_method("transform_sdt_ns2ps(ns_sdt[...]) -> ps_sdt[...]")
+    @node_method("transform_sdt_ns2ps(ns_sdt[..]) -> ps_sdt[..]")
     def transform_sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms signed distance tensor of normalized space to physical space.
+        
+        Args:
+            sdt (Union[onp.ndarray, jnp.ndarray]): Signed distance tensor in normalized space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: Signed distance tensor in physical space.
+        """
         return sdt
 
-    @node_method("transform_sdt_ps2ns(ps_sdt[...]) -> ns_sdt[...]")
+    @node_method("transform_sdt_ps2ns(ps_sdt[..]) -> ns_sdt[..]")
     def transform_sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms signed distance tensor of physical space to normalized space.
+        
+        Args:
+            sdt (Union[onp.ndarray, jnp.ndarray]): Signed distance tensor in physical space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]:  Signed distance tensor in normalized space.
+        """
         return sdt
 
 
@@ -109,20 +141,52 @@ class ShiftAndScaleTransform(AbstractTransformation):
         self.bbox = ((float(bbox_[0][0]), float(bbox_[0][1]), float(bbox_[0][2])),
                      (float(bbox_[1][0]), float(bbox_[1][1]), float(bbox_[1][2])))
 
-    @node_method("transform_xyz_ps2ns(ps_xyz[...,3]) -> ns_xyz[...,3]")
+    @node_method("transform_xyz_ps2ns(ps_xyz[..,3]) -> ns_xyz[..,3]")
     def transform_xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms xyz physical space to normalized space
+
+        Args:
+            xyz (Union[onp.ndarray, jnp.ndarray]): xyz in physical space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: xyz in normalized space.
+        """
         return (xyz - jnp.array(self.ps_center)) / self.scale_ps2ns + jnp.array(self.ns_center)
 
-    @node_method("transform_xyz_ns2ps(ns_xyz[...,3]) -> ps_xyz[...,3]")
+    @node_method("transform_xyz_ns2ps(ns_xyz[..,3]) -> ps_xyz[..,3]")
     def transform_xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms xyz normalized space to physical space
+
+        Args:
+            xyz (Union[onp.ndarray, jnp.ndarray]): xyz in normalized space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: xyz in physical space.
+        """
         return (xyz - jnp.array(self.ns_center)) * self.scale_ps2ns + jnp.array(self.ps_center)
 
-    @node_method("transform_sdt_ns2ps(ns_sdt[...]) -> ps_sdt[...]")
+    @node_method("transform_sdt_ns2ps(ns_sdt[..]) -> ps_sdt[..]")
     def transform_sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms signed distance tensor of normalized space to physical space.
+        
+        Args:
+            sdt (Union[onp.ndarray, jnp.ndarray]): Signed distance tensor in normalized space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: Signed distance tensor in physical space.
+        """
         return sdt * self.scale_ps2ns
 
-    @node_method("transform_sdt_ps2ns(ps_sdt[...]) -> ns_sdt[...]")
+    @node_method("transform_sdt_ps2ns(ps_sdt[..]) -> ns_sdt[..]")
     def transform_sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms signed distance tensor of physical space to normalized space.
+        
+        Args:
+            sdt (Union[onp.ndarray, jnp.ndarray]): Signed distance tensor in physical space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]:  Signed distance tensor in normalized space.
+        """
         return sdt / self.scale_ps2ns
 
 
@@ -141,18 +205,50 @@ class ToNormalCubeTransform(AbstractTransformation):
 
         self._transform_type = "to_cube"
 
-    @node_method("transform_xyz_ps2ns(ps_xyz[...,3]) -> ns_xyz[...,3]")
+    @node_method("transform_xyz_ps2ns(ps_xyz[..,3]) -> ns_xyz[..,3]")
     def transform_xyz_ps2ns(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms xyz physical space to normalized space
+
+        Args:
+            xyz (Union[onp.ndarray, jnp.ndarray]): xyz in physical space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: xyz in normalized space.
+        """
         return (xyz - self.ps_center) / self.scale
 
-    @node_method("transform_xyz_ns2ps(ns_xyz[...,3]) -> ps_xyz[...,3]")
+    @node_method("transform_xyz_ns2ps(ns_xyz[..,3]) -> ps_xyz[..,3]")
     def transform_xyz_ns2ps(self, xyz: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms xyz normalized space to physical space
+
+        Args:
+            xyz (Union[onp.ndarray, jnp.ndarray]): xyz in normalized space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: xyz in physical space.
+        """
         return (xyz * self.scale) + self.ps_center
 
-    @node_method("transform_sdt_ns2ps(ns_sdt[...]) -> ps_sdt[...]")
+    @node_method("transform_sdt_ns2ps(ns_sdt[..]) -> ps_sdt[..]")
     def transform_sdt_ns2ps(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms signed distance tensor of normalized space to physical space.
+        
+        Args:
+            sdt (Union[onp.ndarray, jnp.ndarray]): Signed distance tensor in normalized space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]: Signed distance tensor in physical space.
+        """
         return sdt * self.scale
 
-    @node_method("transform_sdt_ps2ns(ps_sdt[...]) -> ns_sdt[...]")
+    @node_method("transform_sdt_ps2ns(ps_sdt[..]) -> ns_sdt[..]")
     def transform_sdt_ps2ns(self, sdt: Union[onp.ndarray, jnp.ndarray]) -> Union[onp.ndarray, jnp.ndarray]:
+        """Transforms signed distance tensor of physical space to normalized space.
+        
+        Args:
+            sdt (Union[onp.ndarray, jnp.ndarray]): Signed distance tensor in physical space.
+
+        Returns:
+            Union[onp.ndarray, jnp.ndarray]:  Signed distance tensor in normalized space.
+        """
         return sdt / self.scale

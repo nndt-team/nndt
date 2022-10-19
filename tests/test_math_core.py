@@ -193,6 +193,7 @@ class BarycentricGridTestCase(unittest.TestCase):
                                 [0.0, 0.0, 0.5, 0.5],
                                 [0.0, 0.0, 0.0, 1.0]]), coords)
 
+
     def test_rotation_matrix(self):
         self.assertTrue(jnp.allclose(rotation_matrix(0., 0., 0.), jnp.eye(3)))
         M = rotation_matrix(34., 34., 424.)
@@ -202,6 +203,13 @@ class BarycentricGridTestCase(unittest.TestCase):
         self.assertTrue(abs(float(jnp.linalg.norm(M[0])) - 1.0) < 0.0000001)
         self.assertTrue(abs(float(jnp.linalg.norm(M[1])) - 1.0) < 0.0000001)
         self.assertTrue(abs(float(jnp.linalg.norm(M[2])) - 1.0) < 0.0000001)
+
+
+    def test_scale_xyz(self):
+        xyz = jnp.array([1., 2., 3.])
+        assert (jnp.allclose(jnp.array([3., -8., 15.]), scale_xyz(xyz, scale=(3., -4., 5.))))
+        xyz = jnp.array([0., 0., 0.])
+        assert (jnp.allclose(jnp.array([0., 0., 0.]), scale_xyz(xyz, scale=(3., -4., 5.))))
 
 
 if __name__ == '__main__':
