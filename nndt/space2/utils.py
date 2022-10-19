@@ -7,9 +7,6 @@ from skimage import measure
 
 
 def calc_ret_shape(array: Union[jnp.ndarray, onp.ndarray], last_axis: int):
-    # if len(array.shape) == 1:
-    #     ret_shape = (array.shape[0], last_axis)
-    # else:
     ret_shape = list(array.shape)
     ret_shape[-1] = last_axis
     ret_shape = tuple(ret_shape)
