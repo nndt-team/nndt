@@ -290,10 +290,5 @@ def scale_xyz(xyz, scale=(1., 1., 1.)):
     """
     assert(xyz.shape[-1] == 3)
     scale = jnp.array(scale)
-
-    ret_shape = xyz.shape
-    xyz = xyz.reshape((-1, 3))
     xyz = scale*xyz
-
-    xyz = xyz.reshape(ret_shape)
     return xyz
