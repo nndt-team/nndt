@@ -254,7 +254,7 @@ def train_test_split(array: jnp.array,
 
 def rotation_matrix(yaw, pitch, roll):
     """
-    Construct rotation natrix from three rotational angle
+    Construct rotation matrix from three rotational angle
 
     :param yaw:
         The yaw in radian
@@ -267,9 +267,9 @@ def rotation_matrix(yaw, pitch, roll):
     Rz = jnp.array([[jnp.cos(yaw), -jnp.sin(yaw), 0.],
                     [jnp.sin(yaw), jnp.cos(yaw), 0.],
                     [0., 0., 1.]])
-    Ry = jnp.array([[jnp.cos(yaw), 0, jnp.sin(yaw)],
+    Ry = jnp.array([[jnp.cos(pitch), 0, jnp.sin(pitch)],
                     [0, 1, 0],
-                    [-jnp.sin(yaw), 0., jnp.cos(yaw)]])
+                    [-jnp.sin(pitch), 0., jnp.cos(pitch)]])
     Rx = jnp.array([[1., 0., 0.],
                     [0., jnp.cos(roll), -jnp.sin(roll)],
                     [0., jnp.sin(roll), jnp.cos(roll)]])
