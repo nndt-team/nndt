@@ -273,3 +273,22 @@ def train_test_split(array: jnp.ndarray,
     train_index_list = [index for index in indices.tolist() if index not in test_index_list]
 
     return train_index_list, test_index_list
+
+
+def scale_xyz(xyz, scale=(1., 1., 1.)):
+    """
+    Scale array of points to the `scale` factor.
+
+    Parameters
+    ----------
+    :param xyz: Array of points
+    :param scale: The scale factor
+
+    Returns
+    -------
+    :return: Scaled array of points with shape equal to shape of `xyz` array
+    """
+    assert(xyz.shape[-1] == 3)
+    scale = jnp.array(scale)
+    xyz = scale*xyz
+    return xyz
