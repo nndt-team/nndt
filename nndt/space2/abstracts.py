@@ -129,16 +129,17 @@ class AbstractBBoxNode(AbstractTreeElement):
     @node_method("print(default|source|full)")
     def print(self, mode: Optional[str] = "default"):
         """
-        Print tree of objects
+        Print tree view for this element and all children elements
+        
+        Args:
+            mode (Optional[str], optional): 
+                "default" print 3D objects and methods;
+                "source" print only space, groups, and file-sources;
+                "full" print all nodes of the tree;
+                Defaults to "default".
 
-        Params
-        ______
-        :param mode:
-            "default" print 3D objects and methods
-            "source" print only space, groups, and file-sources
-            "full" print all nodes of the tree
-        :return:
-            tree representation string
+        Returns:
+            str: tree representation string
         """
         from nndt.space2.print_tree import _pretty_print
         return _pretty_print(self, mode)
@@ -146,6 +147,16 @@ class AbstractBBoxNode(AbstractTreeElement):
     @node_method("plot(default, filepath=None)")
     def plot(self, mode: Optional[str] = "default",
              filepath: Optional[str] = None):
+        """
+        Iterate over all Object3D in tree and show plot if filepath is None.
+        Save plot in file if filepath is not None.
+
+        Args:
+            mode (Optional[str], optional): 
+                Only the "default" mode is supported yet. Defaults to "default".
+            filepath (Optional[str], optional): 
+                File name. If it exist save there otherwise show. Defaults to None.
+        """
         from nndt.space2.plot_tree import _plot
         _plot(self, mode, filepath)
 

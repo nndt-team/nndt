@@ -273,3 +273,47 @@ def train_test_split(array: jnp.ndarray,
     train_index_list = [index for index in indices.tolist() if index not in test_index_list]
 
     return train_index_list, test_index_list
+
+
+def rotation_matrix(yaw, pitch, roll):
+    """
+    Construct rotation matrix from three rotational angle
+
+    :param yaw:
+        The yaw in radian
+    :param pitch:
+        The pitch in radian
+    :param roll:
+        The roll in radian
+    :return:
+    """
+    Rz = jnp.array([[jnp.cos(yaw), -jnp.sin(yaw), 0.],
+                    [jnp.sin(yaw), jnp.cos(yaw), 0.],
+                    [0., 0., 1.]])
+    Ry = jnp.array([[jnp.cos(pitch), 0, jnp.sin(pitch)],
+                    [0, 1, 0],
+                    [-jnp.sin(pitch), 0., jnp.cos(pitch)]])
+    Rx = jnp.array([[1., 0., 0.],
+                    [0., jnp.cos(roll), -jnp.sin(roll)],
+                    [0., jnp.sin(roll), jnp.cos(roll)]])
+
+    return Rz @ Ry @ Rx
+    
+    
+def scale_xyz(xyz, scale=(1., 1., 1.)):
+    """
+    Scale array of points to the `scale` factor.
+
+    Parameters
+    ----------
+    :param xyz: Array of points
+    :param scale: The scale factor
+
+    Returns
+    -------
+    :return: Scaled array of points with shape equal to shape of `xyz` array
+    """
+    assert(xyz.shape[-1] == 3)
+    scale = jnp.array(scale)
+    xyz = scale*xyz
+    return xyz
