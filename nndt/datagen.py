@@ -95,7 +95,7 @@ class DataGenerator2:
 
         rgba = obj.surface_xyz2rgba(new_pos_xyz)
         color_class = jnp.argmax(rgba[:, 0:3], axis=1)
-        sdt = obj.surface_xyz2sdt(_xyz_cube)
+        sdt = jax.jit(obj.surface_xyz2sdt)(_xyz_cube)
 
         return subkey, color_class, sdt
 
