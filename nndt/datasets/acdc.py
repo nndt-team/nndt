@@ -7,27 +7,27 @@ class ACDC(dataset):
 
         __dict = {
             'ACDC_5': [
-                ['https://drive.google.com/file/d/1wOYib-CBGcx_x-ap0eBu6mstHbICLxKG/view?usp=sharing',
-                 'https://www.dropbox.com/s/m4mz82s5cyotcva/ACDC_5.zip?raw=1'],
-                '877684e505bf97c3a31cb4876f79e862'
+                ['https://drive.google.com/file/d/1UzC2WPkjMQSxzI5sj1rMT47URuZbQhYb/view?usp=sharing',
+                 'https://www.dropbox.com/s/6fomqxbjs0iu79m/ACDC_5.7z?raw=1'],
+                '34d007546353673899c73337d38c9c12'
 
             ],
             'wrong_url_test': [
                 ['https://drive.google.com/file',
                  'a',
                  'b',
-                 'https://a',
+                 'https://a.com',
                  'https://www.dropbox.com/s/m'],
-                '877684e505bf97c3a31cb4876f79e862'
+                '34d007546353673899c73337d38c9c12'
 
             ],
             'wrong_hash_test': [
-                ['https://drive.google.com/file/d/1wOYib-CBGcx_x-ap0eBu6mstHbICLxKG/view?usp=sharing',
-                 'https://www.dropbox.com/s/m4mz82s5cyotcva/ACDC_5.zip?raw=1'],
-                '877684e505bf97c3a31cb4876f79e862  '],
+                ['https://drive.google.com/file/d/1UzC2WPkjMQSxzI5sj1rMT47URuZbQhYb/view?usp=sharing',
+                 'https://www.dropbox.com/s/6fomqxbjs0iu79m/ACDC_5.7z?raw=1'],
+                '34d007546353673899c73337d38c9c12  '],
             'dropbox_test': [
-                ['https://www.dropbox.com/s/m4mz82s5cyotcva/ACDC_5.zip?raw=1'],
-                '877684e505bf97c3a31cb4876f79e862'
+                ['https://www.dropbox.com/s/6fomqxbjs0iu79m/ACDC_5.7z?raw=1'],
+                '34d007546353673899c73337d38c9c12'
             ]
         }
 
