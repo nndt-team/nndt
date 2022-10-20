@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 from nndt import datasets
-from nndt.datasets.utils import _extract_zip_file, _download_from_url, _download_from_google, _check_md5
+from nndt.datasets.utils import _download_from_url,\
+    _download_from_google, _check_md5, _extract_7z_file
 
 
 class dataset:
@@ -19,22 +20,23 @@ class dataset:
         Path(self.to_path).mkdir(parents=True, exist_ok=True)
         complete = False
 
-        for idx in range(len(self.urls)):
-            url = self.urls[idx]
+        for url in self.urls:
             if 'drive.google' in url:
                 try:
                     z = _download_from_google(url, self.to_path)
                     assert _check_md5(z, self.hash)
-                    _extract_zip_file(z, self.to_path)
+                    _extract_7z_file(z, self.to_path)
                 except Exception as e:
+                    print(url, str(e))
                     continue
             else:
                 try:
                     print('Downloading...')
                     z = _download_from_url(url, self.to_path)
                     assert _check_md5(z, self.hash)
-                    _extract_zip_file(z, self.to_path)
+                    _extract_7z_file(z, self.to_path)
                 except Exception as e:
+                    print(url, str(e))
                     continue
             complete = True
             os.remove(z)
