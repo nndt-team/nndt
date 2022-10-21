@@ -43,7 +43,7 @@ def _scale_rotate_shift(cube, scale=(1., 1., 1.), rotation=(0., 0., 0.), shift=(
 _vec_scale_rotate_shift = jax.jit(jax.vmap(_scale_rotate_shift, (0, 0, 0, 0)))
 
 
-class DataGenerator2:
+class DataGenForSegmentation:
 
     def __init__(self,
                  node,
@@ -53,7 +53,7 @@ class DataGenerator2:
                  step=77,
                  shift_sigma=0.09,
                  scale_range=0.03,
-                 rotate_angle=0.03,
+                 rotate_angle=1.,
                  shift_mul=4,
                  augment=True):
         self.node = node
@@ -108,7 +108,7 @@ class DataGenerator2:
 
         for i in lst:
             obj = self.node[i]
-            subkey, color_class, sdt = self._process_one_model(key, obj, epoch)
+            subkey, color_class, sdt = self._process_one_model(subkey, obj, epoch)
             batch_color_class.append(color_class)
             batch_sdt.append(sdt)
 
@@ -120,21 +120,24 @@ class DataGenerator2:
 
 if __name__ == '__main__':
     from nndt.space2 import load_from_path
-
-    space = load_from_path('./../tests/acdc_for_test')
+    from nndt.datasets import ACDC
+    import matplotlib.pylab as plt
+    #ACDC().load()
+    space = load_from_path('./.datasets/ACDC_5')
     space.preload("shift_and_scale")
     print(space.print())
 
     key = jax.random.PRNGKey(42)
-    dg = DataGenerator2(space, augment=False)
+    dg = DataGenForSegmentation(space, augment=False)
     dg.get(key, 0)
 
     start_time = time.time()
     batch_sdt, batch_color_class = dg.get(key, 10)
     stop_time = time.time()
     print((stop_time - start_time) / 5)
+    print(batch_sdt.shape, batch_color_class.shape)
 
-    dg = DataGenerator2(space, augment=True)
+    dg = DataGenForSegmentation(space, augment=True)
     dg.get(key, 0)
 
     start_time = time.time()
@@ -142,12 +145,14 @@ if __name__ == '__main__':
     batch_sdt, batch_color_class = dg.get(key, 10)
     stop_time = time.time()
     print((stop_time - start_time) / 5)
+    print(batch_sdt.shape, batch_color_class.shape)
 
-    # plt.imshow(batch_sdt[20, :, :, 8, 0])
-    # plt.show()
-    # plt.imshow(batch_sdt[20, :, 8, :, 0])
-    # plt.show()
-    # plt.imshow(batch_sdt[20, 8, :, :, 0])
-    # plt.show()
-    # print(batch_sdt[20, :, :, 8, 0])
-    # print(batch_sdt.shape, batch_color_class.shape)
+
+    plt.imshow(batch_sdt[20, :, :, 8, 0])
+    plt.show()
+    plt.imshow(batch_sdt[20, :, 8, :, 0])
+    plt.show()
+    plt.imshow(batch_sdt[20, 8, :, :, 0])
+    plt.show()
+    print(batch_sdt[20, :, :, 8, 0])
+    print(batch_sdt.shape, batch_color_class.shape)
