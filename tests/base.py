@@ -12,7 +12,7 @@ class BaseTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         print("WORKING DIR: " + os.getcwd())
-        print("SHIT: " + os.listdir("."))
+        print("SHIT: " + str(os.listdir(".")))
 
         src_target = [PATH_TEST_STRUCTURE, PATH_TEST_ACDC]
         if os.path.basename(os.getcwd()) == 'tests':
