@@ -28,6 +28,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      - name: Install reqs
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          python setup.py install
+
       - name: Fixing code style
         run: |
           pip install black
