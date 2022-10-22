@@ -19,7 +19,7 @@ class BaseTestCase(unittest.TestCase):
             prefix = './tests/'
             iter_dir = ['./tests/' + PATH_TEST_STRUCTURE, './tests/' + PATH_TEST_ACDC]
         elif os.getcwd() == '/home/runner/work/nndt/nndt':  # TODO this is shit!
-            prefix = '../tests/'
+            prefix = './'
             iter_dir = ['../tests/' + PATH_TEST_STRUCTURE, '../tests/' + PATH_TEST_ACDC]
         else:
             raise NotImplementedError("Something goes wrong with path...")
