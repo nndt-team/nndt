@@ -298,8 +298,8 @@ def rotation_matrix(yaw, pitch, roll):
                     [0., jnp.sin(roll), jnp.cos(roll)]])
 
     return Rz @ Ry @ Rx
-    
-    
+
+
 def scale_xyz(xyz, scale=(1., 1., 1.)):
     """
     Scale array of points to the `scale` factor.
@@ -313,7 +313,7 @@ def scale_xyz(xyz, scale=(1., 1., 1.)):
     -------
     :return: Scaled array of points with shape equal to shape of `xyz` array
     """
-    assert(xyz.shape[-1] == 3)
+    assert (xyz.shape[-1] == 3)
     scale = jnp.array(scale)
-    xyz = scale*xyz
+    xyz = scale * xyz
     return xyz
