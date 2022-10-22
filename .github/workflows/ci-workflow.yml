@@ -1,0 +1,49 @@
+name: CI-workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python 3.10
+        uses: actions/setup-python@master
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Cache python modules
+        uses: actions/cache@master
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Fixing code style
+        run: |
+          pip install black
+          black --target-version=py310 .
+
+      - name: Unpack testing data
+        run: 7z x tests/acdc_for_test.7z
+
+      - name: Generate coverage report
+        run: |
+          pip install pytest pytest-cov
+          pytest --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
