@@ -3,10 +3,10 @@ from anytree import PostOrderIter, PreOrderIter
 from nndt.space2 import ColorMethodSetNode
 from nndt.space2 import SDTMethodSetNode
 from nndt.space2 import SamplingMethodSetNode
+from nndt.space2 import pad_bbox
 from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
     MeshObjMethodSetNode, \
     DICT_NODETYPE_PRIORITY
-from space2 import pad_bbox
 
 
 def _update_bbox_bottom_to_up(node):
