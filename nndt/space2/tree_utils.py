@@ -11,6 +11,7 @@ def update_bbox_from_children(node):
     Args:
         node : Node to update.
     """
+    
     for child in node.children:
         if isinstance(child, AbstractBBoxNode):
             node.bbox = update_bbox(node.bbox, child.bbox)
@@ -23,6 +24,7 @@ def update_bbox_with_float_over_tree(node: NodeMixin):
     Args:
         node (NodeMixin): start node.
     """
+    
     current_node = node
     while not current_node.is_root:
         bbox1 = current_node.bbox
