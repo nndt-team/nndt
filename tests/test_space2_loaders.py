@@ -2,7 +2,7 @@ import unittest
 
 import jax.numpy as jnp
 
-from .base import BaseTestCase
+from tests.base import BaseTestCase
 from nndt.space2 import load_from_path
 
 FILE_TMP = "./test_file.space"
@@ -171,6 +171,11 @@ class LoadersTestCase(BaseTestCase):
         self.assertEqual(obj1, obj2)
         self.assertEqual(obj1, obj3)
         self.assertEqual(obj1, obj4)
+
+    def test_fail_preload_non_existed_path(self):
+        with self.assertRaises(FileNotFoundError):
+            space = load_from_path('../../../../../acdc_for_test')
+            space.preload()
 
 
 if __name__ == '__main__':
