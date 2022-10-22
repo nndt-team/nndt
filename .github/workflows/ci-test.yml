@@ -23,7 +23,9 @@ jobs:
           python-version: 3.8
 
       - name: pwd
-        run: pwd
+        run: |
+          pwd
+          ls
 
       # - name: Code style fixing
       #   run: |
