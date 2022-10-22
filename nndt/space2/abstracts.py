@@ -1,5 +1,6 @@
 import re
 from abc import abstractmethod
+from functools import wraps
 from typing import Union, Optional
 
 from anytree import NodeMixin, Resolver, PostOrderIter
@@ -18,13 +19,15 @@ DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80, "IR": 70,
                           "FS": 60, "TR": 50, "MS": 40, "M": 30}
 
 
-def node_method(docstring=None):
+def node_method(helpstr=None):
+
     def decorator_wrapper(fn):
         classname = str(fn.__qualname__).split('.')[0]
         if classname not in NODE_METHOD_DICT:
             NODE_METHOD_DICT[classname] = {}
-        NODE_METHOD_DICT[classname][str(fn.__name__)] = docstring
+        NODE_METHOD_DICT[classname][str(fn.__name__)] = helpstr
 
+        @wraps(fn)
         def wrapper(*args, **kwargs):
             return fn(*args, **kwargs)
 
@@ -125,12 +128,35 @@ class AbstractBBoxNode(AbstractTreeElement):
 
     @node_method("print(default|source|full)")
     def print(self, mode: Optional[str] = "default"):
+        """
+        Print tree view for this element and all children elements
+        
+        Args:
+            mode (Optional[str], optional): 
+                "default" print 3D objects and methods;
+                "source" print only space, groups, and file-sources;
+                "full" print all nodes of the tree;
+                Defaults to "default".
+
+        Returns:
+            str: tree representation string
+        """
         from nndt.space2.print_tree import _pretty_print
         return _pretty_print(self, mode)
 
     @node_method("plot(default, filepath=None)")
     def plot(self, mode: Optional[str] = "default",
              filepath: Optional[str] = None):
+        """
+        Iterate over all Object3D in tree and show plot if filepath is None.
+        Save plot in file if filepath is not None.
+
+        Args:
+            mode (Optional[str], optional): 
+                Only the "default" mode is supported yet. Defaults to "default".
+            filepath (Optional[str], optional): 
+                File name. If it exist save there otherwise show. Defaults to None.
+        """
         from nndt.space2.plot_tree import _plot
         _plot(self, mode, filepath)
 

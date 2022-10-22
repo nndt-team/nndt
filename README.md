@@ -15,8 +15,19 @@ This is experimental library for unusual neural network applications. Descriptio
 
 ## Install
  
+The last stable release:
+```
+pip install git+https://github.com/KonstantinUshenin/nndt/releases/tag/v0.0.2
+```
+
+The developer release:
 ```
 pip install git+https://github.com/KonstantinUshenin/nndt.git
+```
+
+Installation for Windows with WSL:
+```
+https://github.com/KonstantinUshenin/nndt/wiki/NNDT-WSL
 ```
 
 ## Test

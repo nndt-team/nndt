@@ -12,7 +12,7 @@ from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
 
 
 class IteratorWithTimeMeasurements:
-    """Iter on BasicVizualization object and shows work duration"""
+    """Iterator that records and prints the epoch number and time spent from the start of iterations"""
 
     def __init__(self, basic_viz, epochs):
         self.basic_viz = basic_viz
@@ -49,27 +49,37 @@ class IteratorWithTimeMeasurements:
 
 
 class BasicVizualization:
+    """
+    Simple MLOps class for storing the train history and visualization of intermediate results
+    """
 
-    def __init__(self, folder, experiment_name=None, print_on_each_epoch=20):
+    def __init__(self, folder: str,
+                 experiment_name: Optional[str] = None,
+                 print_on_each_epoch=20):
+        """
+        :param folder: folder for store results
+        :param experiment_name: name for an experiments
+        :param print_on_each_epoch: this parameter helps to control intermediate result output
+        """
         self.folder = folder
         self.experiment_name = experiment_name if (experiment_name is not None) else folder
         os.makedirs(self.folder, exist_ok=True)
         self.print_on_each_epoch = print_on_each_epoch
         self._records = {"_epoch": [], "_time": []}
 
-    def iter(self, epochs_num):
-        """_summary_
+    def iter(self, epoch_num):
+        """Return iterators for the main train cycle
 
         Parameters
         ----------
-        epochs_num : int
-            number of epochs
+        epoch_num : int
+            number of epoch
                       
         Returns
         -------
-            IteratorWithTimeMeasurements
+            instance of IteratorWithTimeMeasurements
         """
-        return IteratorWithTimeMeasurements(self, epochs_num)
+        return IteratorWithTimeMeasurements(self, epoch_num)
 
     def record(self, dict):
         for k, v in dict.items():
@@ -80,7 +90,7 @@ class BasicVizualization:
                 self._records[k].append(v)
 
     def is_print_on_epoch(self, epoch):
-        """Returns the epoch to print
+        """Check if this is the right epoch to print results
 
         Parameters
         ----------
@@ -90,19 +100,19 @@ class BasicVizualization:
         Returns
         -------
         bool 
-            should we print it?
+            Should we print on this step?
         """
         return (epoch % self.print_on_each_epoch) == 0
 
     def draw_loss(self, name, history):
-        """Saves a loss in jpg
+        """Save the training history in .jpg
 
         Parameters
         ----------
         name : string
-            filename
+            File name
         history (_type_): 
-            loss history
+            List of loss values over epochs
         """
         plt.close(1)
         plt.figure(1)
@@ -112,26 +122,26 @@ class BasicVizualization:
         plt.savefig(os.path.join(self.folder, f"{name}.jpg"))
 
     def save_state(self, name, state):
-        """Writes a serialized view of state in file
+        """Save neural network state into the file
 
         Parameters
         ----------
         name : string 
-            filename
+            File name
         state : (_type_)
-            state to save
+            The state to save
         """
         pickle.dump(state, open(os.path.join(self.folder, f"{name}.pkl"), 'wb'))
 
     def save_txt(self, name, summary):
-        """Saves txt to file
+        """Save string data to .txt file
 
         Parameters
         ----------
         name : string
-            filename
+            File name
         summary : string
-            text to save
+            The text to save
         """
         with open(os.path.join(self.folder, f"{name}.txt"), 'w') as fl:
             fl.write(summary)
@@ -139,12 +149,12 @@ class BasicVizualization:
     def sdt_to_obj(self, filename: str,
                    array: Union[jnp.ndarray, onp.ndarray],
                    level: float = 0.):
-        """Run marching cube over SDT and save results to file
+        """Run marching cubes over SDT and save results to file
 
         Parameters
         ----------
         filename : string
-            Filename of mesh to be written.
+            File name
         array : ndarray
             Signed distance tensor (SDT)
         level : float
@@ -157,30 +167,30 @@ class BasicVizualization:
         save_verts_and_faces_to_obj(os.path.join(self.folder, f"{filename}.obj"), verts, faces)
 
     def save_mesh(self, name, save_method: SaveMesh, dict_):
-        """Saves mesh
+        """Save mesh to .vtp file with data
 
         Parameters
         ----------
         name : string
             filename
         save_method : SaveMesh 
-            save method is SaveMesh(file_path: str, name_value: dict)
+            SaveMesh instance from NNDT space (v0.0.1 or v0.0.2)
         dict_ : dict
             name_value
         """
         save_method(os.path.join(self.folder, f"{name}.vtp"), dict_)
 
     def save_3D_array(self, name, array, section_img=True):
-        """Saves 3D array
+        """Save 3D array to a file and section of this array as images
 
         Parameters
         ----------
         name : string
-            filename
+            File name
         array : array
             3D array to save
         section_img : bool
-            add an image (defaults to True)
+            If true, this saves three plane section of 3D array (defaults to True)
         """
         assert (array.ndim == 3)
         jnp.save(os.path.join(self.folder, f"{name}.npy"), array)

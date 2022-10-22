@@ -1,6 +1,17 @@
 # Change log
 
 
+## NNDT 0.0.3XX [IN DEVELOPMENT!]
+* `nndt.datasets` for download of toy datasets
+* More methods support tensors of any shape
+* Imports are shorter for users
+* New methods
+  * Surface data (+2):  `.surface_xyz()`, `.surface_rgba()`
+* Code quality
+  * CI pipeline become faster for new PR
+  * 75% of code coverage in CodeCov
+  * `A` grade, 10 issues in CodeFactor
+
 ## NNDT 0.0.2 (16 Oct 2022)
 * **The partial becomes complete; the crooked, straight; the empty, full; the worn out, new.**
 * *Now we have 7 contributors. Thank you all for new docs, features, issues and CI/CD pipeline!*

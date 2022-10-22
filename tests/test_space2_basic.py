@@ -209,6 +209,12 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         print(space.print('default'))
         self.assertEqual(space.bbox, update_bbox(space.test.bbox, space.train.bbox))
 
+    def test_helper_in_node_method(self):
+
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload()
+        self.assertLess(300, len(space.print.__doc__))
+
 
 if __name__ == '__main__':
     unittest.main()

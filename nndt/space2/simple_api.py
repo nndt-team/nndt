@@ -151,7 +151,7 @@ def load_from_file_lists(name_list,
         group_test = Group("test", parent=space)
         for ind in index_test:
             name = name_list[ind]
-            object_ = Object3D(name, parent=group_train)
+            object_ = Object3D(name, parent=group_test)
             if mesh_list is not None:
                 mesh_source = FileSource(os.path.basename(mesh_list[ind]), mesh_list[ind], 'mesh_obj', parent=object_)
             if sdt_list is not None:

@@ -101,6 +101,13 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), rgba[:, 2])))
         self.assertTrue(bool(jnp.allclose(jnp.array((1.,)), rgba[:, 3])))
 
+    def test_surface_xyz(self):
+        xyz = self.space.patient009.surface_xyz()
+        self.assertEqual((2502, 3), xyz.shape)
+
+    def test_surface_rgba(self):
+        rgba = self.space.patient009.surface_rgba()
+        self.assertEqual((2502, 4), rgba.shape)
 
 if __name__ == '__main__':
     unittest.main()

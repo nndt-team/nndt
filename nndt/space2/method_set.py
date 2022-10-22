@@ -14,6 +14,7 @@ from nndt.space2 import node_method
 from nndt.space2.abstracts import AbstractTreeElement, AbstractBBoxNode
 from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.transformation import AbstractTransformation
+from nndt.space2.utils import calc_ret_shape
 
 
 def _get_class_hierarchy(obj):
@@ -87,18 +88,33 @@ class MeshObjMethodSetNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
-    @node_method("surface_ind2xyz(ns_ind[N,1]) -> ns_xyz[N,3]")
+    @node_method("surface_xyz() -> xyz[N,3]")
+    def surface_xyz(self) -> jnp.ndarray:
+        ps_xyz = self.mesh._loader.points
+        ns_xyz = self.transform.transform_xyz_ps2ns(ps_xyz)
+        return ns_xyz
+
+    @node_method("surface_ind2xyz(ns_ind[..,1]) -> ns_xyz[..,3]")
     def surface_ind2xyz(self, ns_ind: jnp.ndarray) -> jnp.ndarray:
+        ret_shape = calc_ret_shape(ns_ind, 3)
+
         result_ps = jnp.take(self.mesh._loader.points, ns_ind, axis=0)
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
+
+        result_ns = result_ns.reshape(ret_shape)
         return result_ns
 
-    @node_method("surface_xyz2ind(ns_xyz[N,3]) -> ns_ind[N,1]")
+    @node_method("surface_xyz2ind(ns_xyz[..,3]) -> ns_dist[..,1], ns_ind[..,1]")
     def surface_xyz2ind(self, ns_xyz: jnp.ndarray) -> (jnp.ndarray, jnp.ndarray):
+        ret_shape = calc_ret_shape(ns_xyz, 1)
+
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
+        ind = jnp.array(ind).reshape(ret_shape)
         ns_dist = self.transform.transform_sdt_ps2ns(ps_dist)
-        return jnp.array(ns_dist), jnp.array(ind)
+        ns_dist = jnp.array(ns_dist).reshape(ret_shape)
+
+        return ns_dist, ind
 
     @node_method("save_mesh(filepath, {name, array})")
     def save_mesh(self, filepath: str, name_value: dict):
@@ -146,7 +162,7 @@ class SDTMethodSetNode(MethodSetNode):
         self.sdt = sdt
         self.transform = transform
 
-    @node_method("surface_xyz2sdt(ns_xyz[...,3]) -> ns_sdt[...,1]")
+    @node_method("surface_xyz2sdt(ns_xyz[..,3]) -> ns_sdt[..,1]")
     def surface_xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_sdt = self.sdt._loader.request(ps_xyz)
@@ -177,14 +193,29 @@ class ColorMethodSetNode(MethodSetNode):
         self.mesh = mesh
         self.transform = transform
 
-    @node_method("surface_ind2rgba(ind[N,1]) -> rgba[N,4]")
-    def surface_ind2rgba(self, ind: jnp.ndarray) -> jnp.ndarray:
-        rgba = jnp.take(self.mesh._loader.rgba, ind, axis=0)
+    @node_method("surface_rgba() -> xyz[N,4]")
+    def surface_rgba(self) -> jnp.ndarray:
+        rgba = self.mesh._loader.rgba
         return rgba
 
-    @node_method("surface_xyz2rgba(ns_xyz[N,3]) -> rgba[N,4]")
+    @node_method("surface_ind2rgba(ind[..,1]) -> rgba[..,4]")
+    def surface_ind2rgba(self, ind: jnp.ndarray) -> jnp.ndarray:
+        if ind.shape[-1] != 1:
+            ind = ind[..., jnp.newaxis]
+        ret_shape = calc_ret_shape(ind, 4)
+
+        rgba = jnp.take(self.mesh._loader.rgba, ind, axis=0)
+
+        rgba = rgba.reshape(ret_shape)
+        return rgba
+
+    @node_method("surface_xyz2rgba(ns_xyz[..,3]) -> rgba[..,4]")
     def surface_xyz2rgba(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+        ret_shape = calc_ret_shape(ns_xyz, 4)
+
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
         color = jnp.take(self.mesh._loader.rgba, ind, axis=0)
+
+        color = color.reshape(ret_shape)
         return color
