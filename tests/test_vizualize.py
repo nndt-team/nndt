@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from .base import BaseTestCase
+from tests.base import BaseTestCase
 from nndt.vizualize import BasicVizualization
 
 LOG_FOLDER = 'test_log'

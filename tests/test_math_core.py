@@ -1,6 +1,6 @@
 import unittest
 
-from .base import BaseTestCase
+from tests.base import BaseTestCase
 from nndt.math_core import *
 from nndt.primitive_sdf import sdf_primitive_sphere
 

@@ -4,7 +4,7 @@ import haiku as hk
 import jax
 import jax.numpy as jnp
 
-from .base import BaseTestCase
+from tests.base import BaseTestCase
 from nndt.haiku_modules import DescConv
 from nndt.haiku_modules import LipMLP
 from nndt.haiku_modules import LipLinear

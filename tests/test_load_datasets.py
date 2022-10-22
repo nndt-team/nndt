@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 
-from .base import BaseTestCase
+from tests.base import BaseTestCase
 from nndt.datasets import ACDC
 
 DATASETS_FOLDER = '.datasets'

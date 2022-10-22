@@ -1,7 +1,7 @@
 import os.path
 import unittest
 
-from .base import BaseTestCase
+from tests.base import BaseTestCase
 from nndt.space2 import *
 
 FILE_TMP = "./test_file.space"
