@@ -22,27 +22,30 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: pwd
+        run: pwd
+
       # - name: Code style fixing
       #   run: |
       #     pip install black
       #     black --target-version=py310 .
 
-      - name: Test requirements installation
-        run: python setup.py install
+      # - name: Test requirements installation
+      #   run: python setup.py install
 
-      - name: Prepare patient data
-        run: 7z x tests/acdc_for_test.7z
+      # - name: Prepare patient data
+      #   run: 7z x tests/acdc_for_test.7z
 
-      - name: Generate coverage report
-        run: |
-          pip install pytest
-          pip install pytest-cov
-          pytest --cov=tests/test_space2_OLD --cov-report=xml
-        # run: python -m unittest discover tests
+      # - name: Generate coverage report
+      #   run: |
+      #     pip install pytest
+      #     pip install pytest-cov
+      #     pytest --cov=tests/test_space2_OLD --cov-report=xml
+      #   # run: python -m unittest discover tests
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: ./coverage.xml
+      #     flags: unittests
