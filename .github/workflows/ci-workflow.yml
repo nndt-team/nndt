@@ -17,32 +17,37 @@ jobs:
         uses: actions/setup-python@master
         with:
           python-version: "3.10"
-          cache: "pip"
 
       - name: Cache python modules
         uses: actions/cache@master
-        id: cache
+        id: cache-modules
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          path: ./.venv/
+          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install requirements
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
+          python -m venv ./.venv
+          . ./.venv/bin/activate
           python setup.py install
 
       - name: Fix code style
         run: |
+          . ./.venv/bin/activate
           pip install black
           black --target-version=py310 .
 
       - name: Unpack testing data
-        run: 7z x tests/acdc_for_test.7z
+        run: |
+          . ./.venv/bin/activate
+          7z x tests/acdc_for_test.7z
 
       - name: Generate coverage report
         run: |
+          . ./.venv/bin/activate
           pip install pytest pytest-cov
           pytest --cov=./ --cov-report=xml
 
