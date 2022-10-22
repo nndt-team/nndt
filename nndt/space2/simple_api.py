@@ -1,7 +1,7 @@
 import fnmatch
 import os
 import warnings
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 import jax
 import jax.numpy as jnp
@@ -195,14 +195,7 @@ def to_json(space: Space):
     return json_exp.export(space)
 
 
-def split_node_test_train(rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3):
-    child_ = tree_path._container_only_list()
-    indices = jnp.arange(len(child_))
-
-    train_index_list, test_index_list = train_test_split(indices, rng=rng_key, test_size=test_size)
-    train = [child_[i] for i in train_index_list]
-    test = [child_[i] for i in test_index_list]
-
+def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
     from nndt.space2.space_preloader import _update_bbox_bottom_to_up
     train_node = Group("train", parent=tree_path)
     for node in train:
@@ -215,6 +208,44 @@ def split_node_test_train(rng_key: KeyArray, tree_path: AbstractBBoxNode, test_s
 
     tree_path.root.init()
     return tree_path.root
+
+
+def split_node_test_train(rng_key: KeyArray,
+                          tree_path: AbstractBBoxNode,
+                          test_size: float = 0.3):
+    child_ = tree_path._container_only_list()
+    indices = jnp.arange(len(child_))
+
+    train_index_list, test_index_list = train_test_split(indices, rng=rng_key, test_size=test_size)
+    train = [child_[i] for i in train_index_list]
+    test = [child_[i] for i in test_index_list]
+
+    root = __reconstruct_tree(tree_path, train, test)
+    return root
+
+
+def split_node_kfold(tree_path: AbstractBBoxNode,
+                     n_fold: int = 5,
+                     k_for_test: Union[Sequence[int], int] = 0):
+    child_ = tree_path._container_only_list()
+    assert (len(child_) >= n_fold)
+    folds = jnp.array_split(jnp.arange(len(child_), dtype=int), n_fold)
+    k_lst = [k_for_test] if isinstance(k_for_test, int) else list(k_for_test)
+    train_ind = []
+    test_ind = []
+
+    for fold_i, fold_tpl in enumerate(folds):
+        for i in fold_tpl:
+            if fold_i in k_lst:
+                test_ind.append(i)
+            else:
+                train_ind.append(i)
+
+    train = [child_[i] for i in train_ind]
+    test = [child_[i] for i in test_ind]
+
+    root = __reconstruct_tree(tree_path, train, test)
+    return root
 
 
 def add_sphere(tree_path: AbstractBBoxNode,

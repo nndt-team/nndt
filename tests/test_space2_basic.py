@@ -196,7 +196,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space.preload()
         print(space.print('full'))
 
-    def test_test_train_split(self):
+    def test_test_test_train_split(self):
         rng_key = jax.random.PRNGKey(42)
 
         space = load_from_path(PATH_TEST_ACDC)
@@ -208,6 +208,41 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(3, len(space.train))
         print(space.print('default'))
         self.assertEqual(space.bbox, update_bbox(space.test.bbox, space.train.bbox))
+
+    def helper_load_kfold(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload()
+        return space
+
+    def test_split_node_kfold(self):
+        space = self.helper_load_kfold()
+        space = split_node_kfold(space, n_fold=5, k_for_test=0)
+        print(space.print('source'))
+        _ = space.test.patient009
+        _ = space.train.patient029
+        _ = space.train.patient049
+        _ = space.train.patient069
+        _ = space.train.patient089
+
+    def test_split_node_kfold2(self):
+        space = self.helper_load_kfold()
+        space = split_node_kfold(space, n_fold=5, k_for_test=4)
+        print(space.print('source'))
+        _ = space.train.patient009
+        _ = space.train.patient029
+        _ = space.train.patient049
+        _ = space.train.patient069
+        _ = space.test.patient089
+
+    def test_split_node_kfold_list(self):
+        space = self.helper_load_kfold()
+        space = split_node_kfold(space, n_fold=5, k_for_test=[0, 1, 4])
+        print(space.print('source'))
+        _ = space.test.patient009
+        _ = space.test.patient029
+        _ = space.train.patient049
+        _ = space.train.patient069
+        _ = space.test.patient089
 
     def test_helper_in_node_method(self):
 
