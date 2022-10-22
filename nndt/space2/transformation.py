@@ -66,9 +66,17 @@ class AbstractTransformation(AbstractBBoxNode):
 
 
 class IdentityTransform(AbstractTransformation):
+    """
+    Make Transformations without changes
+    """
 
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  parent=None):
+        """
+        Args:
+            ps_bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)). 
+            parent (_type_, optional): parent node. Defaults to None.
+        """
         super(IdentityTransform, self).__init__("transform", bbox=ps_bbox, parent=parent)
 
         self.bbox = ps_bbox
@@ -124,12 +132,22 @@ class IdentityTransform(AbstractTransformation):
 
 
 class ShiftAndScaleTransform(AbstractTransformation):
-
+    """
+    Make transformation with shift and scale
+    """
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  ps_center: (float, float, float),
                  ns_center: (float, float, float),
                  scale_ps2ns: float,
                  parent=None):
+        """
+        Args:
+            ps_bbox (float, float, float): boundary box in form.
+            ps_center (float, float, float): Physical space center.
+            ns_center (float, float, float): Normalized space center.
+            scale_ps2ns (float): Scale.
+            parent (_type_, optional): parent node. Defaults to None.
+        """
         super(ShiftAndScaleTransform, self).__init__("transform", parent=parent)
 
         self.ps_center = jnp.array(ps_center)
@@ -191,9 +209,17 @@ class ShiftAndScaleTransform(AbstractTransformation):
 
 
 class ToNormalCubeTransform(AbstractTransformation):
+    """
+    Make transform with normalization. Scales the cube to fit it in coordinates from -1 to 1
+    """
 
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  parent=None):
+        """
+        Args:
+            ps_bbox (float, float, float):  boundary box in form.
+            parent (_type_, optional):  parent node. Defaults to None.
+        """
         super(ToNormalCubeTransform, self).__init__("transform", parent=parent)
 
         self.ps_lower = jnp.array(ps_bbox[0])
