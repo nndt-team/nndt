@@ -73,6 +73,9 @@ def load_from_path(root_path,
                    template_txt='*.txt',
                    template_sdt='*sd[ft]*.npy',
                    template_mesh_obj='*.obj'):
+    if not os.path.exists(root_path):
+        raise FileNotFoundError(f"Path {root_path} is not exist. Check relative path or folder presence.")
+
     space = Space("space")
 
     def filename_to_loader_type(filename):
