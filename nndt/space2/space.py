@@ -41,9 +41,20 @@ def _add_method_sets_to_node(node: AbstractTreeElement):
 
 
 class Space(AbstractBBoxNode, IterAccessMixin):
+    """
+    Space is a root for element tree that is a container for other groups and 3D objects.
+    """
+    
     def __init__(self, name,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
+        """
+        Args:
+            name (str): name of the tree node
+            bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)). 
+                                    Defaults to ((0., 0., 0.), (0., 0., 0.)).
+            parent (_type_, optional): parent node. Defaults to None.
+        """
         super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
         self.version = nndt.__version__
 

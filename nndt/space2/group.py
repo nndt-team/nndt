@@ -12,8 +12,6 @@ class Group(AbstractBBoxNode, IterAccessMixin):
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
         """
-        Create a group. Group is an element tree that is a container for other groups and 3D objects
-
         :param name: name of the tree node
         :param bbox: boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max))
         :param parent: parent node
