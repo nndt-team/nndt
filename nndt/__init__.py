@@ -1,4 +1,4 @@
-__version__ = "0.0.3a1"
+__version__ = "0.0.3a2"
 
 from nndt.math_core import *
 from nndt.primitive_sdf import SphereSDF
