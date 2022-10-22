@@ -1,10 +1,11 @@
 import unittest
 
+from base import BaseTestCase
 from nndt.math_core import *
 from nndt.primitive_sdf import sdf_primitive_sphere
 
 
-class MathCoreTestCase(unittest.TestCase):
+class MathCoreTestCase(BaseTestCase):
 
     def test_grid_in_cube(self):
         cube = grid_in_cube(spacing=(4, 4, 4), scale=4., center_shift=(2., 2., 2.))

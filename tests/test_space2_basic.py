@@ -1,6 +1,7 @@
 import os.path
 import unittest
 
+from base import BaseTestCase
 from nndt.space2 import *
 
 FILE_TMP = "./test_file.space"
@@ -10,7 +11,7 @@ PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
 
 
-class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
+class SpaceModelBeforeInitializationTestCase(BaseTestCase):
 
     def setUp(self) -> None:
         if os.path.exists(FILE_TMP):

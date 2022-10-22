@@ -4,12 +4,13 @@ import haiku as hk
 import jax
 import jax.numpy as jnp
 
+from base import BaseTestCase
 from nndt.haiku_modules import DescConv
 from nndt.haiku_modules import LipMLP
 from nndt.haiku_modules import LipLinear
 
 
-class HaikuModulesTestCase(unittest.TestCase):
+class HaikuModulesTestCase(BaseTestCase):
 
     def test_DescConv_init(self):
         def init(X):

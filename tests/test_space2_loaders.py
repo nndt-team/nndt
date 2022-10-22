@@ -2,6 +2,7 @@ import unittest
 
 import jax.numpy as jnp
 
+from base import BaseTestCase
 from nndt.space2 import load_from_path
 
 FILE_TMP = "./test_file.space"
@@ -11,7 +12,7 @@ PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
 
 
-class LoadersTestCase(unittest.TestCase):
+class LoadersTestCase(BaseTestCase):
 
     def cmp_array(self, arr0, arr1, atol=0.1):
         arr0_ = jnp.array(arr0)

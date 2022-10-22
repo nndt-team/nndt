@@ -3,6 +3,7 @@ import unittest
 import jax
 import jax.numpy as jnp
 
+from base import BaseTestCase
 from nndt.space2 import load_from_path
 
 FILE_TMP = "./test_file.space"
@@ -12,7 +13,7 @@ PATH_TEST_STRUCTURE = './test_folder_tree'
 PATH_TEST_ACDC = './acdc_for_test'
 
 
-class MethodSetTestCase(unittest.TestCase):
+class MethodSetTestCase(BaseTestCase):
 
     def helper_sampling_presence(self, path):
         space = load_from_path(path)

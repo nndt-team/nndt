@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from base import BaseTestCase
 from nndt.space2 import load_from_path
 
 FILE_TMP_PNG = "./test_file.png"
@@ -8,7 +9,7 @@ FILE_TMP_PNG = "./test_file.png"
 PATH_TEST_ACDC = './acdc_for_test'
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(BaseTestCase):
 
     def setUp(self) -> None:
         if os.path.exists(FILE_TMP_PNG):

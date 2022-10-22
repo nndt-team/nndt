@@ -1,7 +1,9 @@
 import unittest
 
+from base import BaseTestCase
 
-class ImportTestCase(unittest.TestCase):
+
+class ImportTestCase(BaseTestCase):
 
     def test_math_core(self):
         from nndt import grid_in_cube, grid_in_cube2

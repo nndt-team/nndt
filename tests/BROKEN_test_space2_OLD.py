@@ -2,10 +2,11 @@ import unittest
 
 import haiku as hk
 
+from base import BaseTestCase
 from nndt.space2 import *
 
 
-class MyTestCase: # (unittest.TestCase):
+class MyTestCase: #(BaseTestCase): # (unittest.TestCase):
 
     def setUp(self):
         self.name_list = os.listdir('./acdc_for_test')
