@@ -6,9 +6,24 @@ from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 
 class FileSource(AbstractBBoxNode, IterAccessMixin):
+    """
+    File source.
+    """
     def __init__(self, name, filepath: str, loader_type: str,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
+        """
+        Args:
+            name (_type_): file name.
+            filepath (str): file path. If not exists raise FileNotFoundError.
+            loader_type (str): loader type.
+            bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)). 
+                                    Defaults to ((0., 0., 0.), (0., 0., 0.)).
+            parent (_type_, optional): parent node. Defaults to None.
+
+        Raises:
+            FileNotFoundError: _description_
+        """
         super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
         if not os.path.exists(filepath):
             raise FileNotFoundError()
