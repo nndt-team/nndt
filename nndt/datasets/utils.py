@@ -5,12 +5,13 @@ import re
 import urllib
 import urllib.error
 import urllib.request
-import zipfile
 import gdown
 import hashlib
+import py7zr
 
-def _download_from_url(url: str, path_to: str, chunk_size: int = 32768) -> str:
-    path_to = path_to + 'temp.zip'
+
+def _download_from_url(url: str, path_to: str, chunk_size: int = 32768, extension: str = '7z') -> str:
+    path_to = path_to + 'temp.' + extension
     r = requests.get(url, stream=True)
     with open(path_to, 'wb') as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
@@ -19,8 +20,8 @@ def _download_from_url(url: str, path_to: str, chunk_size: int = 32768) -> str:
     return path_to
 
 
-def _download_from_google(url: str, path_to: str = './') -> str:
-    path_to = path_to + 'temp.zip'
+def _download_from_google(url: str, path_to: str = './', extension: str = '7z') -> str:
+    path_to = path_to + 'temp.' + extension
 
     def get_id(url):
         parts = urllib.parse.urlparse(url)
@@ -34,9 +35,10 @@ def _download_from_google(url: str, path_to: str = './') -> str:
     return path_to
 
 
-def _extract_zip_file(from_path: str, to_path: str, delete_archive: bool = False) -> None:
-    with zipfile.ZipFile(from_path, "r", compression=zipfile.ZIP_STORED) as zip:
-        zip.extractall(to_path)
+def _extract_7z_file(from_path: str, to_path: str, delete_archive: bool = False) -> None:
+    with py7zr.SevenZipFile(from_path, mode='r') as z:
+        z.extractall(path=to_path)
+
     if delete_archive:
         os.remove(from_path)
 

@@ -5,11 +5,11 @@ import jax.numpy as jnp
 from jax.random import KeyArray
 
 
-def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
-    """Takes elements from an array along an axis
-    
-    An advanced range iterator that takes data according to the index and starts 
-    from the beginning of the array if the index is greater than the array length.
+def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
+    """An advanced range iterator that iterates over data and selects elements according to their index.
+    If during iteration the index becomes greater than the array length,
+     the iteration continues from the beginning of the array.
+    This function selects elements from an array along the axis zero, which is the first dimension.
     
     Parameters
     ----------
@@ -18,15 +18,15 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
     count : int, optional
         The number of elements to take (default is 1)
     step : int, optional
-        The stepwise movement along the array after each selected index
+        The step of iterator
     shift : int, optional
-        The starting index of the array element to take (default is 0)
+        Index shift for the first index (default is 0)
 
     Returns
     -------
-    ndarray
-        an array of indices used in selecting elements from the source array
-        an array of elements taken from the source array
+    (ndarray, ndarray)
+        an array of indices of the elements taken from the source array
+        an array of elements from the source array corresponding to the selected indices
     """
 
     _, index_set = jnp.divmod(shift + jnp.arange(0, count, dtype=int) * step, array.shape[0])
@@ -34,22 +34,23 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0):
     return index_set, jnp.take(array, index_set, axis=0)
 
 
-def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)):
-    """Samples points from a 3D cube according to a uniform grid
+def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)) -> jnp.ndarray:
+    """Draw samples from the uniform grid that is defined inside a bounding box
+    with center in the `center_shift` and size of `scale`
     
     Parameters
     ----------
     spacing : tuple, optional
-        A tuple of ints of step-lengths of the grid (default is (2, 2, 2))
+        Number of sections along X, Y, and Z axes (default is (2, 2, 2))
     scale : float, optional
-        The scaling factor (default is 2.)
+        The scaling factor which defines the size of bounding box (default is 2.)
     center_shift : tuple, optional
         A tuple of ints of coordinates by which to modify the center of the cube (default is (0., 0., 0.))
 
     Returns
     -------
     ndarray
-        mesh-grid of the sampled points from the 3D cube
+        3D mesh-grid with shape (spacing[0], spacing[1], spacing[2], 3)
     """
 
     center_shift_ = jnp.array(center_shift)
@@ -60,22 +61,22 @@ def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)):
     return scale * (cube - 0.5) + center_shift_
 
 
-def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)):
-    """Samples points from a 3D cube
+def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
+    """Draw samples from the uniform grid that is defined inside a (lower, upper) bounding box
     
     Parameters
     ----------
     spacing : tuple, optional
-        A tuple of ints of step-lengths of the grid (default is (4, 4, 4))
-    lower : tuple, optional
-        A tuple of ints of start values of the grid (default is (-2, -2, -2))
-    upper : tuple, optional
-        A tuple of ints of stop values of the grid (default is (2, 2, 2))
+        Number of sections along X, Y, and Z axes (default is (4, 4, 4))
+    lower: tuple, optional
+        position of lower point for the bounding box  (default is (-2, -2, -2)
+    upper: tuple, optional
+        position of upper point for the bounding box (default is (2, 2, 2)
 
     Returns
     -------
     ndarray
-        multi-dimensional mesh-grid
+        3D mesh-grid with shape (spacing[0], spacing[1], spacing[2], 3)
     """
     cube = jnp.mgrid[lower[0]:upper[0]:spacing[0] * 1j,
            lower[1]:upper[1]:spacing[1] * 1j,
@@ -84,27 +85,24 @@ def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)):
     return cube
 
 
-def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)):
-    """Randomly samples points from a 3d cube and stacks the arrays horizontally
+def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
+    """Draw samples from uniform distribution inside a (lower, upper) bounding box
     
     Parameters
     ----------
     rng_key: KeyArray
-        A PRNGKey used as the random key.
+        Jax key for a random generator
     count: int, optional
-        Length of array of random points to sample (default is 100)
+        Size of sampling (default is 100)
     lower: tuple, optional 
-        tuple of ints broadcast-compatible with ``shape``, a minimum 
-        (inclusive) value for the range (default is (-2, -2, -2)
+        position of lower point for the bounding box  (default is (-2, -2, -2)
     upper: tuple, optional
-        tuple of ints broadcast-compatible with  ``shape``, a maximum
-        (exclusive) value for the range (default is (2, 2, 2)
+        position of upper point for the bounding box (default is (2, 2, 2)
 
     Returns
     -------
     ndarray
-        a horizontally stacked array (shape is (`count`, 3)) of random floating 
-        points between the specified range of coordinates (lower and upper)
+        Array of random points (shape is (`count`, 3))
     """
     x = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[0], maxval=upper[0])
     y = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[1], maxval=upper[1])
@@ -113,17 +111,18 @@ def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 
 
 
 def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
-    """Presents view of barycentric_grid formula with various parameters
+    """Helper for 'barycentric_grid' function.
+    This method prints an iteration polynomial for the barycentric coordinates.
 
     Parameters
     ----------
     order : Sequence[Union[int, Sequence[int]]], optional
-        oder of params (defaults is (1, -1))
+        Order of iterators (defaults is (1, -1), as for the linear interpolation)
 
     Returns
     -------
     str
-        view of formula
+        Text representation of the polynomial
     """
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
 
@@ -158,21 +157,27 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
 def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
                      spacing: Sequence[int] = (0, 3),
                      filter_negative: bool = True):
-    """Makes a barycentyc grid
+    """Analog of nested `for` cycles in barycentric coordinates.
+    In 1D case without free variable this is linear interpolation.
+    In 2D case with free variable this is list of ternary plot points.
+    In ND case this works like a uniform grid inside N-simplex.
+    If this simplex is defined on the basis vectors of space.
 
     Parameters
     ----------
     order : (Sequence[Union[int, Sequence[int]]], optional)
-        order of parameters (defaults is (1, -1))
+        Order of iterator in the polynomial (defaults is (1, -1), as for the linear interpolation)
     spacing : (Sequence[int], optional)
-        _description_. (defaults is (0, 3))
+        This is grid spacing for each iterated variable.
+        N-value in some position is equivalent to jnp.linspace(0,1,N).
+        Zero element must be zero, because this is a technical definition for free variable.
     filter_negative : (bool, optional)
-        complite negative values (defaults is True)
+        Filter values outside the simple (defaults is True)
 
     Returns
     -------
-    jnp.array 
-        _description_
+    jnp.ndarray
+        List of vectors inside the simplex. All the vectors have len(spacing) components.
     """
     assert (len(order) >= 2), "The `order` parameter must include more than 1 iterator."
     assert (len(spacing) >= 2), "The `spacing` parameter must include more than 1 iterator."
@@ -237,9 +242,27 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     return ret
 
 
-def train_test_split(array: jnp.array,
+def train_test_split(array: jnp.ndarray,
                      rng: KeyArray,
                      test_size: float = 0.3) -> (list, list):
+    """
+    Split array to test and train subset. This is analog of `model_selection.train_test_split` in sklearn.
+
+    Parameters
+    ----------
+    array: jnp.ndarray :
+        Array for split
+    rng : KeyArray :
+        Jax key for a random generator
+    test_size: float:
+        Percent of test subset in the array
+
+    Returns
+    ----------
+    (list, list)
+        List of indexes for test and train subsets
+    """
+    assert (0. <= test_size <= 1.)
     indices = jnp.arange(len(array))
 
     test_index_list = [index for index in
@@ -250,3 +273,47 @@ def train_test_split(array: jnp.array,
     train_index_list = [index for index in indices.tolist() if index not in test_index_list]
 
     return train_index_list, test_index_list
+
+
+def rotation_matrix(yaw, pitch, roll):
+    """
+    Construct rotation matrix from three rotational angle
+
+    :param yaw:
+        The yaw in radian
+    :param pitch:
+        The pitch in radian
+    :param roll:
+        The roll in radian
+    :return:
+    """
+    Rz = jnp.array([[jnp.cos(yaw), -jnp.sin(yaw), 0.],
+                    [jnp.sin(yaw), jnp.cos(yaw), 0.],
+                    [0., 0., 1.]])
+    Ry = jnp.array([[jnp.cos(pitch), 0, jnp.sin(pitch)],
+                    [0, 1, 0],
+                    [-jnp.sin(pitch), 0., jnp.cos(pitch)]])
+    Rx = jnp.array([[1., 0., 0.],
+                    [0., jnp.cos(roll), -jnp.sin(roll)],
+                    [0., jnp.sin(roll), jnp.cos(roll)]])
+
+    return Rz @ Ry @ Rx
+    
+    
+def scale_xyz(xyz, scale=(1., 1., 1.)):
+    """
+    Scale array of points to the `scale` factor.
+
+    Parameters
+    ----------
+    :param xyz: Array of points
+    :param scale: The scale factor
+
+    Returns
+    -------
+    :return: Scaled array of points with shape equal to shape of `xyz` array
+    """
+    assert(xyz.shape[-1] == 3)
+    scale = jnp.array(scale)
+    xyz = scale*xyz
+    return xyz
