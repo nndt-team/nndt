@@ -2,16 +2,21 @@ import unittest
 
 import haiku as hk
 
-from tests.base import BaseTestCase
 from nndt.space.loaders import *
 from nndt.space.regions import *
 from nndt.space.repr_mesh import *
 from nndt.space.repr_sdt import *
 from nndt.space.sources import *
 from nndt.space.vtk_wrappers import *
+from tests.base import BaseTestCase
 
 
 class MyTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
     def test_something(self):
         self.assertEqual(True, True)  # add assertion here
 

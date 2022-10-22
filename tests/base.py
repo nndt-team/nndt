@@ -3,7 +3,7 @@ import unittest
 
 from py7zr import py7zr
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
+PATH_TEST_STRUCTURE = './tree_for_test'
 PATH_TEST_ACDC = './acdc_for_test'
 
 

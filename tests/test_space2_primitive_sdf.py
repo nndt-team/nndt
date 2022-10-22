@@ -1,13 +1,15 @@
 import unittest
 
 import nndt.space2 as spc
-from tests.base import BaseTestCase
 from nndt.primitive_sdf import *
-
-PATH_TEST_ACDC = './acdc_for_test'
+from tests.base import BaseTestCase, PATH_TEST_ACDC
 
 
 class PrimitiveSDFTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def test_sdf_primitive_sphere(self):
         ss = SphereSDF()

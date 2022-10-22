@@ -2,17 +2,18 @@ import unittest
 
 import jax.numpy as jnp
 
-from tests.base import BaseTestCase
 from nndt.space2 import load_from_path
+from tests.base import BaseTestCase, PATH_TEST_STRUCTURE, PATH_TEST_ACDC
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
-PATH_TEST_ACDC = './acdc_for_test'
-
 
 class LoadersTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def cmp_array(self, arr0, arr1, atol=0.1):
         arr0_ = jnp.array(arr0)
@@ -120,10 +121,12 @@ class LoadersTestCase(BaseTestCase):
     def test_preload_identity_pad(self):
         space = self.helper_transform_load(mode="identity", ps_padding=(3, 3, 3), ns_padding=(7, 7, 7))
 
-        self.cmp_array(((59.0-3., 112.0-3., 7.0-3.), (134.0+3., 183.0+3., 84.0+3.)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((59.0-3., 112.0-3., 7.0-3.), (134.0+3., 183.0+3., 84.0+3.)), space.patient009.transform.bbox)
-        self.cmp_array(((0.0-7., 0.0-7., 0.0-7.), (134.0+10., 183.0+10., 84.0+10.)), space.patient009.bbox)
-        self.cmp_array(((0.0-7., 0.0-7., 0.0-7.), (174.0+10., 198.0+10., 90.0+10.)), space.bbox)
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.sdf_npy.bbox)
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.transform.bbox)
+        self.cmp_array(((0.0 - 7., 0.0 - 7., 0.0 - 7.), (134.0 + 10., 183.0 + 10., 84.0 + 10.)), space.patient009.bbox)
+        self.cmp_array(((0.0 - 7., 0.0 - 7., 0.0 - 7.), (174.0 + 10., 198.0 + 10., 90.0 + 10.)), space.bbox)
 
     def test_preload_shift_and_scale(self):
         space = self.helper_transform_load(mode="shift_and_scale")
@@ -136,9 +139,12 @@ class LoadersTestCase(BaseTestCase):
     def test_preload_shift_and_scale_pad(self):
         space = self.helper_transform_load(mode="shift_and_scale", ps_padding=(3, 3, 3), ns_padding=(7, 7, 7))
 
-        self.cmp_array(((59.0-3., 112.0-3., 7.0-3.), (134.0+3., 183.0+3., 84.0+3.)), space.patient009.sdf_npy.bbox)
-        self.cmp_array(((-0.75-0.06, -0.71-0.06, -0.77-0.06), (0.75+0.06, 0.71+0.06, 0.77+0.06)), space.patient009.transform.bbox)
-        self.cmp_array(((-0.75-0.06-7, -0.71-0.06-7, -0.77-0.06-7), (0.75+0.06+7, 0.71+0.06+7, 0.77+0.06+7)), space.patient009.bbox)
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.sdf_npy.bbox)
+        self.cmp_array(((-0.75 - 0.06, -0.71 - 0.06, -0.77 - 0.06), (0.75 + 0.06, 0.71 + 0.06, 0.77 + 0.06)),
+                       space.patient009.transform.bbox)
+        self.cmp_array(((-0.75 - 0.06 - 7, -0.71 - 0.06 - 7, -0.77 - 0.06 - 7),
+                        (0.75 + 0.06 + 7, 0.71 + 0.06 + 7, 0.77 + 0.06 + 7)), space.patient009.bbox)
         self.cmp_array((((-7.82, -7.84, -7.89), (7.82, 7.84, 7.89))), space.bbox)
 
     def test_preload_to_cube(self):
@@ -152,10 +158,11 @@ class LoadersTestCase(BaseTestCase):
     def test_preload_to_cube_pad(self):
         space = self.helper_transform_load(mode="to_cube", ps_padding=(3, 3, 3), ns_padding=(7, 7, 7))
 
-        self.cmp_array(((59.0-3., 112.0-3., 7.0-3.), (134.0+3., 183.0+3., 84.0+3.)), space.patient009.sdf_npy.bbox)
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.sdf_npy.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.transform.bbox)
-        self.cmp_array(((-1-7, -1-7, -1-7), (1+7, 1+7, 1+7)), space.patient009.bbox)
-        self.cmp_array(((-1-7, -1-7, -1-7), (1+7, 1+7, 1+7)), space.bbox)
+        self.cmp_array(((-1 - 7, -1 - 7, -1 - 7), (1 + 7, 1 + 7, 1 + 7)), space.patient009.bbox)
+        self.cmp_array(((-1 - 7, -1 - 7, -1 - 7), (1 + 7, 1 + 7, 1 + 7)), space.bbox)
 
     def test_request_tree_nodes2(self):
         space = self.helper_transform_load(mode="identity")

@@ -4,8 +4,8 @@ import unittest
 
 import numpy as np
 
-from tests.base import BaseTestCase
 from nndt.vizualize import BasicVizualization
+from tests.base import BaseTestCase
 
 LOG_FOLDER = 'test_log'
 EXP_NAME = 'test_exp'
@@ -13,6 +13,10 @@ EPOCHS = 100
 
 
 class VizualizeTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def tearDown(self) -> None:
         shutil.rmtree(f'./{LOG_FOLDER}')

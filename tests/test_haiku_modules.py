@@ -4,13 +4,17 @@ import haiku as hk
 import jax
 import jax.numpy as jnp
 
-from tests.base import BaseTestCase
 from nndt.haiku_modules import DescConv
-from nndt.haiku_modules import LipMLP
 from nndt.haiku_modules import LipLinear
+from nndt.haiku_modules import LipMLP
+from tests.base import BaseTestCase
 
 
 class HaikuModulesTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def test_DescConv_init(self):
         def init(X):
@@ -77,6 +81,7 @@ class HaikuModulesTestCase(BaseTestCase):
                            name="lip_mlp_%d" % 2,
                            activation=jax.nn.tanh)
             return ll(x)
+
         lLinear = hk.transform(init)
         self.assertIsInstance(lLinear, tuple)
 

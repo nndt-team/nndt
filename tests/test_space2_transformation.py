@@ -3,18 +3,19 @@ import unittest
 import jax
 import jax.numpy as jnp
 
-from tests.base import BaseTestCase
 from nndt.math_core import grid_in_cube2
 from nndt.space2 import load_from_path
+from tests.base import BaseTestCase, PATH_TEST_ACDC
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
-PATH_TEST_ACDC = './acdc_for_test'
-
 
 class MethodSetTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def cmp_array(self, arr0, arr1, atol=0.1):
         arr0_ = jnp.array(arr0)

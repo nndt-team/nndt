@@ -2,12 +2,14 @@ import unittest
 
 import haiku as hk
 
-from tests.base import BaseTestCase
 from nndt.space2 import *
 
 
-class MyTestCase: #(BaseTestCase): # (unittest.TestCase):
+class MyTestCase:  # (BaseTestCase): # (unittest.TestCase):
 
+    # @classmethod
+    # def setUpClass(cls):
+    #     super().setUpClass()
     def setUp(self):
         self.name_list = os.listdir('./acdc_for_test')
         self.name_list = [filename[:10] for filename in self.name_list if 'patient' in filename]
