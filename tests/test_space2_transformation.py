@@ -3,7 +3,7 @@ import unittest
 import jax
 import jax.numpy as jnp
 
-from base import BaseTestCase
+from .base import BaseTestCase
 from nndt.math_core import grid_in_cube2
 from nndt.space2 import load_from_path
 

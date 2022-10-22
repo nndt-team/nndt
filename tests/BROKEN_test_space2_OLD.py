@@ -2,7 +2,7 @@ import unittest
 
 import haiku as hk
 
-from base import BaseTestCase
+from .base import BaseTestCase
 from nndt.space2 import *
 
 

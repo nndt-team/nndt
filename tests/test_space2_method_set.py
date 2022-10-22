@@ -3,7 +3,7 @@ import unittest
 import jax
 import jax.numpy as jnp
 
-from base import BaseTestCase
+from .base import BaseTestCase
 from nndt.space2 import load_from_path
 
 FILE_TMP = "./test_file.space"

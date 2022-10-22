@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from base import BaseTestCase
+from .base import BaseTestCase
 from nndt.space2 import load_from_path
 
 FILE_TMP_PNG = "./test_file.png"

@@ -1,7 +1,7 @@
 import unittest
 
 import nndt.space2 as spc
-from base import BaseTestCase
+from .base import BaseTestCase
 from nndt.primitive_sdf import *
 
 PATH_TEST_ACDC = './acdc_for_test'
