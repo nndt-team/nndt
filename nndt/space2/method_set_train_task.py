@@ -82,11 +82,11 @@ class TrainTaskSetNode(MethodSetNode):
             pbar.set_description(f"min_loss = {min_loss:.06f}")
 
             if loss < min_loss:
-                pickle.dump({"version": nndt.__version__,
+                with open(filename, 'wb') as fl:
+                    pickle.dump({"version": nndt.__version__,
                              "repr": {(k, v) for k, v in self.transform.__dict__.items() if
                                       isinstance(v, (int, float, str))},
                              "trainable_task": kwargs,
                              "history_loss": loss_history,
-                             "params": params},
-                            open(filename, 'wb'))
+                             "params": params}, fl)
                 min_loss = loss
