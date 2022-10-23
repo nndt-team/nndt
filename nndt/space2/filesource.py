@@ -8,12 +8,8 @@ from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 class FileSource(AbstractBBoxNode, IterAccessMixin):
     """
     File source.
-    """
-    def __init__(self, name, filepath: str, loader_type: str,
-                 bbox=((0., 0., 0.), (0., 0., 0.)),
-                 parent=None):
-        """
-        Args:
+    
+    Args:
             name (_type_): file name.
             filepath (str): file path. If not exists raise FileNotFoundError.
             loader_type (str): loader type.
@@ -22,8 +18,13 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
             parent (_type_, optional): parent node. Defaults to None.
 
         Raises:
-            FileNotFoundError: _description_
-        """
+            FileNotFoundError: file or directory is requested but doesn’t exist.
+    """
+    
+    def __init__(self, name, filepath: str, loader_type: str,
+                 bbox=((0., 0., 0.), (0., 0., 0.)),
+                 parent=None):
+
         super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
         if not os.path.exists(filepath):
             raise FileNotFoundError()
