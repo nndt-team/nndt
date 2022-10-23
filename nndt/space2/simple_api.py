@@ -14,7 +14,7 @@ from nndt.primitive_sdf import SphereSDF
 from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
 from nndt.space2.group import Group
 from nndt.space2.implicit_representation import ImpRepr
-from nndt.space2.loader import FileSource
+from nndt.space2.filesource import FileSource
 from nndt.space2.method_set import SDTMethodSetNode, SamplingMethodSetNode
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space
