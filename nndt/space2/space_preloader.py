@@ -7,6 +7,7 @@ from nndt.space2 import pad_bbox
 from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
     MeshObjMethodSetNode, \
     DICT_NODETYPE_PRIORITY
+from nndt.space2.method_set_train_task import TrainTaskSetNode
 
 
 def _update_bbox_bottom_to_up(node):
@@ -104,6 +105,7 @@ class DefaultPreloader:
             if len(sdt_array_list) and transform is not None:
                 sdt = sdt_array_list[0]
                 SDTMethodSetNode(node, sdt, transform, parent=node)
+                TrainTaskSetNode(node, sdt, transform, parent=node)
 
         return transform
 
