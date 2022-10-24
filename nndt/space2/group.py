@@ -5,7 +5,7 @@ from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 class Group(AbstractBBoxNode, IterAccessMixin):
     """
-    Group is an element tree that is a container for other groups and 3D objects.
+    Group is a tree element that can contain other groups and 3D objects.
 
     Args:
         name (str): name of the tree node.
