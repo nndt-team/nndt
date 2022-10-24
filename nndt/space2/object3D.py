@@ -5,7 +5,8 @@ from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 class Object3D(AbstractBBoxNode, IterAccessMixin):
     """
-    An object that can only contain data sources. Сan be represented by multiple files.
+    Object3D is a representation of object as a whole one. This node can contains data sources, method sets, transformations, and methods. 
+    Object3D cannot include other objects. One object may be defiened by multiple files with various extensions and schemes of data storage.
     
     Args:
         name (str): Name of object.
