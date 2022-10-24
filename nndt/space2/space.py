@@ -42,7 +42,7 @@ def _add_method_sets_to_node(node: AbstractTreeElement):
 
 class Space(AbstractBBoxNode, IterAccessMixin):
     """
-    Space is a root for element tree that is a container for other groups and 3D objects.
+    Space is the root tree element that can contain groups and 3D objects.
     
     Args:
         name (str): name of the tree node.
