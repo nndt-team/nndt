@@ -67,7 +67,7 @@ class AbstractTransformation(AbstractBBoxNode):
 
 class IdentityTransform(AbstractTransformation):
     """
-    Make Transformations without changes.
+    Transfer object of the physical space to normalized space without any changes.
     
     Args:
         ps_bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)). 
@@ -132,7 +132,7 @@ class IdentityTransform(AbstractTransformation):
 
 class ShiftAndScaleTransform(AbstractTransformation):
     """
-    Make transformation with shift and scale
+    Transfer objects from a physical space to normalized space using shift and scale transformation.
     
     Args:
         ps_bbox (float, float, float): boundary box in form.
@@ -209,7 +209,9 @@ class ShiftAndScaleTransform(AbstractTransformation):
 
 class ToNormalCubeTransform(AbstractTransformation):
     """
-    Make transform with normalization. Scales the cube to fit it in coordinates from -1 to 1
+    Transfer objects from a physical space to normalized space.
+    All objects are scales to cube with coordinates from -1 to 1.
+    This approach is similar to NormalScaler in scikit-learn.
     
     Args:
         ps_bbox (float, float, float):  boundary box in form.
