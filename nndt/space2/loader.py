@@ -1,3 +1,4 @@
+import pickle
 import warnings
 from typing import Optional
 
@@ -6,8 +7,9 @@ import vtk
 from pykdtree.kdtree import KDTree
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
+import nndt
 from nndt.space2.abstracts import AbstractLoader
-
+from packaging import version
 
 class EmptyLoader(AbstractLoader):
 
@@ -227,8 +229,34 @@ class SDTLoader(AbstractLoader):
         return self.is_load
 
 
+class IR1Loader(AbstractLoader):
+
+    def __init__(self, filepath: str):
+        self.filepath = filepath
+        self.is_load = False
+
+        self.json_ = None
+
+    def load_data(self):
+        with open(self.filepath, "rb") as input_file:
+            self.json_ = pickle.load(input_file)
+            version_ = self.json_["version"]
+
+        if version.parse(nndt.__version__) < version.parse(version_):
+            warnings.warn("Loaded neural network was created on earlier version of NNDT!")
+
+        self.is_load = True
+
+    def unload_data(self):
+        self.json_ = None
+
+    def is_load(self) -> bool:
+        return self.is_load
+
+
 DICT_LOADERTYPE_CLASS = {'txt': TXTLoader,
                          'sdt': SDTLoader,
                          'mesh_obj': MeshObjLoader,
+                         'implicit_ir1': IR1Loader,
                          'undefined': EmptyLoader}
 DICT_CLASS_LOADERTYPE = {(v, k) for k, v in DICT_LOADERTYPE_CLASS.items()}

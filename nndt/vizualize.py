@@ -8,7 +8,6 @@ import matplotlib.pylab as plt
 import numpy as onp
 
 from nndt.space.repr_mesh import SaveMesh
-from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
 
 
 class IteratorWithTimeMeasurements:
@@ -162,6 +161,8 @@ class BasicVizualization:
         """
         assert (array.ndim == 3)
         array_ = onp.array(array)
+
+        from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
 
         verts, faces = array_to_vert_and_faces(array_, level=level)
         save_verts_and_faces_to_obj(os.path.join(self.folder, f"{filename}.obj"), verts, faces)
