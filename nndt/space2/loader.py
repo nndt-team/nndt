@@ -15,7 +15,7 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
     def __init__(self, name, filepath: str, loader_type: str,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
-        super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.GREEN, _nodetype='FS')
+        super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype='FS')
         if not os.path.exists(filepath):
             raise FileNotFoundError()
         self.filepath = filepath

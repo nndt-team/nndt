@@ -41,28 +41,17 @@ def _add_method_sets_to_node(node: AbstractTreeElement):
 
 
 class Space(AbstractBBoxNode, IterAccessMixin):
-    """
-    Space is the root tree element that can contain groups and 3D objects.
-    
-    Args:
-        name (str): name of the tree node.
-        bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)). 
-                                Defaults to ((0., 0., 0.), (0., 0., 0.)).
-        parent (_type_, optional): parent node. Defaults to None.
-    """
-    
     def __init__(self, name,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
-
-        super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
+        super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.YELLOW,  _nodetype='S')
         self.version = nndt.__version__
 
         self._is_init = False
         self._is_preload = False
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.LIGHTBLACK_EX + f' {self.version}' + Fore.RESET
 
     @node_method("save_space_to_file(filepath)")
     def save_space_to_file(self, filepath: str):
@@ -111,5 +100,5 @@ class Space(AbstractBBoxNode, IterAccessMixin):
         """
         if not self._is_preload:
             from nndt.space2.space_preloader import DefaultPreloader
-            self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory)
+            self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory )
             self.preloader.preload(self)
