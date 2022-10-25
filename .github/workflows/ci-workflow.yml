@@ -38,7 +38,7 @@ jobs:
         run: |
           . ./.venv/bin/activate
           pip install black
-          black --target-version=py310 .
+          black --check .
 
       - name: Unpack testing data
         run: |
