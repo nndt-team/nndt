@@ -1,12 +1,12 @@
+import jax.numpy as jnp
+from jax.random import PRNGKey, split
+
 import nndt.space2 as spc
 from nndt.datagen import DataGenForSegmentation
-from tests.base import BaseTestCase, PATH_TEST_ACDC
-from jax.random import PRNGKey, split
-import jax.numpy as jnp
+from tests.base import PATH_TEST_ACDC, BaseTestCase
 
 
 class DatagenTestCase(BaseTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

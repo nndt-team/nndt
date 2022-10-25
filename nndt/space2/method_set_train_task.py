@@ -8,23 +8,23 @@ from tqdm import tqdm
 
 import nndt
 from nndt import SimpleSDF
-from nndt.space2 import FileSource
-from nndt.space2 import MethodSetNode
-from nndt.space2 import node_method
+from nndt.space2 import FileSource, MethodSetNode, node_method
 from nndt.space2.abstracts import AbstractBBoxNode
 from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.transformation import AbstractTransformation
 
 
 class TrainTaskSetNode(MethodSetNode):
-    def __init__(self,
-                 object_3d: AbstractBBoxNode,
-                 sdt: Union[FileSource, ImpRepr],
-                 transform: AbstractTransformation,
-                 parent: AbstractBBoxNode = None):
-        super(TrainTaskSetNode, self).__init__('train_task', parent=parent)
+    def __init__(
+        self,
+        object_3d: AbstractBBoxNode,
+        sdt: Union[FileSource, ImpRepr],
+        transform: AbstractTransformation,
+        parent: AbstractBBoxNode = None,
+    ):
+        super(TrainTaskSetNode, self).__init__("train_task", parent=parent)
         self.object_3d = object_3d
-        assert (isinstance(sdt, ImpRepr) or sdt.loader_type == 'sdt')
+        assert isinstance(sdt, ImpRepr) or sdt.loader_type == "sdt"
         self.sdt = sdt
         self.transform = transform
 
@@ -37,26 +37,42 @@ class TrainTaskSetNode(MethodSetNode):
         sdf_flat = jnp.squeeze(self.parent.sdt.surface_xyz2sdt(xyz_flat))
         xyz_flat = jnp.array(xyz_flat)
 
-        data = SimpleSDF.DATA(X=xyz_flat[:, 0], Y=xyz_flat[:, 1], Z=xyz_flat[:, 2], SDF=sdf_flat)
+        data = SimpleSDF.DATA(
+            X=xyz_flat[:, 0], Y=xyz_flat[:, 1], Z=xyz_flat[:, 2], SDF=sdf_flat
+        )
         return data
 
     @node_method("train_task_sdt2sdf(filename, **kwargs)")
-    def train_task_sdt2sdf(self,
-                           filename,
-                           spacing=(64, 64, 64),
-                           width=32,
-                           depth=8,
-                           learning_rate=0.006,
-                           epochs=10001):
-        if not (hasattr(self.parent, "sampling") and hasattr(self.parent.sampling, "sampling_grid")):
-            raise NotImplementedError("This error is really bad. Initialization order was broken!")
-        if not (hasattr(self.parent, "sdt") and hasattr(self.parent.sdt, "surface_xyz2sdt")):
-            raise NotImplementedError("This error is really bad. Initialization order was broken!")
+    def train_task_sdt2sdf(
+        self,
+        filename,
+        spacing=(64, 64, 64),
+        width=32,
+        depth=8,
+        learning_rate=0.006,
+        epochs=10001,
+    ):
+        if not (
+            hasattr(self.parent, "sampling")
+            and hasattr(self.parent.sampling, "sampling_grid")
+        ):
+            raise NotImplementedError(
+                "This error is really bad. Initialization order was broken!"
+            )
+        if not (
+            hasattr(self.parent, "sdt") and hasattr(self.parent.sdt, "surface_xyz2sdt")
+        ):
+            raise NotImplementedError(
+                "This error is really bad. Initialization order was broken!"
+            )
 
-        kwargs = {"mlp_layers": tuple([width] * depth + [1]),
-                  "batch_size": spacing[0] * spacing[1] * spacing[2]}
+        kwargs = {
+            "mlp_layers": tuple([width] * depth + [1]),
+            "batch_size": spacing[0] * spacing[1] * spacing[2],
+        }
 
         from nndt.trainable_task import SimpleSDF
+
         task = SimpleSDF(**kwargs)
         rng = jax.random.PRNGKey(42)
         params, F = task.init_and_functions(rng)
@@ -82,11 +98,19 @@ class TrainTaskSetNode(MethodSetNode):
             pbar.set_description(f"min_loss = {min_loss:.06f}")
 
             if loss < min_loss:
-                with open(filename, 'wb') as fl:
-                    pickle.dump({"version": nndt.__version__,
-                             "repr": {(k, v) for k, v in self.transform.__dict__.items() if
-                                      isinstance(v, (int, float, str))},
-                             "trainable_task": kwargs,
-                             "history_loss": loss_history,
-                             "params": params}, fl)
+                with open(filename, "wb") as fl:
+                    pickle.dump(
+                        {
+                            "version": nndt.__version__,
+                            "repr": {
+                                (k, v)
+                                for k, v in self.transform.__dict__.items()
+                                if isinstance(v, (int, float, str))
+                            },
+                            "trainable_task": kwargs,
+                            "history_loss": loss_history,
+                            "params": params,
+                        },
+                        fl,
+                    )
                 min_loss = loss

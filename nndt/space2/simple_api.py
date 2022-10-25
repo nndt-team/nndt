@@ -11,11 +11,11 @@ from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
 from nndt.primitive_sdf import SphereSDF
-from nndt.space2 import AbstractTreeElement, AbstractBBoxNode
+from nndt.space2 import AbstractBBoxNode, AbstractTreeElement
 from nndt.space2.filesource import FileSource
 from nndt.space2.group import Group
 from nndt.space2.implicit_representation import ImpRepr
-from nndt.space2.method_set import SDTMethodSetNode, SamplingMethodSetNode
+from nndt.space2.method_set import SamplingMethodSetNode, SDTMethodSetNode
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space
 from nndt.space2.transformation import IdentityTransform
@@ -68,19 +68,24 @@ def load_only_one_file(fullpath, loader_type="txt"):
 
     space = Space("space")
     default = Object3D("default", parent=space)
-    _filesource = FileSource(os.path.basename(fullpath), fullpath, loader_type,
-                             parent=default)
+    _filesource = FileSource(
+        os.path.basename(fullpath), fullpath, loader_type, parent=default
+    )
     space.init()
     return space
 
 
-def load_from_path(root_path,
-                   template_txt="*.txt",
-                   template_sdt="*sd[ft]*.npy",
-                   template_mesh_obj="*.obj",
-                   template_implicit_ir1="*.ir1"):
+def load_from_path(
+    root_path,
+    template_txt="*.txt",
+    template_sdt="*sd[ft]*.npy",
+    template_mesh_obj="*.obj",
+    template_implicit_ir1="*.ir1",
+):
     if not os.path.exists(root_path):
-        raise FileNotFoundError(f"Path {root_path} is not exist. Check relative path or folder presence.")
+        raise FileNotFoundError(
+            f"Path {root_path} is not exist. Check relative path or folder presence."
+        )
 
     loader_type_array = []
     space = Space("space")
@@ -90,9 +95,13 @@ def load_from_path(root_path,
             ret = "txt"
         elif (template_sdt is not None) and fnmatch.fnmatch(filename, template_sdt):
             ret = "sdt"
-        elif (template_mesh_obj is not None) and fnmatch.fnmatch(filename, template_mesh_obj):
+        elif (template_mesh_obj is not None) and fnmatch.fnmatch(
+            filename, template_mesh_obj
+        ):
             ret = "mesh_obj"
-        elif (template_implicit_ir1 is not None) and fnmatch.fnmatch(filename, template_implicit_ir1):
+        elif (template_implicit_ir1 is not None) and fnmatch.fnmatch(
+            filename, template_implicit_ir1
+        ):
             ret = "implicit_ir1"
         else:
             warnings.warn("Some file in path is ignored")
@@ -115,7 +124,9 @@ def load_from_path(root_path,
                         loader_type = filename_to_loader_type(filename)
                         if loader_type is not None:
                             loader_type_array.append(loader_type)
-                            current_node_ = FileSource(name_, fullpath, loader_type, parent=current_node_)
+                            current_node_ = FileSource(
+                                name_, fullpath, loader_type, parent=current_node_
+                            )
 
     for root, dirs, files in os.walk(root_path, topdown=False):
         for fl in files:
@@ -124,18 +135,20 @@ def load_from_path(root_path,
             lst = line2.split("/")
             add_values(lst, os.path.join(root, fl), fl)
 
-    if ('sdt' in loader_type_array) and ('implicit_ir1' in loader_type_array):
-        raise NotImplementedError('SDT and SDF simultaneously are not supported yet!')
+    if ("sdt" in loader_type_array) and ("implicit_ir1" in loader_type_array):
+        raise NotImplementedError("SDT and SDF simultaneously are not supported yet!")
 
     space.init()
     return space
 
 
-def load_from_file_lists(name_list,
-                         mesh_list: Optional[Sequence[str]] = None,
-                         sdt_list: Optional[Sequence[str]] = None,
-                         ir1_list: Optional[Sequence[str]] = None,
-                         test_size: Optional[float] = None) -> Space:
+def load_from_file_lists(
+    name_list,
+    mesh_list: Optional[Sequence[str]] = None,
+    sdt_list: Optional[Sequence[str]] = None,
+    ir1_list: Optional[Sequence[str]] = None,
+    test_size: Optional[float] = None,
+) -> Space:
     if mesh_list is not None:
         assert len(name_list) == len(mesh_list)
     if sdt_list is not None:
@@ -144,7 +157,7 @@ def load_from_file_lists(name_list,
         assert len(name_list) == len(ir1_list)
 
     if (sdt_list is not None) and (ir1_list is not None):
-        raise NotImplementedError('SDT and SDF simultaneously are not supported yet!')
+        raise NotImplementedError("SDT and SDF simultaneously are not supported yet!")
 
     if test_size is None:
         space = Space("main")
@@ -185,9 +198,19 @@ def load_from_file_lists(name_list,
                     parent=object_,
                 )
             if sdt_list is not None:
-                sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
+                sdt_source = FileSource(
+                    os.path.basename(sdt_list[ind]),
+                    sdt_list[ind],
+                    "sdt",
+                    parent=object_,
+                )
             if ir1_list is not None:
-                ir1_source = FileSource(os.path.basename(ir1_list[ind]), ir1_list[ind], 'implicit_ir1', parent=object_)
+                ir1_source = FileSource(
+                    os.path.basename(ir1_list[ind]),
+                    ir1_list[ind],
+                    "implicit_ir1",
+                    parent=object_,
+                )
 
         group_test = Group("test", parent=space)
         for ind in index_test:
@@ -201,9 +224,19 @@ def load_from_file_lists(name_list,
                     parent=object_,
                 )
             if sdt_list is not None:
-                sdt_source = FileSource(os.path.basename(sdt_list[ind]), sdt_list[ind], 'sdt', parent=object_)
+                sdt_source = FileSource(
+                    os.path.basename(sdt_list[ind]),
+                    sdt_list[ind],
+                    "sdt",
+                    parent=object_,
+                )
             if ir1_list is not None:
-                ir1_source = FileSource(os.path.basename(ir1_list[ind]), ir1_list[ind], 'implicit_ir1', parent=object_)
+                ir1_source = FileSource(
+                    os.path.basename(ir1_list[ind]),
+                    ir1_list[ind],
+                    "implicit_ir1",
+                    parent=object_,
+                )
 
     space.init()
     return space

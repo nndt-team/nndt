@@ -1,12 +1,20 @@
 from anytree import PostOrderIter, PreOrderIter
 
-from nndt.space2 import ColorMethodSetNode
-from nndt.space2 import SDTMethodSetNode
-from nndt.space2 import SamplingMethodSetNode
-from nndt.space2 import pad_bbox
-from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
-    MeshObjMethodSetNode, \
-    DICT_NODETYPE_PRIORITY
+from nndt.space2 import (
+    DICT_NODETYPE_PRIORITY,
+    AbstractBBoxNode,
+    AbstractTransformation,
+    ColorMethodSetNode,
+    FileSource,
+    Group,
+    MeshObjMethodSetNode,
+    Object3D,
+    SamplingMethodSetNode,
+    SDTMethodSetNode,
+    Space,
+    pad_bbox,
+    update_bbox,
+)
 from nndt.space2.method_set_train_task import TrainTaskSetNode
 
 
@@ -147,8 +155,9 @@ class DefaultPreloader:
     def _init_FileSource(self, node: FileSource):
 
         from nndt.space2 import DICT_LOADERTYPE_CLASS
+
         if node.loader_type not in DICT_LOADERTYPE_CLASS:
-            raise NotImplementedError(f'{node.loader_type} is unknown loader')
+            raise NotImplementedError(f"{node.loader_type} is unknown loader")
 
         node._loader = DICT_LOADERTYPE_CLASS[node.loader_type](filepath=node.filepath)
         node._loader.load_data()

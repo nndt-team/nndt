@@ -1,19 +1,18 @@
-import os
+import pickle
 import warnings
 from typing import Optional
 
 import jax.numpy as jnp
 import vtk
-from colorama import Fore
+from packaging import version
 from pykdtree.kdtree import KDTree
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
 import nndt
 from nndt.space2.abstracts import AbstractLoader
-from packaging import version
+
 
 class EmptyLoader(AbstractLoader):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -29,7 +28,6 @@ class EmptyLoader(AbstractLoader):
 
 
 class TXTLoader(AbstractLoader):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -42,7 +40,7 @@ class TXTLoader(AbstractLoader):
         return self._text
 
     def load_data(self):
-        with open(self.filepath, 'r') as fl:
+        with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
@@ -60,15 +58,15 @@ def _load_colors_from_obj(filepath):
     blue = []
     alpha = []
 
-    with open(filepath, 'r') as fl:
+    with open(filepath, "r") as fl:
         for line in fl:
             if "v" in line:
                 tokens = line.split(" ")
                 if ("v" == tokens[0]) and (len(tokens) >= 7):
-                    red.append(float(tokens[4].replace(',', '.')))
-                    green.append(float(tokens[5].replace(',', '.')))
-                    blue.append(float(tokens[6].replace(',', '.')))
-                    alpha.append(1.)
+                    red.append(float(tokens[4].replace(",", ".")))
+                    green.append(float(tokens[5].replace(",", ".")))
+                    blue.append(float(tokens[6].replace(",", ".")))
+                    alpha.append(1.0)
 
     red = jnp.array(red)
     green = jnp.array(green)
@@ -86,17 +84,17 @@ def _load_colors_from_ply(filepath):
 
     is_read_mode = False
 
-    with open(filepath, 'r') as fl:
+    with open(filepath, "r") as fl:
         for line in fl:
             if "end_header" in line:
                 is_read_mode = True
             if is_read_mode:
                 tokens = line.split(" ")
                 if len(tokens) >= 10:
-                    red.append(float(tokens[6].replace(',', '.')))
-                    green.append(float(tokens[7].replace(',', '.')))
-                    blue.append(float(tokens[8].replace(',', '.')))
-                    alpha.append(float(tokens[9].replace(',', '.')))
+                    red.append(float(tokens[6].replace(",", ".")))
+                    green.append(float(tokens[7].replace(",", ".")))
+                    blue.append(float(tokens[8].replace(",", ".")))
+                    alpha.append(float(tokens[9].replace(",", ".")))
 
     red = jnp.array(red) / 255
     green = jnp.array(green) / 255
@@ -173,17 +171,23 @@ class SDTLoader(AbstractLoader):
         self.filepath = filepath
         self.is_load = False
         self._sdt = None
-        self._sdt_threshold_level = 0.
+        self._sdt_threshold_level = 0.0
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
-        mask_arr = (self.sdt <= self._sdt_threshold_level)
+        mask_arr = self.sdt <= self._sdt_threshold_level
         Xmin = float(jnp.argmax(jnp.any(mask_arr, axis=(1, 2))))
         Ymin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 2))))
         Zmin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 1))))
 
-        Xmax = float(self.sdt.shape[0] - jnp.argmax(jnp.any(mask_arr, axis=(1, 2))[::-1]))
-        Ymax = float(self.sdt.shape[1] - jnp.argmax(jnp.any(mask_arr, axis=(0, 2))[::-1]))
-        Zmax = float(self.sdt.shape[2] - jnp.argmax(jnp.any(mask_arr, axis=(0, 1))[::-1]))
+        Xmax = float(
+            self.sdt.shape[0] - jnp.argmax(jnp.any(mask_arr, axis=(1, 2))[::-1])
+        )
+        Ymax = float(
+            self.sdt.shape[1] - jnp.argmax(jnp.any(mask_arr, axis=(0, 2))[::-1])
+        )
+        Zmax = float(
+            self.sdt.shape[2] - jnp.argmax(jnp.any(mask_arr, axis=(0, 1))[::-1])
+        )
 
         return (Xmin, Ymin, Zmin), (Xmax, Ymax, Zmax)
 
@@ -199,8 +203,8 @@ class SDTLoader(AbstractLoader):
 
     def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
 
-        assert (ps_xyz.ndim >= 1)
-        assert (ps_xyz.shape[-1] == 3)
+        assert ps_xyz.ndim >= 1
+        assert ps_xyz.shape[-1] == 3
 
         if ps_xyz.ndim == 1:
             p_array_ = ps_xyz[jnp.newaxis, :]
@@ -231,7 +235,6 @@ class SDTLoader(AbstractLoader):
 
 
 class IR1Loader(AbstractLoader):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -244,7 +247,9 @@ class IR1Loader(AbstractLoader):
             version_ = self.json_["version"]
 
         if version.parse(nndt.__version__) < version.parse(version_):
-            warnings.warn("Loaded neural network was created on earlier version of NNDT!")
+            warnings.warn(
+                "Loaded neural network was created on earlier version of NNDT!"
+            )
 
         self.is_load = True
 
@@ -255,9 +260,11 @@ class IR1Loader(AbstractLoader):
         return self.is_load
 
 
-DICT_LOADERTYPE_CLASS = {'txt': TXTLoader,
-                         'sdt': SDTLoader,
-                         'mesh_obj': MeshObjLoader,
-                         'implicit_ir1': IR1Loader,
-                         'undefined': EmptyLoader}
+DICT_LOADERTYPE_CLASS = {
+    "txt": TXTLoader,
+    "sdt": SDTLoader,
+    "mesh_obj": MeshObjLoader,
+    "implicit_ir1": IR1Loader,
+    "undefined": EmptyLoader,
+}
 DICT_CLASS_LOADERTYPE = {(v, k) for k, v in DICT_LOADERTYPE_CLASS.items()}
