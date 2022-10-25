@@ -20,7 +20,6 @@ DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80, "IR": 70,
 
 
 def node_method(helpstr=None):
-
     def decorator_wrapper(fn):
         classname = str(fn.__qualname__).split('.')[0]
         if classname not in NODE_METHOD_DICT:

@@ -8,9 +8,15 @@ from nndt.space.repr_mesh import *
 from nndt.space.repr_sdt import *
 from nndt.space.sources import *
 from nndt.space.vtk_wrappers import *
+from tests.base import BaseTestCase
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
     def test_something(self):
         self.assertEqual(True, True)  # add assertion here
 

@@ -7,6 +7,7 @@
 * Imports are shorter for users
 * New methods
   * Surface data (+2):  `.surface_xyz()`, `.surface_rgba()`
+  * Space model modification (1): `split_node_kfold`
 * Code quality
   * CI pipeline become faster for new PR
   * 75% of code coverage in CodeCov
@@ -24,7 +25,7 @@
     * Space model serialization (2): `to_json`, `save_space_to_file`
     * Space model deserialization (2): `read_space_from_file`, `from_json`
     * Primitive generation (1): `add_sphere`
-    * Space model modification (1): `split_node_test_train`'
+    * Space model modification (1): `split_node_test_train`
   * Available as methods in the space model tree (18)
     * General (3): `.plot`, `.print`, `.unload_from_memory`
     * Sampling (4): `.sampling_eachN_from_mesh`, `.sampling_grid`, `.sampling_grid_with_noise`, `.sampling_uniform`

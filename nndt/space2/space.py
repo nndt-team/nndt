@@ -90,7 +90,8 @@ class Space(AbstractBBoxNode, IterAccessMixin):
                                                     reverse=False)
 
     @node_method("preload(identity|shift_and_scale|to_cube, scale, keep_in_memory=True)")
-    def preload(self, mode="identity", scale=50, keep_in_memory=True):
+    def preload(self, mode="identity", scale=50, keep_in_memory=True,
+                ps_padding=(0., 0., 0.), ns_padding=(0., 0., 0.)):
         """Makes preload for Space if it was not done. Otherwise does nothing
 
         Args:
@@ -100,5 +101,10 @@ class Space(AbstractBBoxNode, IterAccessMixin):
         """
         if not self._is_preload:
             from nndt.space2.space_preloader import DefaultPreloader
-            self.preloader = DefaultPreloader(mode=mode, scale=scale, keep_in_memory=keep_in_memory )
+            self.preloader = DefaultPreloader(mode=mode,
+                                              scale=scale,
+                                              keep_in_memory=keep_in_memory,
+                                              ps_padding=ps_padding,
+                                              ns_padding=ns_padding)
+
             self.preloader.preload(self)

@@ -1,14 +1,19 @@
 import os
 import shutil
-import unittest
 
 from nndt.datasets import ACDC
+from tests.base import BaseTestCase
 
 DATASETS_FOLDER = '.datasets'
 DATA_FOLDER = DATASETS_FOLDER + '/ACDC_5'
 
 
-class DatasetLoadingCase(unittest.TestCase):
+class DatasetLoadingCase(BaseTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
     def tearDown(self) -> None:
         if os.path.exists(f'./{DATASETS_FOLDER}'):
             shutil.rmtree(f'./{DATASETS_FOLDER}')

@@ -3,6 +3,7 @@ from anytree import PostOrderIter, PreOrderIter
 from nndt.space2 import ColorMethodSetNode
 from nndt.space2 import SDTMethodSetNode
 from nndt.space2 import SamplingMethodSetNode
+from nndt.space2 import pad_bbox
 from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
     MeshObjMethodSetNode, \
     DICT_NODETYPE_PRIORITY
@@ -19,10 +20,15 @@ class DefaultPreloader:
     def __init__(self,
                  mode="identity",
                  scale=50,
-                 keep_in_memory=True):
+                 keep_in_memory=True,
+                 ps_padding=(0., 0., 0.),
+                 ns_padding=(0., 0., 0.)):
         self.mode = mode
         self.scale = scale
         self.keep_in_memory = keep_in_memory
+
+        self.ps_padding = ps_padding
+        self.ns_padding = ns_padding
 
     def preload(self, space: Space):
 
@@ -93,6 +99,7 @@ class DefaultPreloader:
             else:
                 raise NotImplementedError(f"{self.mode} is not supported for initialization")
             node.bbox = update_bbox(node.bbox, transform.bbox)
+            node.bbox = pad_bbox(node.bbox, self.ns_padding)
 
             if len(sdt_array_list) and transform is not None:
                 sdt = sdt_array_list[0]
@@ -124,6 +131,7 @@ class DefaultPreloader:
         node._loader = DICT_LOADERTYPE_CLASS[node.loader_type](filepath=node.filepath)
         node._loader.load_data()
         node.bbox = node._loader.calc_bbox()
+        node.bbox = pad_bbox(node.bbox, self.ps_padding)
 
         self._add_sampling_node(node)
 

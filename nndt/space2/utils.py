@@ -2,7 +2,6 @@ from typing import *
 
 import jax.numpy as jnp
 import numpy as onp
-import numpy as onp
 from skimage import measure
 
 
@@ -11,6 +10,7 @@ def calc_ret_shape(array: Union[jnp.ndarray, onp.ndarray], last_axis: int):
     ret_shape[-1] = last_axis
     ret_shape = tuple(ret_shape)
     return ret_shape
+
 
 def update_bbox(bbox1: ((float, float, float), (float, float, float)),
                 bbox2: ((float, float, float), (float, float, float))):
@@ -41,3 +41,18 @@ def array_to_vert_and_faces(array: Union[jnp.ndarray, onp.ndarray],
         faces = faces.flatten()
 
     return verts, faces
+
+
+def pad_bbox(bbox1: ((float, float, float), (float, float, float)), pad: (float, float, float)):
+    """
+    Expand bbox of the tree node with padding
+
+    Params
+    ------
+    :param bbox1: bbox of some node in the space tree
+    :param pad: padding for the box
+    :return: new bbox of the node
+    """
+    (Xmin1, Ymin1, Zmin1), (Xmax1, Ymax1, Zmax1) = bbox1
+    return ((Xmin1 - pad[0], Ymin1 - pad[1], Zmin1 - pad[2]),
+            (Xmax1 + pad[0], Ymax1 + pad[1], Zmax1 + pad[2]))

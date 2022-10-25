@@ -3,15 +3,17 @@ import unittest
 import jax.numpy as jnp
 
 from nndt.space2 import load_from_path
+from tests.base import BaseTestCase, PATH_TEST_STRUCTURE, PATH_TEST_ACDC
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
-PATH_TEST_ACDC = './acdc_for_test'
 
+class LoadersTestCase(BaseTestCase):
 
-class LoadersTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def cmp_array(self, arr0, arr1, atol=0.1):
         arr0_ = jnp.array(arr0)
@@ -101,9 +103,9 @@ class LoadersTestCase(unittest.TestCase):
                         (162.07835388183594, 166.13941955566406, 50.982513427734375)),
                        space.patient089.sdf_npy.bbox, tolerance)
 
-    def helper_transform_load(self, mode="identity"):
+    def helper_transform_load(self, mode="identity", **kwargs):
         space = load_from_path(PATH_TEST_ACDC)
-        space.preload(mode=mode, keep_in_memory=False)
+        space.preload(mode=mode, keep_in_memory=False, **kwargs)
         print(space.print("full"))
 
         return space
@@ -116,6 +118,16 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((0.0, 0.0, 0.0), (134.0, 183.0, 84.0)), space.patient009.bbox)
         self.cmp_array(((0.0, 0.0, 0.0), (174.0, 198.0, 90.0)), space.bbox)
 
+    def test_preload_identity_pad(self):
+        space = self.helper_transform_load(mode="identity", ps_padding=(3, 3, 3), ns_padding=(7, 7, 7))
+
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.sdf_npy.bbox)
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.transform.bbox)
+        self.cmp_array(((0.0 - 7., 0.0 - 7., 0.0 - 7.), (134.0 + 10., 183.0 + 10., 84.0 + 10.)), space.patient009.bbox)
+        self.cmp_array(((0.0 - 7., 0.0 - 7., 0.0 - 7.), (174.0 + 10., 198.0 + 10., 90.0 + 10.)), space.bbox)
+
     def test_preload_shift_and_scale(self):
         space = self.helper_transform_load(mode="shift_and_scale")
 
@@ -124,6 +136,17 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((-0.75, -0.71, -0.77), (0.75, 0.71, 0.77)), space.patient009.bbox)
         self.cmp_array(((-0.76, -0.78, -0.83), (0.76, 0.78, 0.83)), space.bbox)
 
+    def test_preload_shift_and_scale_pad(self):
+        space = self.helper_transform_load(mode="shift_and_scale", ps_padding=(3, 3, 3), ns_padding=(7, 7, 7))
+
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.sdf_npy.bbox)
+        self.cmp_array(((-0.75 - 0.06, -0.71 - 0.06, -0.77 - 0.06), (0.75 + 0.06, 0.71 + 0.06, 0.77 + 0.06)),
+                       space.patient009.transform.bbox)
+        self.cmp_array(((-0.75 - 0.06 - 7, -0.71 - 0.06 - 7, -0.77 - 0.06 - 7),
+                        (0.75 + 0.06 + 7, 0.71 + 0.06 + 7, 0.77 + 0.06 + 7)), space.patient009.bbox)
+        self.cmp_array((((-7.82, -7.84, -7.89), (7.82, 7.84, 7.89))), space.bbox)
+
     def test_preload_to_cube(self):
         space = self.helper_transform_load(mode="to_cube")
 
@@ -131,6 +154,15 @@ class LoadersTestCase(unittest.TestCase):
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.transform.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.bbox)
         self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.bbox)
+
+    def test_preload_to_cube_pad(self):
+        space = self.helper_transform_load(mode="to_cube", ps_padding=(3, 3, 3), ns_padding=(7, 7, 7))
+
+        self.cmp_array(((59.0 - 3., 112.0 - 3., 7.0 - 3.), (134.0 + 3., 183.0 + 3., 84.0 + 3.)),
+                       space.patient009.sdf_npy.bbox)
+        self.cmp_array(((-1, -1, -1), (1, 1, 1)), space.patient009.transform.bbox)
+        self.cmp_array(((-1 - 7, -1 - 7, -1 - 7), (1 + 7, 1 + 7, 1 + 7)), space.patient009.bbox)
+        self.cmp_array(((-1 - 7, -1 - 7, -1 - 7), (1 + 7, 1 + 7, 1 + 7)), space.bbox)
 
     def test_request_tree_nodes2(self):
         space = self.helper_transform_load(mode="identity")
@@ -146,6 +178,11 @@ class LoadersTestCase(unittest.TestCase):
         self.assertEqual(obj1, obj2)
         self.assertEqual(obj1, obj3)
         self.assertEqual(obj1, obj4)
+
+    def test_fail_preload_non_existed_path(self):
+        with self.assertRaises(FileNotFoundError):
+            space = load_from_path('../../../../../acdc_for_test')
+            space.preload()
 
 
 if __name__ == '__main__':

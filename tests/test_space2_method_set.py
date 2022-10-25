@@ -4,15 +4,17 @@ import jax
 import jax.numpy as jnp
 
 from nndt.space2 import load_from_path
+from tests.base import BaseTestCase, PATH_TEST_STRUCTURE, PATH_TEST_ACDC
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
-PATH_TEST_ACDC = './acdc_for_test'
 
+class MethodSetTestCase(BaseTestCase):
 
-class MethodSetTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def helper_sampling_presence(self, path):
         space = load_from_path(path)
@@ -108,6 +110,7 @@ class CheckAllMethodsTestCase(unittest.TestCase):
     def test_surface_rgba(self):
         rgba = self.space.patient009.surface_rgba()
         self.assertEqual((2502, 4), rgba.shape)
+
 
 if __name__ == '__main__':
     unittest.main()

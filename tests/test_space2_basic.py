@@ -2,15 +2,16 @@ import os.path
 import unittest
 
 from nndt.space2 import *
+from tests.base import BaseTestCase, PATH_TEST_STRUCTURE, PATH_TEST_ACDC
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
-PATH_TEST_ACDC = './acdc_for_test'
+class SpaceModelBeforeInitializationTestCase(BaseTestCase):
 
-
-class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def setUp(self) -> None:
         if os.path.exists(FILE_TMP):
@@ -196,7 +197,7 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         space.preload()
         print(space.print('full'))
 
-    def test_test_train_split(self):
+    def test_test_test_train_split(self):
         rng_key = jax.random.PRNGKey(42)
 
         space = load_from_path(PATH_TEST_ACDC)
@@ -208,6 +209,41 @@ class SpaceModelBeforeInitializationTestCase(unittest.TestCase):
         self.assertEqual(3, len(space.train))
         print(space.print('default'))
         self.assertEqual(space.bbox, update_bbox(space.test.bbox, space.train.bbox))
+
+    def helper_load_kfold(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload()
+        return space
+
+    def test_split_node_kfold(self):
+        space = self.helper_load_kfold()
+        space = split_node_kfold(space, n_fold=5, k_for_test=0)
+        print(space.print('source'))
+        _ = space.test.patient009
+        _ = space.train.patient029
+        _ = space.train.patient049
+        _ = space.train.patient069
+        _ = space.train.patient089
+
+    def test_split_node_kfold2(self):
+        space = self.helper_load_kfold()
+        space = split_node_kfold(space, n_fold=5, k_for_test=4)
+        print(space.print('source'))
+        _ = space.train.patient009
+        _ = space.train.patient029
+        _ = space.train.patient049
+        _ = space.train.patient069
+        _ = space.test.patient089
+
+    def test_split_node_kfold_list(self):
+        space = self.helper_load_kfold()
+        space = split_node_kfold(space, n_fold=5, k_for_test=[0, 1, 4])
+        print(space.print('source'))
+        _ = space.test.patient009
+        _ = space.test.patient029
+        _ = space.train.patient049
+        _ = space.train.patient069
+        _ = space.test.patient089
 
     def test_helper_in_node_method(self):
 
