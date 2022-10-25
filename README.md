@@ -6,7 +6,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/konstantinushenin/nndt/badge)](https://www.codefactor.io/repository/github/konstantinushenin/nndt)
 [![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-workflow.yml)
 [![License](https://img.shields.io/github/license/KonstantinUshenin/nndt)](https://github.com/KonstantinUshenin/nndt/blob/main/LICENSE)
-[![Python](https://github.com/KonstantinUshenin/nndt/blob/fast-changes-2/python-badge.svg)](https://www.python.org/downloads/release/python-380/)
+[![Python version](https://github.com/KonstantinUshenin/nndt/blob/fast-changes-2/python-badge.svg)](https://www.python.org/downloads/release/python-380/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/KonstantinUshenin/nndt)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
