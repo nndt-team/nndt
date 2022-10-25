@@ -27,10 +27,7 @@ The developer release:
 pip install git+https://github.com/KonstantinUshenin/nndt.git
 ```
 
-Installation for Windows with WSL:
-```
-https://github.com/KonstantinUshenin/nndt/wiki/NNDT-WSL
-```
+[Installation for Windows with WSL](https://github.com/KonstantinUshenin/nndt/wiki/NNDT-WSL)
 
 ## Test
 
