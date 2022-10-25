@@ -1,28 +1,62 @@
 import re
 from abc import abstractmethod
 from functools import wraps
-from typing import Union, Optional
+from typing import Optional, Union
 
-from anytree import NodeMixin, Resolver, PostOrderIter
+from anytree import NodeMixin, PostOrderIter, Resolver
 from colorama import Fore
 
-FORBIDDEN_NAME = ['separator', 'parent', '__check_loop', '__detach', '__attach', '__children_or_empty', 'children',
-                  '__check_children', 'children_setter', 'children_deleter', '_pre_detach_children',
-                  '_post_detach_children', '_pre_attach_children', '_post_attach_children', 'path', 'iter_path_reverse',
-                  '_path', 'ancestors', 'anchestors', 'descendants', 'root', 'siblings', 'leaves', 'is_leaf', 'is_root',
-                  'height', 'depth', '_pre_detach', '_post_detach', '_pre_attach', '_post_attach'] + \
-                 ['name', 'parent', '_print_color', '_nodetype']
+FORBIDDEN_NAME = [
+    "separator",
+    "parent",
+    "__check_loop",
+    "__detach",
+    "__attach",
+    "__children_or_empty",
+    "children",
+    "__check_children",
+    "children_setter",
+    "children_deleter",
+    "_pre_detach_children",
+    "_post_detach_children",
+    "_pre_attach_children",
+    "_post_attach_children",
+    "path",
+    "iter_path_reverse",
+    "_path",
+    "ancestors",
+    "anchestors",
+    "descendants",
+    "root",
+    "siblings",
+    "leaves",
+    "is_leaf",
+    "is_root",
+    "height",
+    "depth",
+    "_pre_detach",
+    "_post_detach",
+    "_pre_attach",
+    "_post_attach",
+] + ["name", "parent", "_print_color", "_nodetype"]
 
 NODE_METHOD_DICT = {}
 
-DICT_NODETYPE_PRIORITY = {"S": 100, "G": 90, "O3D": 80, "IR": 70,
-                          "FS": 60, "TR": 50, "MS": 40, "M": 30}
+DICT_NODETYPE_PRIORITY = {
+    "S": 100,
+    "G": 90,
+    "O3D": 80,
+    "IR": 70,
+    "FS": 60,
+    "TR": 50,
+    "MS": 40,
+    "M": 30,
+}
 
 
 def node_method(helpstr=None):
-
     def decorator_wrapper(fn):
-        classname = str(fn.__qualname__).split('.')[0]
+        classname = str(fn.__qualname__).split(".")[0]
         if classname not in NODE_METHOD_DICT:
             NODE_METHOD_DICT[classname] = {}
         NODE_METHOD_DICT[classname][str(fn.__name__)] = helpstr
@@ -37,13 +71,13 @@ def node_method(helpstr=None):
 
 
 def _name_to_safename(name: str) -> str:
-    safe_name = re.sub('\W|^(?=\d)', '_', name)
+    safe_name = re.sub("\W|^(?=\d)", "_", name)
     if safe_name in FORBIDDEN_NAME:
-        safe_name = safe_name + '_'
+        safe_name = safe_name + "_"
         if safe_name in FORBIDDEN_NAME:
-            safe_name = safe_name + '_'
+            safe_name = safe_name + "_"
             if safe_name in FORBIDDEN_NAME:
-                raise ValueError(f'{name} cannot be safely renamed.')
+                raise ValueError(f"{name} cannot be safely renamed.")
     return safe_name
 
 
@@ -52,7 +86,13 @@ class AbstractTreeElement(NodeMixin):
     Abstract element of the space model tree
     """
 
-    def __init__(self, name: str, _print_color: str = Fore.RESET, _nodetype: str = 'UNDEFINED', parent=None):
+    def __init__(
+        self,
+        name: str,
+        _print_color: str = Fore.RESET,
+        _nodetype: str = "UNDEFINED",
+        parent=None,
+    ):
         """
         Create abstract element of space model tree
         :param name: name of the tree node
@@ -66,7 +106,7 @@ class AbstractTreeElement(NodeMixin):
         self._print_color = _print_color
         self._nodetype = _nodetype
 
-        self._resolver = Resolver('name')
+        self._resolver = Resolver("name")
 
     def _container_only_list(self):
         return [ch for ch in self.children if isinstance(ch, IterAccessMixin)]
@@ -87,7 +127,7 @@ class AbstractTreeElement(NodeMixin):
             raise NotImplementedError()
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.RESET
+        return self._print_color + f"{self._nodetype}:{self.name}" + Fore.RESET
 
     def _post_attach(self, parent):
         if isinstance(self, AbstractBBoxNode):
@@ -105,10 +145,14 @@ class AbstractBBoxNode(AbstractTreeElement):
     Element of the space model tree with boundary box
     """
 
-    def __init__(self, name: str,
-                 bbox=((0., 0., 0.), (0., 0., 0.)),
-                 _print_color=Fore.RESET, _nodetype='UNDEFINED',
-                 parent=None):
+    def __init__(
+        self,
+        name: str,
+        bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        _print_color=Fore.RESET,
+        _nodetype="UNDEFINED",
+        parent=None,
+    ):
         """
         Create element of the space model tree with boundary box
 
@@ -116,11 +160,19 @@ class AbstractBBoxNode(AbstractTreeElement):
         :param bbox: boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max))
         :param parent: parent node
         """
-        super(AbstractBBoxNode, self).__init__(name, _print_color=_print_color, _nodetype=_nodetype, parent=parent)
+        super(AbstractBBoxNode, self).__init__(
+            name, _print_color=_print_color, _nodetype=_nodetype, parent=parent
+        )
         self.bbox = bbox
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self._print_bbox()}' + Fore.RESET
+        return (
+            self._print_color
+            + f"{self._nodetype}:{self.name}"
+            + Fore.WHITE
+            + f" {self._print_bbox()}"
+            + Fore.RESET
+        )
 
     def _print_bbox(self):
         a = self.bbox
@@ -130,9 +182,9 @@ class AbstractBBoxNode(AbstractTreeElement):
     def print(self, mode: Optional[str] = "default"):
         """
         Print tree view for this element and all children elements
-        
+
         Args:
-            mode (Optional[str], optional): 
+            mode (Optional[str], optional):
                 "default" print 3D objects and methods;
                 "source" print only space, groups, and file-sources;
                 "full" print all nodes of the tree;
@@ -142,27 +194,29 @@ class AbstractBBoxNode(AbstractTreeElement):
             str: tree representation string
         """
         from nndt.space2.print_tree import _pretty_print
+
         return _pretty_print(self, mode)
 
     @node_method("plot(default, filepath=None)")
-    def plot(self, mode: Optional[str] = "default",
-             filepath: Optional[str] = None):
+    def plot(self, mode: Optional[str] = "default", filepath: Optional[str] = None):
         """
         Iterate over all Object3D in tree and show plot if filepath is None.
         Save plot in file if filepath is not None.
 
         Args:
-            mode (Optional[str], optional): 
+            mode (Optional[str], optional):
                 Only the "default" mode is supported yet. Defaults to "default".
-            filepath (Optional[str], optional): 
+            filepath (Optional[str], optional):
                 File name. If it exist save there otherwise show. Defaults to None.
         """
         from nndt.space2.plot_tree import _plot
+
         _plot(self, mode, filepath)
 
     @node_method("unload_from_memory()")
     def unload_from_memory(self):
         from nndt.space2 import FileSource
+
         for node in PostOrderIter(self):
             if isinstance(node, FileSource) and node._loader is not None:
                 node._loader.unload_data()
@@ -173,9 +227,8 @@ class IterAccessMixin:
 
 
 class AbstractLoader:
-
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
-        return (0., 0., 0.), (0., 0., 0.)
+        return (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)
 
     @abstractmethod
     def load_data(self):

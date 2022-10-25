@@ -4,15 +4,16 @@ import jax
 import jax.numpy as jnp
 
 from nndt.space2 import load_from_path
+from tests.base import PATH_TEST_ACDC, PATH_TEST_STRUCTURE, BaseTestCase
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
 
-PATH_TEST_STRUCTURE = './test_folder_tree'
-PATH_TEST_ACDC = './acdc_for_test'
 
-
-class MethodSetTestCase(unittest.TestCase):
+class MethodSetTestCase(BaseTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def helper_sampling_presence(self, path):
         space = load_from_path(path)
@@ -25,8 +26,8 @@ class MethodSetTestCase(unittest.TestCase):
         jnp.allclose(jnp.zeros((2, 2, 2, 3)), ret2)
         jnp.allclose(jnp.zeros((100, 3)), ret3)
 
-        print(space.print('default'))
-        print(space.print('full'))
+        print(space.print("default"))
+        print(space.print("full"))
 
     def test_sampling_exists_in_the_space(self):
         self.helper_sampling_presence(PATH_TEST_ACDC)
@@ -34,15 +35,16 @@ class MethodSetTestCase(unittest.TestCase):
 
 
 class CheckAllMethodsTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.space = load_from_path(PATH_TEST_ACDC)
-        self.space.preload('shift_and_scale')
+        self.space.preload("shift_and_scale")
         print(self.space.print())
         self.rng_key = jax.random.PRNGKey(42)
 
     def test_sampling_eachN_from_mesh(self):
-        ind, xyz = self.space.patient009.sampling_eachN_from_mesh(count=100, step=7, shift=3)
+        ind, xyz = self.space.patient009.sampling_eachN_from_mesh(
+            count=100, step=7, shift=3
+        )
         self.assertEqual((100,), ind.shape)
         self.assertEqual((100, 3), xyz.shape)
 
@@ -55,9 +57,9 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         self.assertEqual((5, 5, 5, 3), ret.shape)
 
     def test_sampling_grid_with_noise(self):
-        ret = self.space.patient009.sampling_grid_with_noise(self.rng_key,
-                                                             spacing=(5, 5, 5),
-                                                             sigma=1.)
+        ret = self.space.patient009.sampling_grid_with_noise(
+            self.rng_key, spacing=(5, 5, 5), sigma=1.0
+        )
         self.assertEqual((5, 5, 5, 3), ret.shape)
 
     def test_sampling_uniform(self):
@@ -65,22 +67,38 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         self.assertEqual((100, 3), ret.shape)
 
     def test_xyz2ind_ind2xyz(self):
-        ns_dist, ind = self.space.patient009.surface_xyz2ind(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        ns_dist, ind = self.space.patient009.surface_xyz2ind(
+            jnp.array([[-0.75312406, -0.01604767, -0.69798934]])
+        )
         point_xyz = self.space.patient009.surface_ind2xyz(ind)
-        ns_dist2 = jnp.linalg.norm(point_xyz - jnp.array([-0.75312406, -0.01604767, -0.69798934]))
+        ns_dist2 = jnp.linalg.norm(
+            point_xyz - jnp.array([-0.75312406, -0.01604767, -0.69798934])
+        )
         self.assertAlmostEqual(float(ns_dist), float(ns_dist2))
 
-        ns_dist, ind = self.space.patient009.surface_xyz2ind(jnp.array([[2., 2., 2.]]))
+        ns_dist, ind = self.space.patient009.surface_xyz2ind(
+            jnp.array([[2.0, 2.0, 2.0]])
+        )
         point_xyz = self.space.patient009.surface_ind2xyz(ind)
-        ns_dist2 = jnp.linalg.norm(point_xyz - jnp.array([2., 2., 2.]))
+        ns_dist2 = jnp.linalg.norm(point_xyz - jnp.array([2.0, 2.0, 2.0]))
         self.assertAlmostEqual(float(ns_dist), float(ns_dist2))
 
     def test_surface_xyz2localsdt(self):
-        ns_xyz, ns_local_sdt = self.space.patient009.surface_xyz2localsdt(jnp.array([[0., 0., 0.]]),
-                                                                          spacing=(2, 2, 2),
-                                                                          scale=2.)
-        ns_xyz2 = jnp.array([[-1., -1., -1.], [-1., -1., 1.], [-1., 1., -1.], [-1., 1., 1.],
-                             [1., -1., -1.], [1., -1., 1.], [1., 1., -1.], [1., 1., 1.]])
+        ns_xyz, ns_local_sdt = self.space.patient009.surface_xyz2localsdt(
+            jnp.array([[0.0, 0.0, 0.0]]), spacing=(2, 2, 2), scale=2.0
+        )
+        ns_xyz2 = jnp.array(
+            [
+                [-1.0, -1.0, -1.0],
+                [-1.0, -1.0, 1.0],
+                [-1.0, 1.0, -1.0],
+                [-1.0, 1.0, 1.0],
+                [1.0, -1.0, -1.0],
+                [1.0, -1.0, 1.0],
+                [1.0, 1.0, -1.0],
+                [1.0, 1.0, 1.0],
+            ]
+        )
         ns_sdt = self.space.patient009.surface_xyz2sdt(ns_xyz2)
         self.assertEqual((2, 2, 2, 1), ns_local_sdt.shape)
         self.assertEqual((2, 2, 2, 3), ns_xyz.shape)
@@ -89,17 +107,25 @@ class CheckAllMethodsTestCase(unittest.TestCase):
 
     def test_surface_colors(self):
         rgba = self.space.patient009.surface_ind2rgba(jnp.array([0, 1, 2]))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.937255, 0.937255, 0.937255)), rgba[:, 0])))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), rgba[:, 1])))
-        self.assertTrue(bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), rgba[:, 2])))
-        self.assertTrue(bool(jnp.allclose(jnp.array((1., 1., 1.)), rgba[:, 3])))
+        self.assertTrue(
+            bool(jnp.allclose(jnp.array((0.937255, 0.937255, 0.937255)), rgba[:, 0]))
+        )
+        self.assertTrue(
+            bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), rgba[:, 1]))
+        )
+        self.assertTrue(
+            bool(jnp.allclose(jnp.array((0.156863, 0.156863, 0.156863)), rgba[:, 2]))
+        )
+        self.assertTrue(bool(jnp.allclose(jnp.array((1.0, 1.0, 1.0)), rgba[:, 3])))
 
     def test_surface_colors_xyz(self):
-        rgba = self.space.patient009.surface_xyz2rgba(jnp.array([[-0.75312406, -0.01604767, -0.69798934]]))
+        rgba = self.space.patient009.surface_xyz2rgba(
+            jnp.array([[-0.75312406, -0.01604767, -0.69798934]])
+        )
         self.assertTrue(bool(jnp.allclose(jnp.array((0.937255,)), rgba[:, 0])))
         self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), rgba[:, 1])))
         self.assertTrue(bool(jnp.allclose(jnp.array((0.156863,)), rgba[:, 2])))
-        self.assertTrue(bool(jnp.allclose(jnp.array((1.,)), rgba[:, 3])))
+        self.assertTrue(bool(jnp.allclose(jnp.array((1.0,)), rgba[:, 3])))
 
     def test_surface_xyz(self):
         xyz = self.space.patient009.surface_xyz()
@@ -109,5 +135,6 @@ class CheckAllMethodsTestCase(unittest.TestCase):
         rgba = self.space.patient009.surface_rgba()
         self.assertEqual((2502, 4), rgba.shape)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

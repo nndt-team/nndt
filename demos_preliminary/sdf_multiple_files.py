@@ -11,14 +11,14 @@ LEARNING_RATE = 0.006
 EPOCHS = 8001
 SHAPE = (64, 64, 64)
 FLAT_SHAPE = SHAPE[0] * SHAPE[1] * SHAPE[2]
-EXP_NAME = 'sdf_multiple_files'
-LOG_FOLDER = f'./{EXP_NAME}/'
+EXP_NAME = "sdf_multiple_files"
+LOG_FOLDER = f"./{EXP_NAME}/"
 LEVEL_SHIFT = 0.03
 
 
 def load_batch(patient_name_list, spacing=(2, 2, 2)):
-    space = spc.load_from_path('../tests/acdc_for_test/')
-    space.preload('shift_and_scale')
+    space = spc.load_from_path("../tests/acdc_for_test/")
+    space.preload("shift_and_scale")
     print(space.print())
 
     batch = None
@@ -30,14 +30,16 @@ def load_batch(patient_name_list, spacing=(2, 2, 2)):
         xyz_flat = jnp.array(xyz_flat)
 
         p_array = jnp.array(jnp.zeros((sdf_flat.shape[0], len(patient_name_list))))
-        p_array = p_array.at[:, code].set(1.)
+        p_array = p_array.at[:, code].set(1.0)
 
-        DATA = ApproximateSDF.DATA(X=xyz_flat[:, 0],
-                                   Y=xyz_flat[:, 1],
-                                   Z=xyz_flat[:, 2],
-                                   T=jnp.zeros(sdf_flat.shape[0]),
-                                   P=p_array,
-                                   SDF=sdf_flat)
+        DATA = ApproximateSDF.DATA(
+            X=xyz_flat[:, 0],
+            Y=xyz_flat[:, 1],
+            Z=xyz_flat[:, 2],
+            T=jnp.zeros(sdf_flat.shape[0]),
+            P=p_array,
+            SDF=sdf_flat,
+        )
         print(DATA)
         if batch is None:
             batch = DATA
@@ -47,7 +49,7 @@ def load_batch(patient_name_list, spacing=(2, 2, 2)):
     return batch
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # NN initialization
     task = ApproximateSDF(batch_size=FLAT_SHAPE, model_number=2)
     rng = jax.random.PRNGKey(42)
@@ -65,16 +67,19 @@ if __name__ == '__main__':
     part0_test = jnp.concatenate([a_test, b_test], axis=1)
     part1_test = jnp.concatenate([b_test, a_test], axis=1)
 
-    xyz = grid_in_cube2(spacing=SHAPE,
-                        lower=jnp.array((D1.X.min(), D1.Y.min(), D1.Z.min())),
-                        upper=jnp.array((D1.X.max(), D1.Y.max(), D1.Z.max()))).reshape((-1, 3))
-    D_TEST = ApproximateSDF.DATA(X=jnp.hstack([xyz[:, 0], xyz[:, 0]]),
-                                 Y=jnp.hstack([xyz[:, 1], xyz[:, 1]]),
-                                 Z=jnp.hstack([xyz[:, 2], xyz[:, 2]]),
-                                 T=jnp.zeros(FLAT_SHAPE * 2),
-                                 P=jnp.concatenate([part0_test, part1_test], axis=0),
-                                 SDF=None)
-
+    xyz = grid_in_cube2(
+        spacing=SHAPE,
+        lower=jnp.array((D1.X.min(), D1.Y.min(), D1.Z.min())),
+        upper=jnp.array((D1.X.max(), D1.Y.max(), D1.Z.max())),
+    ).reshape((-1, 3))
+    D_TEST = ApproximateSDF.DATA(
+        X=jnp.hstack([xyz[:, 0], xyz[:, 0]]),
+        Y=jnp.hstack([xyz[:, 1], xyz[:, 1]]),
+        Z=jnp.hstack([xyz[:, 2], xyz[:, 2]]),
+        T=jnp.zeros(FLAT_SHAPE * 2),
+        P=jnp.concatenate([part0_test, part1_test], axis=0),
+        SDF=None,
+    )
 
     @jax.jit
     def train_step(params, rng, opt_state):
@@ -85,7 +90,6 @@ if __name__ == '__main__':
 
         return loss, params, rng, opt_state
 
-
     max_loss = 99999
     viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=1000)
     for epoch in viz.iter(EPOCHS):
@@ -95,15 +99,13 @@ if __name__ == '__main__':
         viz.record({"loss": float(loss)})
 
         if viz.is_print_on_epoch(epoch):
-            tmp = F.vec_sdf(params, rng,
-                            D1.X, D1.Y, D1.Z,
-                            D1.T, D1.P)
+            tmp = F.vec_sdf(params, rng, D1.X, D1.Y, D1.Z, D1.T, D1.P)
             model0000 = tmp[:FLAT_SHAPE].reshape(SHAPE)
             model1000 = tmp[FLAT_SHAPE:].reshape(SHAPE)
 
-            tmp1 = F.vec_sdf(params, rng,
-                             D_TEST.X, D_TEST.Y, D_TEST.Z,
-                             D_TEST.T, D_TEST.P)
+            tmp1 = F.vec_sdf(
+                params, rng, D_TEST.X, D_TEST.Y, D_TEST.Z, D_TEST.T, D_TEST.P
+            )
 
             model0333 = tmp1[:FLAT_SHAPE].reshape(SHAPE)
             model0666 = tmp1[FLAT_SHAPE:].reshape(SHAPE)
@@ -126,7 +128,7 @@ if __name__ == '__main__':
             viz.draw_loss("TRAIN_LOSS", viz._records["loss"])
 
             if loss < max_loss:
-                viz.save_state('sdf_model', params)
+                viz.save_state("sdf_model", params)
                 max_loss = loss
 
         rng, subkey = jax.random.split(rng)

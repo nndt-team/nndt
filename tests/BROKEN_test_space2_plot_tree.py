@@ -2,13 +2,15 @@ import os
 import unittest
 
 from nndt.space2 import load_from_path
+from tests.base import PATH_TEST_ACDC, BaseTestCase
 
 FILE_TMP_PNG = "./test_file.png"
 
-PATH_TEST_ACDC = './acdc_for_test'
 
-
-class MyTestCase(unittest.TestCase):
+class MyTestCase(BaseTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
     def setUp(self) -> None:
         if os.path.exists(FILE_TMP_PNG):
@@ -69,5 +71,5 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
