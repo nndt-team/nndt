@@ -44,14 +44,14 @@ class Space(AbstractBBoxNode, IterAccessMixin):
     def __init__(self, name,
                  bbox=((0., 0., 0.), (0., 0., 0.)),
                  parent=None):
-        super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='S')
+        super(Space, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.YELLOW,  _nodetype='S')
         self.version = nndt.__version__
 
         self._is_init = False
         self._is_preload = False
 
     def __repr__(self):
-        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.WHITE + f' {self.version}' + Fore.RESET
+        return self._print_color + f'{self._nodetype}:{self.name}' + Fore.LIGHTBLACK_EX + f' {self.version}' + Fore.RESET
 
     @node_method("save_space_to_file(filepath)")
     def save_space_to_file(self, filepath: str):
@@ -106,4 +106,5 @@ class Space(AbstractBBoxNode, IterAccessMixin):
                                               keep_in_memory=keep_in_memory,
                                               ps_padding=ps_padding,
                                               ns_padding=ns_padding)
+
             self.preloader.preload(self)
