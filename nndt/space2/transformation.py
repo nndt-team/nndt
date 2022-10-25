@@ -66,6 +66,13 @@ class AbstractTransformation(AbstractBBoxNode):
 
 
 class IdentityTransform(AbstractTransformation):
+    """
+    Transfer object of the physical space to normalized space without any changes.
+    
+    Args:
+        ps_bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)). 
+        parent (_type_, optional): parent node. Defaults to None.
+    """
 
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  parent=None):
@@ -124,7 +131,17 @@ class IdentityTransform(AbstractTransformation):
 
 
 class ShiftAndScaleTransform(AbstractTransformation):
-
+    """
+    Transfer objects from a physical space to normalized space using shift and scale transformation.
+    
+    Args:
+        ps_bbox (float, float, float): boundary box in form.
+        ps_center (float, float, float): Physical space center.
+        ns_center (float, float, float): Normalized space center.
+        scale_ps2ns (float): Scale.
+        parent (_type_, optional): parent node. Defaults to None.
+    """
+    
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  ps_center: (float, float, float),
                  ns_center: (float, float, float),
@@ -191,6 +208,15 @@ class ShiftAndScaleTransform(AbstractTransformation):
 
 
 class ToNormalCubeTransform(AbstractTransformation):
+    """
+    Transfer objects from a physical space to normalized space.
+    All objects are scales to cube with coordinates from -1 to 1.
+    This approach is similar to NormalScaler in scikit-learn.
+    
+    Args:
+        ps_bbox (float, float, float):  boundary box in form.
+        parent (_type_, optional):  parent node. Defaults to None.
+    """
 
     def __init__(self, ps_bbox: ((float, float, float), (float, float, float)),
                  parent=None):
