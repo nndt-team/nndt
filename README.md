@@ -1,7 +1,7 @@
 # Neural Network for Digital Twin (NNDT)
 
 [![GitHub issues by-label](https://img.shields.io/github/issues/KonstantinUshenin/nndt/good%20first%20issue)](https://github.com/KonstantinUshenin/nndt/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-[![docstr_coverage](https://github.com/KonstantinUshenin/nndt/blob/test/badge.svg)](https://github.com/KonstantinUshenin/nndt)
+[![docstr_coverage](https://github.com/KonstantinUshenin/nndt/blob/main/badge.svg)](https://github.com/KonstantinUshenin/nndt)
 [![codecov](https://codecov.io/gh/KonstantinUshenin/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/KonstantinUshenin/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/konstantinushenin/nndt/badge)](https://www.codefactor.io/repository/github/konstantinushenin/nndt)
 [![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml)
