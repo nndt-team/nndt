@@ -1,9 +1,10 @@
-import pickle
+import os
 import warnings
 from typing import Optional
 
 import jax.numpy as jnp
 import vtk
+from colorama import Fore
 from pykdtree.kdtree import KDTree
 from vtkmodules.util.numpy_support import vtk_to_numpy
 

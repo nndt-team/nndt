@@ -52,16 +52,18 @@ class BasicVizualization:
     Simple MLOps class for storing the train history and visualization of intermediate results
     """
 
-    def __init__(self, folder: str,
-                 experiment_name: Optional[str] = None,
-                 print_on_each_epoch=20):
+    def __init__(
+        self, folder: str, experiment_name: Optional[str] = None, print_on_each_epoch=20
+    ):
         """
         :param folder: folder for store results
         :param experiment_name: name for an experiments
         :param print_on_each_epoch: this parameter helps to control intermediate result output
         """
         self.folder = folder
-        self.experiment_name = experiment_name if (experiment_name is not None) else folder
+        self.experiment_name = (
+            experiment_name if (experiment_name is not None) else folder
+        )
         os.makedirs(self.folder, exist_ok=True)
         self.print_on_each_epoch = print_on_each_epoch
         self._records = {"_epoch": [], "_time": []}
@@ -73,7 +75,7 @@ class BasicVizualization:
         ----------
         epoch_num : int
             number of epoch
-                      
+
         Returns
         -------
             instance of IteratorWithTimeMeasurements
@@ -98,7 +100,7 @@ class BasicVizualization:
 
         Returns
         -------
-        bool 
+        bool
             Should we print on this step?
         """
         return (epoch % self.print_on_each_epoch) == 0
@@ -110,7 +112,7 @@ class BasicVizualization:
         ----------
         name : string
             File name
-        history (_type_): 
+        history (_type_):
             List of loss values over epochs
         """
         plt.close(1)
@@ -125,12 +127,12 @@ class BasicVizualization:
 
         Parameters
         ----------
-        name : string 
+        name : string
             File name
         state : (_type_)
             The state to save
         """
-        pickle.dump(state, open(os.path.join(self.folder, f"{name}.pkl"), 'wb'))
+        pickle.dump(state, open(os.path.join(self.folder, f"{name}.pkl"), "wb"))
 
     def save_txt(self, name, summary):
         """Save string data to .txt file
@@ -142,12 +144,12 @@ class BasicVizualization:
         summary : string
             The text to save
         """
-        with open(os.path.join(self.folder, f"{name}.txt"), 'w') as fl:
+        with open(os.path.join(self.folder, f"{name}.txt"), "w") as fl:
             fl.write(summary)
 
-    def sdt_to_obj(self, filename: str,
-                   array: Union[jnp.ndarray, onp.ndarray],
-                   level: float = 0.):
+    def sdt_to_obj(
+        self, filename: str, array: Union[jnp.ndarray, onp.ndarray], level: float = 0.0
+    ):
         """Run marching cubes over SDT and save results to file
 
         Parameters
@@ -159,13 +161,15 @@ class BasicVizualization:
         level : float
             Isosurface level (defaults to 0.).
         """
-        assert (array.ndim == 3)
+        assert array.ndim == 3
         array_ = onp.array(array)
 
         from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
 
         verts, faces = array_to_vert_and_faces(array_, level=level)
-        save_verts_and_faces_to_obj(os.path.join(self.folder, f"{filename}.obj"), verts, faces)
+        save_verts_and_faces_to_obj(
+            os.path.join(self.folder, f"{filename}.obj"), verts, faces
+        )
 
     def save_mesh(self, name, save_method: SaveMesh, dict_):
         """Save mesh to .vtp file with data
@@ -174,7 +178,7 @@ class BasicVizualization:
         ----------
         name : string
             filename
-        save_method : SaveMesh 
+        save_method : SaveMesh
             SaveMesh instance from NNDT space (v0.0.1 or v0.0.2)
         dict_ : dict
             name_value
@@ -193,27 +197,27 @@ class BasicVizualization:
         section_img : bool
             If true, this saves three plane section of 3D array (defaults to True)
         """
-        assert (array.ndim == 3)
+        assert array.ndim == 3
         jnp.save(os.path.join(self.folder, f"{name}.npy"), array)
 
         if section_img:
             plt.close(1)
             plt.figure(1)
             plt.title(f"{self.experiment_name}_{name}_0")
-            plt.imshow(array[array.shape[0] // 2, :, :], cmap='turbo')
+            plt.imshow(array[array.shape[0] // 2, :, :], cmap="turbo")
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_0.jpg"))
 
             plt.close(1)
             plt.figure(1)
             plt.title(f"{self.experiment_name}_{name}_1")
-            plt.imshow(array[:, array.shape[1] // 2, :], cmap='turbo')
+            plt.imshow(array[:, array.shape[1] // 2, :], cmap="turbo")
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_1.jpg"))
 
             plt.close(1)
             plt.figure(1)
             plt.title(f"{self.experiment_name}_{name}_2")
-            plt.imshow(array[:, :, array.shape[2] // 2], cmap='turbo')
+            plt.imshow(array[:, :, array.shape[2] // 2], cmap="turbo")
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_2.jpg"))

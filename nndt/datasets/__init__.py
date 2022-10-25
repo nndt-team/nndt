@@ -1,7 +1,8 @@
 from .acdc import ACDC
 from .utils import *
+
 list_of_datasets = [
-    'ACDC',
+    "ACDC",
 ]
 
-source_url = 'https://github.com/KonstantinUshenin/nndt'
+source_url = "https://github.com/KonstantinUshenin/nndt"

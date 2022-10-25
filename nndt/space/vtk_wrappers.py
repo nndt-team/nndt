@@ -7,7 +7,6 @@ import vtk
 
 
 class UnloadMixin:
-
     @abstractmethod
     def unload_data(self):
         pass
@@ -18,7 +17,6 @@ class UnloadMixin:
 
 
 class SurfaceMesh(UnloadMixin):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
         self._mesh = None
@@ -33,7 +31,7 @@ class SurfaceMesh(UnloadMixin):
         self._mesh = None
 
     def is_data_load(self):
-        return (self._mesh is not None)
+        return self._mesh is not None
 
     def _load_mesh(self):
 
@@ -46,8 +44,10 @@ class SurfaceMesh(UnloadMixin):
         elif file_extension == ".obj":
             reader = vtk.vtkOBJReader()
         else:
-            raise NotImplementedError(f"Mesh with {file_extension} is not supported. "
-                                      f"The following file types are available: .obj, .ply.")
+            raise NotImplementedError(
+                f"Mesh with {file_extension} is not supported. "
+                f"The following file types are available: .obj, .ply."
+            )
         reader.SetFileName(str(self.file))
         reader.Update()
         _mesh = reader.GetOutput()
@@ -56,14 +56,13 @@ class SurfaceMesh(UnloadMixin):
 
 
 class SDTExplicitArray(UnloadMixin):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
 
         self.file = Path(filepath)
         self.file.resolve(strict=True)
         _, file_extension = os.path.splitext(self.file)
-        assert ("npy" in file_extension)
+        assert "npy" in file_extension
 
         self._sdt = None
 
@@ -77,13 +76,13 @@ class SDTExplicitArray(UnloadMixin):
         self._sdt = None
 
     def is_data_load(self):
-        return (self._sdt is not None)
+        return self._sdt is not None
 
     def _load_sdt(self):
         return onp.load(self.filepath)
 
     def min_bbox(self):
-        mask_arr = (self.sdt <= 0.)
+        mask_arr = self.sdt <= 0.0
         Xmin = onp.argmax(onp.any(mask_arr, axis=(1, 2)))
         Ymin = onp.argmax(onp.any(mask_arr, axis=(0, 2)))
         Zmin = onp.argmax(onp.any(mask_arr, axis=(0, 1)))
@@ -96,8 +95,8 @@ class SDTExplicitArray(UnloadMixin):
 
     def request(self, ps_xyz: onp.ndarray) -> onp.ndarray:
 
-        assert (ps_xyz.ndim >= 1)
-        assert (ps_xyz.shape[-1] == 3)
+        assert ps_xyz.ndim >= 1
+        assert ps_xyz.shape[-1] == 3
 
         if ps_xyz.ndim == 1:
             p_array_ = ps_xyz[onp.newaxis, :]
