@@ -16,4 +16,4 @@ repos:
     rev: v2.2.0
     hooks:
       - id: docstr-coverage
-        args: ["nndt", --fail-under", "0", "--percentage-only", "--badge", "./badge.svg"]
+        args: ["nndt", "--fail-under", "0", "--percentage-only", "--badge", "./badge.svg"]

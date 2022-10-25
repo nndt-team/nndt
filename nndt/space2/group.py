@@ -14,7 +14,7 @@ class Group(AbstractBBoxNode, IterAccessMixin):
         parent (_type_, optional): parent node. Defaults to None.
     """
 
-    def __init__(self, name,
-                 bbox=((0., 0., 0.), (0., 0., 0.)),
-                 parent=None):
-        super(Group, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype='G')
+    def __init__(self, name, bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)), parent=None):
+        super(Group, self).__init__(
+            name, parent=parent, bbox=bbox, _print_color=Fore.RED, _nodetype="G"
+        )

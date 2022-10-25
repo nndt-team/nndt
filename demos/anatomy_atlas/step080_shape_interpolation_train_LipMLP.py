@@ -10,12 +10,12 @@ LEARNING_RATE = 0.005
 EPOCHS = 50001
 SHAPE = (84, 84, 84)
 FLAT_SHAPE = SHAPE[0] * SHAPE[1] * SHAPE[2]
-EXP_NAME = 'shape_interpolation_LipMLP_3'
-LOG_FOLDER = f'./{EXP_NAME}/'
+EXP_NAME = "shape_interpolation_LipMLP_3"
+LOG_FOLDER = f"./{EXP_NAME}/"
 LEVEL_SHIFT = 0.03
 
-class DataGen:
 
+class DataGen:
     def __init__(self, patient_name_list, spacing):
         self.patient_name_list = patient_name_list
         self.spacing = spacing
@@ -34,20 +34,24 @@ class DataGen:
         batch = None
         for code, patient in enumerate(self.patient_name_list):
 
-            xyz = self.space[f'sampling_grid'](spacing=self.spacing)
+            xyz = self.space[f"sampling_grid"](spacing=self.spacing)
             xyz_flat = xyz.reshape((-1, 3))
-            sdf_flat = jnp.squeeze(self.space[f'default/{patient}/sdfpkl/repr/xyz2sdt'](xyz_flat))
+            sdf_flat = jnp.squeeze(
+                self.space[f"default/{patient}/sdfpkl/repr/xyz2sdt"](xyz_flat)
+            )
             xyz_flat = jnp.array(xyz_flat)
 
             p_array = jnp.array(jnp.zeros((sdf_flat.shape[0], num_of_obj)))
-            p_array = p_array.at[:, code].set(1.)
+            p_array = p_array.at[:, code].set(1.0)
 
-            DATA = ApproximateSDFLipMLP.DATA(X=xyz_flat[:, 0],
-                                               Y=xyz_flat[:, 1],
-                                               Z=xyz_flat[:, 2],
-                                               T=jnp.zeros(sdf_flat.shape[0]),
-                                               P=p_array,
-                                               SDF=sdf_flat)
+            DATA = ApproximateSDFLipMLP.DATA(
+                X=xyz_flat[:, 0],
+                Y=xyz_flat[:, 1],
+                Z=xyz_flat[:, 2],
+                T=jnp.zeros(sdf_flat.shape[0]),
+                P=p_array,
+                SDF=sdf_flat,
+            )
             if batch is None:
                 batch = DATA
             else:
@@ -56,7 +60,7 @@ class DataGen:
         return batch
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     name_list = ["patient009", "patient029", "patient089"]
 
     # NN initialization
@@ -94,14 +98,16 @@ if __name__ == '__main__':
             if loss < max_loss:
                 predict_sdf = F.vec_sdf(params, rng, D1.X, D1.Y, D1.Z, D1.T, D1.P)
                 for i, name in enumerate(name_list):
-                    exact = D1.SDF[FLAT_SHAPE*i:FLAT_SHAPE*(i+1)].reshape(SHAPE)
-                    predict = predict_sdf[FLAT_SHAPE*i:FLAT_SHAPE*(i+1)].reshape(SHAPE)
+                    exact = D1.SDF[FLAT_SHAPE * i : FLAT_SHAPE * (i + 1)].reshape(SHAPE)
+                    predict = predict_sdf[
+                        FLAT_SHAPE * i : FLAT_SHAPE * (i + 1)
+                    ].reshape(SHAPE)
                     viz.sdt_to_obj(f"SDF_exact_{name}", exact, level=LEVEL_SHIFT)
                     viz.sdt_to_obj(f"SDF_predict_{name}", predict, level=LEVEL_SHIFT)
                     viz.save_3D_array(f"SDF_exact_{name}", exact)
                     viz.save_3D_array(f"SDF_predict_{name}", predict)
 
-                viz.save_state('sdf_model', params)
+                viz.save_state("sdf_model", params)
                 max_loss = loss
 
         rng, subkey = jax.random.split(rng)
