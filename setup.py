@@ -1,6 +1,7 @@
 import io
 import os
 import re
+
 from setuptools import find_packages, setup
 
 
@@ -43,5 +44,5 @@ setup(
         "Source": "https://github.com/KonstantinUshenin/nndt",
     },
     keywords=["pinn implicit-geometry jax machine-learning"],
-    install_requires=requirements
+    install_requires=requirements,
 )

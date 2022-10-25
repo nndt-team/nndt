@@ -12,10 +12,17 @@ from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader, IterAccessMi
 
 
 class FileSource(AbstractBBoxNode, IterAccessMixin):
-    def __init__(self, name, filepath: str, loader_type: str,
-                 bbox=((0., 0., 0.), (0., 0., 0.)),
-                 parent=None):
-        super(FileSource, self).__init__(name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype='FS')
+    def __init__(
+        self,
+        name,
+        filepath: str,
+        loader_type: str,
+        bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        parent=None,
+    ):
+        super(FileSource, self).__init__(
+            name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype="FS"
+        )
         if not os.path.exists(filepath):
             raise FileNotFoundError()
         self.filepath = filepath
@@ -25,12 +32,16 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
     def __repr__(self):
         star_bool = self._loader.is_load if self._loader is not None else False
         star = "^" if star_bool else ""
-        return self._print_color + f'{self._nodetype}:{self.name}' + \
-               Fore.WHITE + f" {self.loader_type}{star} {self.filepath}" + Fore.RESET
+        return (
+            self._print_color
+            + f"{self._nodetype}:{self.name}"
+            + Fore.WHITE
+            + f" {self.loader_type}{star} {self.filepath}"
+            + Fore.RESET
+        )
 
 
 class EmptyLoader(AbstractLoader):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -46,7 +57,6 @@ class EmptyLoader(AbstractLoader):
 
 
 class TXTLoader(AbstractLoader):
-
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -59,7 +69,7 @@ class TXTLoader(AbstractLoader):
         return self._text
 
     def load_data(self):
-        with open(self.filepath, 'r') as fl:
+        with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
@@ -77,15 +87,15 @@ def _load_colors_from_obj(filepath):
     blue = []
     alpha = []
 
-    with open(filepath, 'r') as fl:
+    with open(filepath, "r") as fl:
         for line in fl:
             if "v" in line:
                 tokens = line.split(" ")
                 if ("v" == tokens[0]) and (len(tokens) >= 7):
-                    red.append(float(tokens[4].replace(',', '.')))
-                    green.append(float(tokens[5].replace(',', '.')))
-                    blue.append(float(tokens[6].replace(',', '.')))
-                    alpha.append(1.)
+                    red.append(float(tokens[4].replace(",", ".")))
+                    green.append(float(tokens[5].replace(",", ".")))
+                    blue.append(float(tokens[6].replace(",", ".")))
+                    alpha.append(1.0)
 
     red = jnp.array(red)
     green = jnp.array(green)
@@ -103,17 +113,17 @@ def _load_colors_from_ply(filepath):
 
     is_read_mode = False
 
-    with open(filepath, 'r') as fl:
+    with open(filepath, "r") as fl:
         for line in fl:
             if "end_header" in line:
                 is_read_mode = True
             if is_read_mode:
                 tokens = line.split(" ")
                 if len(tokens) >= 10:
-                    red.append(float(tokens[6].replace(',', '.')))
-                    green.append(float(tokens[7].replace(',', '.')))
-                    blue.append(float(tokens[8].replace(',', '.')))
-                    alpha.append(float(tokens[9].replace(',', '.')))
+                    red.append(float(tokens[6].replace(",", ".")))
+                    green.append(float(tokens[7].replace(",", ".")))
+                    blue.append(float(tokens[8].replace(",", ".")))
+                    alpha.append(float(tokens[9].replace(",", ".")))
 
     red = jnp.array(red) / 255
     green = jnp.array(green) / 255
@@ -190,17 +200,23 @@ class SDTLoader(AbstractLoader):
         self.filepath = filepath
         self.is_load = False
         self._sdt = None
-        self._sdt_threshold_level = 0.
+        self._sdt_threshold_level = 0.0
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
-        mask_arr = (self.sdt <= self._sdt_threshold_level)
+        mask_arr = self.sdt <= self._sdt_threshold_level
         Xmin = float(jnp.argmax(jnp.any(mask_arr, axis=(1, 2))))
         Ymin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 2))))
         Zmin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 1))))
 
-        Xmax = float(self.sdt.shape[0] - jnp.argmax(jnp.any(mask_arr, axis=(1, 2))[::-1]))
-        Ymax = float(self.sdt.shape[1] - jnp.argmax(jnp.any(mask_arr, axis=(0, 2))[::-1]))
-        Zmax = float(self.sdt.shape[2] - jnp.argmax(jnp.any(mask_arr, axis=(0, 1))[::-1]))
+        Xmax = float(
+            self.sdt.shape[0] - jnp.argmax(jnp.any(mask_arr, axis=(1, 2))[::-1])
+        )
+        Ymax = float(
+            self.sdt.shape[1] - jnp.argmax(jnp.any(mask_arr, axis=(0, 2))[::-1])
+        )
+        Zmax = float(
+            self.sdt.shape[2] - jnp.argmax(jnp.any(mask_arr, axis=(0, 1))[::-1])
+        )
 
         return (Xmin, Ymin, Zmin), (Xmax, Ymax, Zmax)
 
@@ -216,8 +232,8 @@ class SDTLoader(AbstractLoader):
 
     def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
 
-        assert (ps_xyz.ndim >= 1)
-        assert (ps_xyz.shape[-1] == 3)
+        assert ps_xyz.ndim >= 1
+        assert ps_xyz.shape[-1] == 3
 
         if ps_xyz.ndim == 1:
             p_array_ = ps_xyz[jnp.newaxis, :]
@@ -247,8 +263,10 @@ class SDTLoader(AbstractLoader):
         return self.is_load
 
 
-DICT_LOADERTYPE_CLASS = {'txt': TXTLoader,
-                         'sdt': SDTLoader,
-                         'mesh_obj': MeshObjLoader,
-                         'undefined': EmptyLoader}
+DICT_LOADERTYPE_CLASS = {
+    "txt": TXTLoader,
+    "sdt": SDTLoader,
+    "mesh_obj": MeshObjLoader,
+    "undefined": EmptyLoader,
+}
 DICT_CLASS_LOADERTYPE = {(v, k) for k, v in DICT_LOADERTYPE_CLASS.items()}

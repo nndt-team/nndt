@@ -5,12 +5,14 @@ import jax.numpy as jnp
 from jax.random import KeyArray
 
 
-def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, jnp.ndarray):
+def take_each_n(
+    array: jnp.ndarray, count=1, step=1, shift=0
+) -> (jnp.ndarray, jnp.ndarray):
     """An advanced range iterator that iterates over data and selects elements according to their index.
     If during iteration the index becomes greater than the array length,
      the iteration continues from the beginning of the array.
     This function selects elements from an array along the axis zero, which is the first dimension.
-    
+
     Parameters
     ----------
     array : ndarray
@@ -29,15 +31,19 @@ def take_each_n(array: jnp.ndarray, count=1, step=1, shift=0) -> (jnp.ndarray, j
         an array of elements from the source array corresponding to the selected indices
     """
 
-    _, index_set = jnp.divmod(shift + jnp.arange(0, count, dtype=int) * step, array.shape[0])
+    _, index_set = jnp.divmod(
+        shift + jnp.arange(0, count, dtype=int) * step, array.shape[0]
+    )
 
     return index_set, jnp.take(array, index_set, axis=0)
 
 
-def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)) -> jnp.ndarray:
+def grid_in_cube(
+    spacing=(2, 2, 2), scale=2.0, center_shift=(0.0, 0.0, 0.0)
+) -> jnp.ndarray:
     """Draw samples from the uniform grid that is defined inside a bounding box
     with center in the `center_shift` and size of `scale`
-    
+
     Parameters
     ----------
     spacing : tuple, optional
@@ -54,16 +60,18 @@ def grid_in_cube(spacing=(2, 2, 2), scale=2., center_shift=(0., 0., 0.)) -> jnp.
     """
 
     center_shift_ = jnp.array(center_shift)
-    cube = jnp.mgrid[0:1:spacing[0] * 1j,
-           0:1:spacing[1] * 1j,
-           0:1:spacing[2] * 1j].transpose((1, 2, 3, 0))
+    cube = jnp.mgrid[
+        0 : 1 : spacing[0] * 1j, 0 : 1 : spacing[1] * 1j, 0 : 1 : spacing[2] * 1j
+    ].transpose((1, 2, 3, 0))
 
     return scale * (cube - 0.5) + center_shift_
 
 
-def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
+def grid_in_cube2(
+    spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)
+) -> jnp.ndarray:
     """Draw samples from the uniform grid that is defined inside a (lower, upper) bounding box
-    
+
     Parameters
     ----------
     spacing : tuple, optional
@@ -78,23 +86,27 @@ def grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp
     ndarray
         3D mesh-grid with shape (spacing[0], spacing[1], spacing[2], 3)
     """
-    cube = jnp.mgrid[lower[0]:upper[0]:spacing[0] * 1j,
-           lower[1]:upper[1]:spacing[1] * 1j,
-           lower[2]:upper[2]:spacing[2] * 1j].transpose((1, 2, 3, 0))
+    cube = jnp.mgrid[
+        lower[0] : upper[0] : spacing[0] * 1j,
+        lower[1] : upper[1] : spacing[1] * 1j,
+        lower[2] : upper[2] : spacing[2] * 1j,
+    ].transpose((1, 2, 3, 0))
 
     return cube
 
 
-def uniform_in_cube(rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)) -> jnp.ndarray:
+def uniform_in_cube(
+    rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)
+) -> jnp.ndarray:
     """Draw samples from uniform distribution inside a (lower, upper) bounding box
-    
+
     Parameters
     ----------
     rng_key: KeyArray
         Jax key for a random generator
     count: int, optional
         Size of sampling (default is 100)
-    lower: tuple, optional 
+    lower: tuple, optional
         position of lower point for the bounding box  (default is (-2, -2, -2)
     upper: tuple, optional
         position of upper point for the bounding box (default is (2, 2, 2)
@@ -154,9 +166,11 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
     return polynomial
 
 
-def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
-                     spacing: Sequence[int] = (0, 3),
-                     filter_negative: bool = True):
+def barycentric_grid(
+    order: Sequence[Union[int, Sequence[int]]] = (1, -1),
+    spacing: Sequence[int] = (0, 3),
+    filter_negative: bool = True,
+):
     """Analog of nested `for` cycles in barycentric coordinates.
     In 1D case without free variable this is linear interpolation.
     In 2D case with free variable this is list of ternary plot points.
@@ -179,20 +193,25 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     jnp.ndarray
         List of vectors inside the simplex. All the vectors have len(spacing) components.
     """
-    assert (len(order) >= 2), "The `order` parameter must include more than 1 iterator."
-    assert (len(spacing) >= 2), "The `spacing` parameter must include more than 1 iterator."
-    assert ((spacing[0] == 0) or (spacing[0] is None)), \
-        "First value in spacing must be 0, because zero iterator is not used."
+    assert len(order) >= 2, "The `order` parameter must include more than 1 iterator."
+    assert (
+        len(spacing) >= 2
+    ), "The `spacing` parameter must include more than 1 iterator."
+    assert (spacing[0] == 0) or (
+        spacing[0] is None
+    ), "First value in spacing must be 0, because zero iterator is not used."
 
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
     flat_flat_order = [element for x in order_adv for element in x]
 
-    assert float(jnp.max(jnp.abs(jnp.array(flat_flat_order)))) < len(spacing), \
-        "Index of iterator in `order` overcomes the number of iterators in `spacing`."
-    assert float(jnp.sum(jnp.array(flat_flat_order) == 0)) <= 1, \
-        "Only one 0 is possible in `order`. Zero shows replenished coefficient."
+    assert float(jnp.max(jnp.abs(jnp.array(flat_flat_order)))) < len(
+        spacing
+    ), "Index of iterator in `order` overcomes the number of iterators in `spacing`."
+    assert (
+        float(jnp.sum(jnp.array(flat_flat_order) == 0)) <= 1
+    ), "Only one 0 is possible in `order`. Zero shows replenished coefficient."
 
-    lin_spaces = [[0., 0.]] + [jnp.linspace(0, 1, s) for s in spacing[1:]]
+    lin_spaces = [[0.0, 0.0]] + [jnp.linspace(0, 1, s) for s in spacing[1:]]
     iter_list = [0] * len(spacing)
     ret = []
 
@@ -200,22 +219,22 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
 
         # Collect cases from current iterator states
         case = []
-        case_sub = 0.
+        case_sub = 0.0
         replace_ind = None
         for ord_ind, ord in enumerate(order_adv):
-            val = 1.
-            val_sub = 1.
+            val = 1.0
+            val_sub = 1.0
             for ord_ind2, ord2 in enumerate(ord):
                 if ord2 == 0:
-                    val *= 0.
-                    val_sub *= 0.
+                    val *= 0.0
+                    val_sub *= 0.0
                     replace_ind = ord_ind
                 elif ord2 > 0:
                     val *= lin_spaces[ord2][iter_list[ord2]]
                     val_sub *= lin_spaces[ord2][iter_list[ord2]]
                 elif ord2 < 0:
-                    val *= (1. - lin_spaces[-ord2][iter_list[-ord2]])
-                    val_sub *= (1. - lin_spaces[-ord2][iter_list[-ord2]])
+                    val *= 1.0 - lin_spaces[-ord2][iter_list[-ord2]]
+                    val_sub *= 1.0 - lin_spaces[-ord2][iter_list[-ord2]]
 
             case.append(float(val))
             case_sub += val_sub
@@ -226,7 +245,7 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
         # Add this case or filter if negative values are not allowed
         here_is_negative = False
         for i in case:
-            if i < 0.:
+            if i < 0.0:
                 here_is_negative = True
         if (not here_is_negative) or (not filter_negative and here_is_negative):
             ret.append(case)
@@ -242,9 +261,9 @@ def barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1),
     return ret
 
 
-def train_test_split(array: jnp.ndarray,
-                     rng: KeyArray,
-                     test_size: float = 0.3) -> (list, list):
+def train_test_split(
+    array: jnp.ndarray, rng: KeyArray, test_size: float = 0.3
+) -> (list, list):
     """
     Split array to test and train subset. This is analog of `model_selection.train_test_split` in sklearn.
 
@@ -262,15 +281,18 @@ def train_test_split(array: jnp.ndarray,
     (list, list)
         List of indexes for test and train subsets
     """
-    assert (0. <= test_size <= 1.)
+    assert 0.0 <= test_size <= 1.0
     indices = jnp.arange(len(array))
 
-    test_index_list = [index for index in
-                       jax.random.choice(key=rng,
-                                         a=indices,
-                                         replace=False,
-                                         shape=[int(len(indices) * test_size)]).tolist()]
-    train_index_list = [index for index in indices.tolist() if index not in test_index_list]
+    test_index_list = [
+        index
+        for index in jax.random.choice(
+            key=rng, a=indices, replace=False, shape=[int(len(indices) * test_size)]
+        ).tolist()
+    ]
+    train_index_list = [
+        index for index in indices.tolist() if index not in test_index_list
+    ]
 
     return train_index_list, test_index_list
 
@@ -287,20 +309,32 @@ def rotation_matrix(yaw, pitch, roll):
         The roll in radian
     :return:
     """
-    Rz = jnp.array([[jnp.cos(yaw), -jnp.sin(yaw), 0.],
-                    [jnp.sin(yaw), jnp.cos(yaw), 0.],
-                    [0., 0., 1.]])
-    Ry = jnp.array([[jnp.cos(pitch), 0, jnp.sin(pitch)],
-                    [0, 1, 0],
-                    [-jnp.sin(pitch), 0., jnp.cos(pitch)]])
-    Rx = jnp.array([[1., 0., 0.],
-                    [0., jnp.cos(roll), -jnp.sin(roll)],
-                    [0., jnp.sin(roll), jnp.cos(roll)]])
+    Rz = jnp.array(
+        [
+            [jnp.cos(yaw), -jnp.sin(yaw), 0.0],
+            [jnp.sin(yaw), jnp.cos(yaw), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    Ry = jnp.array(
+        [
+            [jnp.cos(pitch), 0, jnp.sin(pitch)],
+            [0, 1, 0],
+            [-jnp.sin(pitch), 0.0, jnp.cos(pitch)],
+        ]
+    )
+    Rx = jnp.array(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, jnp.cos(roll), -jnp.sin(roll)],
+            [0.0, jnp.sin(roll), jnp.cos(roll)],
+        ]
+    )
 
     return Rz @ Ry @ Rx
 
 
-def scale_xyz(xyz, scale=(1., 1., 1.)):
+def scale_xyz(xyz, scale=(1.0, 1.0, 1.0)):
     """
     Scale array of points to the `scale` factor.
 
@@ -313,7 +347,7 @@ def scale_xyz(xyz, scale=(1., 1., 1.)):
     -------
     :return: Scaled array of points with shape equal to shape of `xyz` array
     """
-    assert (xyz.shape[-1] == 3)
+    assert xyz.shape[-1] == 3
     scale = jnp.array(scale)
     xyz = scale * xyz
     return xyz

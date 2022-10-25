@@ -1,27 +1,30 @@
+import hashlib
 import os
 import os.path
-import requests
 import re
 import urllib
 import urllib.error
 import urllib.request
+
 import gdown
-import hashlib
 import py7zr
+import requests
 
 
-def _download_from_url(url: str, path_to: str, chunk_size: int = 32768, extension: str = '7z') -> str:
-    path_to = path_to + 'temp.' + extension
+def _download_from_url(
+    url: str, path_to: str, chunk_size: int = 32768, extension: str = "7z"
+) -> str:
+    path_to = path_to + "temp." + extension
     r = requests.get(url, stream=True)
-    with open(path_to, 'wb') as fd:
+    with open(path_to, "wb") as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             fd.write(chunk)
 
     return path_to
 
 
-def _download_from_google(url: str, path_to: str = './', extension: str = '7z') -> str:
-    path_to = path_to + 'temp.' + extension
+def _download_from_google(url: str, path_to: str = "./", extension: str = "7z") -> str:
+    path_to = path_to + "temp." + extension
 
     def get_id(url):
         parts = urllib.parse.urlparse(url)
@@ -35,8 +38,10 @@ def _download_from_google(url: str, path_to: str = './', extension: str = '7z') 
     return path_to
 
 
-def _extract_7z_file(from_path: str, to_path: str, delete_archive: bool = False) -> None:
-    with py7zr.SevenZipFile(from_path, mode='r') as z:
+def _extract_7z_file(
+    from_path: str, to_path: str, delete_archive: bool = False
+) -> None:
+    with py7zr.SevenZipFile(from_path, mode="r") as z:
         z.extractall(path=to_path)
 
     if delete_archive:
@@ -52,7 +57,7 @@ def __create_md5(file: str) -> str:
 
 
 def _check_md5(file: str, orig_hash: str) -> bool:
-    with open(file, 'rb') as f:
+    with open(file, "rb") as f:
         data = f.read()
         md5 = hashlib.md5(data).hexdigest()
 
