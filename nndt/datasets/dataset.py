@@ -27,7 +27,6 @@ class dataset:
                     assert _check_md5(z, self.hash)
                     _extract_7z_file(z, self.to_path)
                 except Exception as e:
-                    print(url, str(e))
                     continue
             else:
                 try:
@@ -36,7 +35,6 @@ class dataset:
                     assert _check_md5(z, self.hash)
                     _extract_7z_file(z, self.to_path)
                 except Exception as e:
-                    print(url, str(e))
                     continue
             complete = True
             os.remove(z)
