@@ -4,7 +4,7 @@
 [![docstr_coverage](https://github.com/KonstantinUshenin/nndt/blob/main/badge.svg)](https://github.com/KonstantinUshenin/nndt)
 [![codecov](https://codecov.io/gh/KonstantinUshenin/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/KonstantinUshenin/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/konstantinushenin/nndt/badge)](https://www.codefactor.io/repository/github/konstantinushenin/nndt)
-[![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml)
+[![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-workflow.yml)
 [![License](https://img.shields.io/github/license/KonstantinUshenin/nndt)](https://github.com/KonstantinUshenin/nndt/blob/main/LICENSE)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/KonstantinUshenin/nndt)
