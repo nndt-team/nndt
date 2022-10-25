@@ -5,7 +5,7 @@ from jax.random import PRNGKey, split
 import jax.numpy as jnp
 
 
-class test_datagen(BaseTestCase):
+class DatagenTestCase(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
