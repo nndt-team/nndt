@@ -1,11 +1,11 @@
-from nndt.datasets.dataset import dataset
+from nndt.datasets.dataset import Dataset
 
 
-class MICCAI2015(dataset):
+class MICCAI2015(Dataset):
     def __init__(self, name='left_adrenal_gland_10', to_path=None):
-        super().__init__()
+        super().__init__(name=name, to_path=to_path)
 
-        __dict = {
+        self._dict = {
             'left_adrenal_gland_10': [
                 ['https://drive.google.com/file/d/1LFJs5tW-acZOXTVVHh-WpWRNkAgtKaDd/view?usp=sharing',
                  'https://www.dropbox.com/s/xyarraopmj069de/left_adrenal_gland.7z?raw=1'],
@@ -36,13 +36,10 @@ class MICCAI2015(dataset):
             ]
         }
 
-        if name in __dict.keys():
+        if name in self._dict.keys():
             self.name = 'MICCAI2015'
             self.to_path = to_path
-            self.urls, self.hash = __dict[name]
+            self.urls, self.hash = self._dict[name]
 
         else:
-            raise ValueError(f'name must be in {[key for key in __dict if "test" not in key]}')
-
-    def load(self):
-        super(MICCAI2015, self).load()
+            raise ValueError(f'name must be in {[key for key in self._dict if "_test" not in key]}')

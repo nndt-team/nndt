@@ -48,6 +48,8 @@ class DatasetLoadingCase(BaseTestCase):
         with self.assertRaises(ConnectionError):
             ACDC('wrong_hash_test').load()
 
-    def test_check_miccai15(self):
-        with self.assertRaises(ValueError):
-            MICCAI2015('random_name').load()
+    def test_dataset_list(self):
+        _list = MICCAI2015().dataset_list()
+        self.assertTrue(_list is not None)
+        self.assertTrue(len(_list) > 0)
+        self.assertTrue(len([item for item in _list if '_test' in item]) == 0)

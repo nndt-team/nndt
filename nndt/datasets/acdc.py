@@ -1,11 +1,11 @@
-from nndt.datasets.dataset import dataset
+from nndt.datasets.dataset import Dataset
 
 
-class ACDC(dataset):
+class ACDC(Dataset):
     def __init__(self, name='ACDC_5', to_path=None):
-        super().__init__()
+        super().__init__(name=name, to_path=to_path)
 
-        __dict = {
+        self._dict = {
             'ACDC_5': [
                 ['https://drive.google.com/file/d/1UzC2WPkjMQSxzI5sj1rMT47URuZbQhYb/view?usp=sharing',
                  'https://www.dropbox.com/s/6fomqxbjs0iu79m/ACDC_5.7z?raw=1'],
@@ -31,15 +31,14 @@ class ACDC(dataset):
             ]
         }
 
-        if name in __dict.keys():
+        if name in self._dict.keys():
             if 'test' in name:
                 self.name = 'ACDC_5'
             else:
                 self.name = name
             self.to_path = to_path
-            self.urls, self.hash = __dict[name]
+            self.urls, self.hash = self._dict[name]
         else:
-            raise ValueError(f'name must be in {[key for key in __dict if "test" not in key]}')
+            raise ValueError(f'name must be in {[key for key in self._dict if "_test" not in key]}')
 
-    def load(self):
-        super(ACDC, self).load()
+
