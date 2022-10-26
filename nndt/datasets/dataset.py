@@ -11,8 +11,6 @@ from nndt.datasets.utils import (
 )
 
 
-
-
 class Dataset:
     def __init__(self, name=None, to_path=None):
         self.name = name

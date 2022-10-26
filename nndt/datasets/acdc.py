@@ -47,6 +47,3 @@ class ACDC(Dataset):
             raise ValueError(
                 f'name must be in {[key for key in self._dict if "_test" not in key]}'
             )
-
-
-
