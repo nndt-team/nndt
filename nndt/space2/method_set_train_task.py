@@ -107,6 +107,7 @@ class TrainTaskSetNode(MethodSetNode):
                                 for k, v in self.transform.__dict__.items()
                                 if isinstance(v, (int, float, str))
                             },
+                            "bbox": self.object_3d.bbox,
                             "trainable_task": kwargs,
                             "history_loss": loss_history,
                             "params": params,

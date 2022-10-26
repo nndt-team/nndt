@@ -2,6 +2,7 @@ import pickle
 import warnings
 from typing import Optional
 
+import jax
 import jax.numpy as jnp
 import vtk
 from packaging import version
@@ -10,6 +11,7 @@ from vtkmodules.util.numpy_support import vtk_to_numpy
 
 import nndt
 from nndt.space2.abstracts import AbstractLoader
+from nndt.trainable_task import SimpleSDF
 
 
 class EmptyLoader(AbstractLoader):
@@ -240,21 +242,65 @@ class IR1Loader(AbstractLoader):
         self.is_load = False
 
         self.json_ = None
+        self.functions_ = None
+        self.params_ = None
+        self.bbox_ = None
+
+    @property
+    def json(self):
+        if not self.is_load:
+            self.load_data()
+        return self.json_
+
+    @property
+    def functions(self):
+        if not self.is_load:
+            self.load_data()
+        return self.functions_
+
+    @property
+    def params(self):
+        if not self.is_load:
+            self.load_data()
+        return self.params_
+
+    @property
+    def bbox(self):
+        if not self.is_load:
+            self.load_data()
+        return self.bbox_
 
     def load_data(self):
         with open(self.filepath, "rb") as input_file:
             self.json_ = pickle.load(input_file)
             version_ = self.json_["version"]
+            trainable_task_ = self.json_["trainable_task"]
+            repr_ = self.json_["repr"]
+
+            history_loss_ = self.json_["history_loss"]
+            params_ = self.json_["params"]
+            bbox_ = self.json_["bbox"]
 
         if version.parse(nndt.__version__) < version.parse(version_):
             warnings.warn(
                 "Loaded neural network was created on earlier version of NNDT!"
             )
 
+        task = SimpleSDF(**trainable_task_)
+        rng = jax.random.PRNGKey(42)
+        _, self.F = task.init_and_functions(rng)
+
+        self.functions_ = self.F
+        self.params_ = params_
+        self.bbox_ = bbox_
+
         self.is_load = True
 
     def unload_data(self):
         self.json_ = None
+        self.functions_ = None
+        self.params_ = None
+        self.bbox_ = None
 
     def is_load(self) -> bool:
         return self.is_load
