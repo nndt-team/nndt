@@ -21,20 +21,16 @@ class AbstractTrainableTask:
 
 
 class SimpleSDF(AbstractTrainableTask):
-    FUNC = namedtuple(
-        "SimpleSDF_DATA",
-        [
-            "sdf",
-            "vec_sdf",
-            "sdf_dx",
-            "sdf_dy",
-            "sdf_dz",
-            "vec_sdf_dx",
-            "vec_sdf_dy",
-            "vec_sdf_dz",
-            "vec_main_loss",
-        ],
-    )
+    class FUNC(NamedTuple):
+        sdf: Callable
+        vec_sdf: Callable
+        sdf_dx: Callable
+        sdf_dy: Callable
+        sdf_dz: Callable
+        vec_sdf_dx: Callable
+        vec_sdf_dy: Callable
+        vec_sdf_dz: Callable
+        vec_main_loss: Callable
 
     class DATA(NamedTuple):
         X: jnp.ndarray  # [N]
