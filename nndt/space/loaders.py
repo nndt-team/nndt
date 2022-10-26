@@ -5,14 +5,14 @@ from anytree import PreOrderIter
 from nndt.math_core import train_test_split
 from nndt.space.regions import *
 from nndt.space.repr_mesh import *
-from nndt.space.repr_prim import SphereSDF_Xyz2SDT, SphereSDF, SphereSDF_PureSDF
+from nndt.space.repr_prim import SphereSDF, SphereSDF_PureSDF, SphereSDF_Xyz2SDT
 from nndt.space.repr_sdt import *
 from nndt.space.sources import SphereSDFSource
 
 
-def preload_all_possible(space: Space,
-                         padding_physical=(10, 10, 10),
-                         scale_physical2normed=50):
+def preload_all_possible(
+    space: Space, padding_physical=(10, 10, 10), scale_physical2normed=50
+):
     for node in PreOrderIter(space):
         if isinstance(node, AbstractRegion):
             _ = SamplingGrid(node)
@@ -20,9 +20,11 @@ def preload_all_possible(space: Space,
             _ = SamplingGridWithShackle(node)
 
         if isinstance(node, MeshSource):
-            mesh_repr = MeshRepr.load_mesh_and_bring_to_center(node,
-                                                               padding_physical=padding_physical,
-                                                               scale_physical2normed=scale_physical2normed)
+            mesh_repr = MeshRepr.load_mesh_and_bring_to_center(
+                node,
+                padding_physical=padding_physical,
+                scale_physical2normed=scale_physical2normed,
+            )
             _ = Index2xyz(mesh_repr)
             _ = SamplingEachN(mesh_repr)
             _ = SaveMesh(mesh_repr)
@@ -30,9 +32,11 @@ def preload_all_possible(space: Space,
             color_reps = PointColorRepr.try_to_build_representation(mesh_repr)
 
         if isinstance(node, SDTSource):
-            repr = SDTRepr.load_mesh_and_bring_to_center(node,
-                                                         padding_physical=padding_physical,
-                                                         scale_physical2normed=scale_physical2normed)
+            repr = SDTRepr.load_mesh_and_bring_to_center(
+                node,
+                padding_physical=padding_physical,
+                scale_physical2normed=scale_physical2normed,
+            )
 
             _ = Xyz2SDT(repr)
             _ = Xyz2LocalSDT(repr)
@@ -51,17 +55,19 @@ def preload_all_possible(space: Space,
     gc.collect()
 
 
-def load_data(name_list,
-              mesh_list: Optional[Sequence[str]] = None,
-              sdt_list: Optional[Sequence[str]] = None,
-              sdfpkl_list: Optional[Sequence[str]] = None,
-              test_size: Optional[float] = None) -> Space:
+def load_data(
+    name_list,
+    mesh_list: Optional[Sequence[str]] = None,
+    sdt_list: Optional[Sequence[str]] = None,
+    sdfpkl_list: Optional[Sequence[str]] = None,
+    test_size: Optional[float] = None,
+) -> Space:
     if mesh_list is not None:
-        assert (len(name_list) == len(mesh_list))
+        assert len(name_list) == len(mesh_list)
     if sdt_list is not None:
-        assert (len(name_list) == len(sdt_list))
+        assert len(name_list) == len(sdt_list)
     if sdfpkl_list is not None:
-        assert (len(name_list) == len(sdfpkl_list))
+        assert len(name_list) == len(sdfpkl_list)
 
     if test_size is None:
         space = Space("main")
@@ -75,13 +81,13 @@ def load_data(name_list,
             if sdfpkl_list is not None:
                 sdfpkl_source = SDFPKLSource("sdfpkl", sdfpkl_list[ind], parent=object)
     else:
-        assert (0.0 < test_size < 1.0)
+        assert 0.0 < test_size < 1.0
         space = Space("main")
         rng = jax.random.PRNGKey(0)
         rng_key, _ = jax.random.split(rng)
-        index_train, index_test = train_test_split(range(len(name_list)),
-                                                   rng=rng_key,
-                                                   test_size=test_size)
+        index_train, index_test = train_test_split(
+            range(len(name_list)), rng=rng_key, test_size=test_size
+        )
 
         group_train = Group("train", parent=space)
         for ind in index_train:

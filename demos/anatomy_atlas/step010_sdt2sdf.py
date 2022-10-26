@@ -13,16 +13,16 @@ LEARNING_RATE = 0.006
 EPOCHS = 9001
 SHAPE = (64, 64, 64)
 FLAT_SHAPE = SHAPE[0] * SHAPE[1] * SHAPE[2]
-EXP_NAME = 'sdt2sdf_default'
-LOG_FOLDER = f'./{EXP_NAME}/'
+EXP_NAME = "sdt2sdf_default"
+LOG_FOLDER = f"./{EXP_NAME}/"
 LEVEL_SHIFT = 0.03
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     os.makedirs(LOG_FOLDER, exist_ok=True)
 
-    folder = '../../tests/acdc_for_test'
+    folder = "../../tests/acdc_for_test"
     name_list = os.listdir(folder)
     name_list.sort()
     mesh_list = [f"{folder}/{p}/colored.obj" for p in name_list]
@@ -34,5 +34,7 @@ if __name__ == '__main__':
     for width in [2, 4, 8, 16, 32, 64]:
         for depth in [1, 2, 4, 8, 16, 32, 64]:
             for patient in name_list[:1]:
-                train = space[f'default/{patient}/sdt/repr/train_sdt2sdf']
-                train(f'./{EXP_NAME}/{depth}_{width}_{patient}', width=width, depth=depth)
+                train = space[f"default/{patient}/sdt/repr/train_sdt2sdf"]
+                train(
+                    f"./{EXP_NAME}/{depth}_{width}_{patient}", width=width, depth=depth
+                )

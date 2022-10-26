@@ -1,0 +1,19 @@
+repos:
+
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+      - id: black-jupyter
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/HunterMcGushion/docstr_coverage
+    rev: v2.2.0
+    hooks:
+      - id: docstr-coverage
+        args: ["nndt", "--fail-under", "0", "--percentage-only", "--badge", "./badge.svg"]

@@ -1,8 +1,7 @@
-from nndt.space.abstracts import FileSource, ExtendedNodeMixin, AbstractSource
+from nndt.space.abstracts import AbstractSource, ExtendedNodeMixin, FileSource
 
 
 class MeshSource(FileSource, ExtendedNodeMixin):
-
     def __init__(self, name, filepath, parent=None):
         super(MeshSource, self).__init__(filepath)
         self.name = name
@@ -10,7 +9,6 @@ class MeshSource(FileSource, ExtendedNodeMixin):
 
 
 class SDTSource(FileSource, ExtendedNodeMixin):
-
     def __init__(self, name, filepath, parent=None):
         super(SDTSource, self).__init__(filepath)
         self.name = name
@@ -18,7 +16,6 @@ class SDTSource(FileSource, ExtendedNodeMixin):
 
 
 class SDFPKLSource(FileSource, ExtendedNodeMixin):
-
     def __init__(self, name, filepath, parent=None):
         super(SDFPKLSource, self).__init__(filepath)
         self.name = name
@@ -26,8 +23,7 @@ class SDFPKLSource(FileSource, ExtendedNodeMixin):
 
 
 class SphereSDFSource(AbstractSource, ExtendedNodeMixin):
-
-    def __init__(self, name, center=(0., 0., 0.), radius=1., parent=None):
+    def __init__(self, name, center=(0.0, 0.0, 0.0), radius=1.0, parent=None):
         super(SphereSDFSource, self).__init__()
         self.name = name
         self.parent = parent

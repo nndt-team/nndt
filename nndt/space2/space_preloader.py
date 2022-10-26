@@ -1,12 +1,20 @@
 from anytree import PostOrderIter, PreOrderIter
 
-from nndt.space2 import ColorMethodSetNode
-from nndt.space2 import SDTMethodSetNode
-from nndt.space2 import SamplingMethodSetNode
-from nndt.space2 import pad_bbox
-from nndt.space2 import update_bbox, AbstractBBoxNode, Space, FileSource, Object3D, Group, AbstractTransformation, \
-    MeshObjMethodSetNode, \
-    DICT_NODETYPE_PRIORITY
+from nndt.space2 import (
+    DICT_NODETYPE_PRIORITY,
+    AbstractBBoxNode,
+    AbstractTransformation,
+    ColorMethodSetNode,
+    FileSource,
+    Group,
+    MeshObjMethodSetNode,
+    Object3D,
+    SamplingMethodSetNode,
+    SDTMethodSetNode,
+    Space,
+    pad_bbox,
+    update_bbox,
+)
 
 
 def _update_bbox_bottom_to_up(node):
@@ -16,13 +24,14 @@ def _update_bbox_bottom_to_up(node):
 
 
 class DefaultPreloader:
-
-    def __init__(self,
-                 mode="identity",
-                 scale=50,
-                 keep_in_memory=True,
-                 ps_padding=(0., 0., 0.),
-                 ns_padding=(0., 0., 0.)):
+    def __init__(
+        self,
+        mode="identity",
+        scale=50,
+        keep_in_memory=True,
+        ps_padding=(0.0, 0.0, 0.0),
+        ns_padding=(0.0, 0.0, 0.0),
+    ):
         self.mode = mode
         self.scale = scale
         self.keep_in_memory = keep_in_memory
@@ -58,8 +67,10 @@ class DefaultPreloader:
 
     def _keep_alphabetical_order_of_nodes(self, space: Space):
         for node in PreOrderIter(space):
-            node._NodeMixin__children_or_empty.sort(key=lambda d: (100 - DICT_NODETYPE_PRIORITY[d._nodetype], d.name),
-                                                    reverse=False)
+            node._NodeMixin__children_or_empty.sort(
+                key=lambda d: (100 - DICT_NODETYPE_PRIORITY[d._nodetype], d.name),
+                reverse=False,
+            )
 
     def _add_sampling_node(self, node: AbstractBBoxNode):
         SamplingMethodSetNode(parent=node)
@@ -75,29 +86,41 @@ class DefaultPreloader:
 
     def _process_sdt_source(self, node: Object3D):
 
-        sdt_array_list = [source for source in node.children
-                          if isinstance(source, FileSource) and source.loader_type == 'sdt']
+        sdt_array_list = [
+            source
+            for source in node.children
+            if isinstance(source, FileSource) and source.loader_type == "sdt"
+        ]
         transform = None
         if len(sdt_array_list) > 0:
-            from nndt.space2.transformation import IdentityTransform, ShiftAndScaleTransform, ToNormalCubeTransform
+            from nndt.space2.transformation import (
+                IdentityTransform,
+                ShiftAndScaleTransform,
+                ToNormalCubeTransform,
+            )
+
             ps_bbox = sdt_array_list[0].bbox
-            if self.mode == 'identity':
-                transform = IdentityTransform(ps_bbox=ps_bbox,
-                                              parent=node)
-            elif self.mode == 'shift_and_scale':
-                ps_center = ((ps_bbox[0][0] + ps_bbox[1][0]) / 2.,
-                             (ps_bbox[0][1] + ps_bbox[1][1]) / 2.,
-                             (ps_bbox[0][2] + ps_bbox[1][2]) / 2.)
-                transform = ShiftAndScaleTransform(ps_bbox=ps_bbox,
-                                                   ps_center=ps_center,
-                                                   ns_center=(0., 0., 0.),
-                                                   scale_ps2ns=self.scale,
-                                                   parent=node)
-            elif self.mode == 'to_cube':
-                transform = ToNormalCubeTransform(ps_bbox=ps_bbox,
-                                                  parent=node)
+            if self.mode == "identity":
+                transform = IdentityTransform(ps_bbox=ps_bbox, parent=node)
+            elif self.mode == "shift_and_scale":
+                ps_center = (
+                    (ps_bbox[0][0] + ps_bbox[1][0]) / 2.0,
+                    (ps_bbox[0][1] + ps_bbox[1][1]) / 2.0,
+                    (ps_bbox[0][2] + ps_bbox[1][2]) / 2.0,
+                )
+                transform = ShiftAndScaleTransform(
+                    ps_bbox=ps_bbox,
+                    ps_center=ps_center,
+                    ns_center=(0.0, 0.0, 0.0),
+                    scale_ps2ns=self.scale,
+                    parent=node,
+                )
+            elif self.mode == "to_cube":
+                transform = ToNormalCubeTransform(ps_bbox=ps_bbox, parent=node)
             else:
-                raise NotImplementedError(f"{self.mode} is not supported for initialization")
+                raise NotImplementedError(
+                    f"{self.mode} is not supported for initialization"
+                )
             node.bbox = update_bbox(node.bbox, transform.bbox)
             node.bbox = pad_bbox(node.bbox, self.ns_padding)
 
@@ -107,9 +130,14 @@ class DefaultPreloader:
 
         return transform
 
-    def _process_mesh_obj_source(self, node: Object3D, transform: AbstractTransformation):
-        mesh_obj_array_list = [source for source in node.children
-                               if isinstance(source, FileSource) and source.loader_type == 'mesh_obj']
+    def _process_mesh_obj_source(
+        self, node: Object3D, transform: AbstractTransformation
+    ):
+        mesh_obj_array_list = [
+            source
+            for source in node.children
+            if isinstance(source, FileSource) and source.loader_type == "mesh_obj"
+        ]
 
         if len(mesh_obj_array_list) and transform is not None:
             mesh = mesh_obj_array_list[0]
@@ -125,8 +153,9 @@ class DefaultPreloader:
     def _init_FileSource(self, node: FileSource):
 
         from nndt.space2 import DICT_LOADERTYPE_CLASS
+
         if node.loader_type not in DICT_LOADERTYPE_CLASS:
-            raise NotImplementedError(f'{node.loader_type} is unknown loader')
+            raise NotImplementedError(f"{node.loader_type} is unknown loader")
 
         node._loader = DICT_LOADERTYPE_CLASS[node.loader_type](filepath=node.filepath)
         node._loader.load_data()

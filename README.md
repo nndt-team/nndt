@@ -1,13 +1,15 @@
 # Neural Network for Digital Twin (NNDT)
 
 [![GitHub issues by-label](https://img.shields.io/github/issues/KonstantinUshenin/nndt/good%20first%20issue)](https://github.com/KonstantinUshenin/nndt/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+[![docstr_coverage](https://github.com/KonstantinUshenin/nndt/blob/main/docstr-cov-badge.svg)](https://github.com/KonstantinUshenin/nndt)
 [![codecov](https://codecov.io/gh/KonstantinUshenin/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/KonstantinUshenin/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/konstantinushenin/nndt/badge)](https://www.codefactor.io/repository/github/konstantinushenin/nndt)
-[![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-test.yml)
+[![ci-test workflow](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/KonstantinUshenin/nndt/actions/workflows/ci-workflow.yml)
 [![License](https://img.shields.io/github/license/KonstantinUshenin/nndt)](https://github.com/KonstantinUshenin/nndt/blob/main/LICENSE)
-[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Python version](https://github.com/KonstantinUshenin/nndt/blob/main/python-badge.svg)](https://www.python.org/downloads/release/python-3110/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/KonstantinUshenin/nndt)
-[![PEP8](https://img.shields.io/badge/code%20style-pep8-blue.svg)](https://www.python.org/dev/peps/pep-0008/)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 
 [Wiki](https://github.com/KonstantinUshenin/nndt/wiki) | [Change logs](https://github.com/KonstantinUshenin/nndt/blob/v0.0.1rc/CHANGELOG.md)
 
@@ -25,10 +27,7 @@ The developer release:
 pip install git+https://github.com/KonstantinUshenin/nndt.git
 ```
 
-Installation for Windows with WSL:
-```
-https://github.com/KonstantinUshenin/nndt/wiki/NNDT-WSL
-```
+[Installation for Windows with WSL](https://github.com/KonstantinUshenin/nndt/wiki/NNDT-WSL)
 
 ## Test
 
