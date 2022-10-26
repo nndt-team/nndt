@@ -12,7 +12,12 @@ P = {
     "level_shift": 0.03,
 }
 
-if __name__ == "__main__":
+
+def main():
+    """
+    This step train usual MLP for representation of the models.
+    :return:
+    """
     space = load_from_path(P["dataset_path"])
     space.preload("shift_and_scale")
     print(space.print())
@@ -20,9 +25,14 @@ if __name__ == "__main__":
     for width in [2, 4, 8, 16, 32, 64]:
         for depth in [1, 2, 4, 8, 16, 32, 64]:
             for patient in space:
-                os.makedirs(f"./{P['exp_name']}/{patient.name}/", exist_ok=True)
+                path = f"./{P['exp_name']}/{depth:02}_{width:02}/"
+                os.makedirs(path, exist_ok=True)
                 patient.train_task_sdt2sdf(
-                    f"./{P['exp_name']}/{patient.name}/{depth:02}_{width:02}.ir",
+                    path + f"{patient.name}/imp_repr.ir1",
                     width=width,
                     depth=depth,
                 )
+
+
+if __name__ == "__main__":
+    main()
