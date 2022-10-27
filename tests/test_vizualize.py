@@ -65,13 +65,13 @@ class VizualizeTestCase(BaseTestCase):
 
     def test_fix_file_extension(self):
         str = fix_file_extension("/something/file.txt", ".txt")
-        self.assertTrue("file.txt", str.split("/")[-1])
+        self.assertTrue("/something/file.txt", str)
         str = fix_file_extension("/something/file.wow", ".txt")
-        self.assertTrue("file.wow.txt", str.split("/")[-1])
+        self.assertTrue("/something/file.wow.txt", str)
         str = fix_file_extension("/something/file", ".txt")
-        self.assertTrue("file.txt", str.split("/")[-1])
+        self.assertTrue("/something/file.txt", str)
         str = fix_file_extension("/something/file.", ".txt")
-        self.assertTrue("file..txt", str.split("/")[-1])
+        self.assertTrue("/something/file..txt", str)
 
 
 if __name__ == "__main__":

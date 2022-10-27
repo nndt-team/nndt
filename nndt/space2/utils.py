@@ -6,8 +6,8 @@ from skimage import measure
 
 
 def fix_file_extension(path: str, ext: str):
-    ext_len = path[-len(ext) :]
-    ret = str if path.endswith(ext) else ext_len + ext
+    ext_len = path[: -len(ext)]
+    ret = path if path.endswith(ext) else ext_len + ext
     return ret
 
 
