@@ -5,6 +5,12 @@ import numpy as onp
 from skimage import measure
 
 
+def fix_file_extension(path: str, ext: str):
+    ext_len = path[-len(ext) :]
+    ret = str if path.endswith(ext) else ext_len + ext
+    return ret
+
+
 def calc_ret_shape(array: Union[jnp.ndarray, onp.ndarray], last_axis: int):
     ret_shape = list(array.shape)
     ret_shape[-1] = last_axis

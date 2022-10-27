@@ -4,6 +4,7 @@ import unittest
 
 import numpy as np
 
+from nndt.space2 import fix_file_extension
 from nndt.vizualize import BasicVizualization
 from tests.base import BaseTestCase
 
@@ -18,7 +19,8 @@ class VizualizeTestCase(BaseTestCase):
         super().setUpClass()
 
     def tearDown(self) -> None:
-        shutil.rmtree(f"./{LOG_FOLDER}")
+        if os.path.exists(f"./{LOG_FOLDER}"):
+            shutil.rmtree(f"./{LOG_FOLDER}")
 
     def test_draw_loss(self):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
@@ -60,6 +62,16 @@ class VizualizeTestCase(BaseTestCase):
             if viz.is_print_on_epoch(epoch):
                 viz.draw_loss("TRAIN_LOSS", viz._records["loss"])
                 self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/TRAIN_LOSS.jpg"))
+
+    def test_fix_file_extension(self):
+        str = fix_file_extension("/something/file.txt", ".txt")
+        self.assertTrue("file.txt", str.split("/")[-1])
+        str = fix_file_extension("/something/file.wow", ".txt")
+        self.assertTrue("file.wow.txt", str.split("/")[-1])
+        str = fix_file_extension("/something/file", ".txt")
+        self.assertTrue("file.txt", str.split("/")[-1])
+        str = fix_file_extension("/something/file.", ".txt")
+        self.assertTrue("file..txt", str.split("/")[-1])
 
 
 if __name__ == "__main__":
