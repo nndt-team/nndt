@@ -20,6 +20,20 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
         bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
         parent=None,
     ):
+        """
+        This class show location of file for processing.
+
+        Args:
+            name (str): file name.
+            filepath (str): file path. If not exists raise FileNotFoundError.
+            loader_type (str): loader type, this string notes type of information for uploading
+            bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)).
+                                    Defaults to ((0., 0., 0.), (0., 0., 0.)).
+            parent (_type_, optional): parent node. Defaults to None.
+
+        Raises:
+            FileNotFoundError: file or directory is requested but doesn’t exist.
+        """
         super(FileSource, self).__init__(
             name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype="FS"
         )
@@ -42,6 +56,13 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
 
 
 class EmptyLoader(AbstractLoader):
+    """
+    Does nothing.
+
+    Args:
+        filepath (str): Filepath.
+    """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -57,6 +78,13 @@ class EmptyLoader(AbstractLoader):
 
 
 class TXTLoader(AbstractLoader):
+    """
+    Load txt file.
+
+    Args:
+        filepath (str): Filepath.
+    """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -64,20 +92,32 @@ class TXTLoader(AbstractLoader):
 
     @property
     def text(self):
+        """If loaded return text from file, otherwise should make load_data().
+
+        Returns:
+            str: File content.
+        """
         if not self.is_load:
             self.load_data()
         return self._text
 
     def load_data(self):
+        """Load data in RAM from file."""
         with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
     def unload_data(self):
+        """Unload data from RAM."""
         self._text = None
         self.is_load = False
 
     def is_load(self) -> bool:
+        """Return is file loaded.
+
+        Returns:
+            bool: File load status.
+        """
         return self.is_load
 
 
