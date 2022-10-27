@@ -13,7 +13,7 @@ from nndt.trainable_task import (
 from nndt.vizualize import BasicVizualization
 
 
-def init_colab(window_size=(600, 400)):
+def init_colab(window_size: Tuple[int, int] = (600, 400)):
     import os
 
     os.system("/usr/bin/Xvfb :99 -screen 0 1024x768x24 &")
