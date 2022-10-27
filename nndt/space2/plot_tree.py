@@ -16,6 +16,8 @@ from nndt.space2 import (
     SDTLoader,
 )
 
+pyvista_pre_params = dict()
+
 
 def _plot_pv_mesh(pl: Plotter, verts, faces, transform):
     verts = transform(verts)
@@ -61,9 +63,9 @@ def _plot(
         )
 
     if filepath is None:
-        pl = pv.Plotter()
+        pl = pv.Plotter(**pyvista_pre_params)
     else:
-        pl = pv.Plotter(off_screen=True)
+        pl = pv.Plotter(off_screen=True, **pyvista_pre_params)
 
     default_transform = lambda xyz: xyz
 
