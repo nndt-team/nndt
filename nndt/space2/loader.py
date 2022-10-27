@@ -9,12 +9,61 @@ from packaging import version
 from pykdtree.kdtree import KDTree
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
-import nndt
-from nndt.space2.abstracts import AbstractLoader
-from nndt.trainable_task import SimpleSDF
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader, IterAccessMixin
+
+
+class FileSource(AbstractBBoxNode, IterAccessMixin):
+    def __init__(
+        self,
+        name,
+        filepath: str,
+        loader_type: str,
+        bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+        parent=None,
+    ):
+        """
+        This class show location of file for processing.
+
+        Args:
+            name (str): file name.
+            filepath (str): file path. If not exists raise FileNotFoundError.
+            loader_type (str): loader type, this string notes type of information for uploading
+            bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)).
+                                    Defaults to ((0., 0., 0.), (0., 0., 0.)).
+            parent (_type_, optional): parent node. Defaults to None.
+
+        Raises:
+            FileNotFoundError: file or directory is requested but doesn’t exist.
+        """
+        super(FileSource, self).__init__(
+            name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype="FS"
+        )
+        if not os.path.exists(filepath):
+            raise FileNotFoundError()
+        self.filepath = filepath
+        self.loader_type = loader_type
+        self._loader = None
+
+    def __repr__(self):
+        star_bool = self._loader.is_load if self._loader is not None else False
+        star = "^" if star_bool else ""
+        return (
+            self._print_color
+            + f"{self._nodetype}:{self.name}"
+            + Fore.WHITE
+            + f" {self.loader_type}{star} {self.filepath}"
+            + Fore.RESET
+        )
 
 
 class EmptyLoader(AbstractLoader):
+    """
+    Does nothing.
+
+    Args:
+        filepath (str): Filepath.
+    """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -30,6 +79,13 @@ class EmptyLoader(AbstractLoader):
 
 
 class TXTLoader(AbstractLoader):
+    """
+    Load txt file.
+
+    Args:
+        filepath (str): Filepath.
+    """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -37,20 +93,32 @@ class TXTLoader(AbstractLoader):
 
     @property
     def text(self):
+        """If loaded return text from file, otherwise should make load_data().
+
+        Returns:
+            str: File content.
+        """
         if not self.is_load:
             self.load_data()
         return self._text
 
     def load_data(self):
+        """Load data in RAM from file."""
         with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
     def unload_data(self):
+        """Unload data from RAM."""
         self._text = None
         self.is_load = False
 
     def is_load(self) -> bool:
+        """Return is file loaded.
+
+        Returns:
+            bool: File load status.
+        """
         return self.is_load
 
 
