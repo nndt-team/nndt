@@ -86,7 +86,7 @@ def load_only_one_file(fullpath, loader_type="txt"):
     """Load one file. Allowed types of file: txt, sdt, mesh_obj.
 
     Args:
-        fullpath (str): Path to file. 
+        fullpath (str): Path to file.
         loader_type (str, optional): Loader type. Allowed: txt, sdt, mes_obj. Defaults to "txt".
 
     Raises:
