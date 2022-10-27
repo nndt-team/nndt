@@ -47,14 +47,38 @@ def _nodecls_function(parent=None, **attrs):
 
 
 def load_txt(fullpath):
+    """Load Space from txt file.
+
+    Args:
+        fullpath (str): Path to txt file.
+
+    Returns:
+        Space: initialized space.
+    """
     return load_only_one_file(fullpath, loader_type="txt")
 
 
 def load_sdt(fullpath):
+    """Load Space from signed distance tensor file.
+
+    Args:
+        fullpath (str): Path to SDT file.
+
+    Returns:
+        Space: initialized space.
+    """
     return load_only_one_file(fullpath, loader_type="sdt")
 
 
 def load_mesh_obj(fullpath):
+    """Load Space from mesh object file.
+
+    Args:
+        fullpath (str): Path to SDT file.
+
+    Returns:
+        Space: initialized space.
+    """
     return load_only_one_file(fullpath, loader_type="mesh_obj")
 
 
@@ -63,7 +87,19 @@ def load_implicit_ir1(fullpath):
 
 
 def load_only_one_file(fullpath, loader_type="txt"):
-    if loader_type not in ["txt", "sdt", "mesh_obj", "implicit_ir1"]:
+    """Load one file. Allowed types of file: txt, sdt, mesh_obj.
+
+    Args:
+        fullpath (str): Path to file. 
+        loader_type (str, optional): Loader type. Allowed: txt, sdt, mes_obj. Defaults to "txt".
+
+    Raises:
+        ValueError: loader_type is unknown.
+
+    Returns:
+        Space: initialized space.
+    """
+    if loader_type not in ["txt", "sdt", "mesh_obj"]:
         raise ValueError("loader_type is unknown")
 
     space = Space("space")
