@@ -1,5 +1,6 @@
 __version__ = "0.0.3a2"
 
+import nndt.space2.plot_tree
 from nndt.math_core import *
 from nndt.primitive_sdf import SphereSDF
 from nndt.trainable_task import (
@@ -10,3 +11,20 @@ from nndt.trainable_task import (
     SurfaceSegmentation,
 )
 from nndt.vizualize import BasicVizualization
+
+
+def init_colab(window_size: Tuple[int, int] = (600, 400)):
+    import os
+
+    os.system("/usr/bin/Xvfb :99 -screen 0 1024x768x24 &")
+    os.environ["DISPLAY"] = ":99"
+
+    import panel as pn
+    import pyvista as pv
+
+    pn.extension("vtk")
+
+    nndt.space2.plot_tree.pyvista_pre_params = {
+        "notebook": True,
+        "window_size": window_size,
+    }
