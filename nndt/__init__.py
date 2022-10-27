@@ -19,7 +19,6 @@ def init_colab(window_size=(600, 400)):
     os.system("/usr/bin/Xvfb :99 -screen 0 1024x768x24 &")
     os.environ["DISPLAY"] = ":99"
 
-    import numpy as np
     import panel as pn
     import pyvista as pv
 
