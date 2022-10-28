@@ -4,6 +4,7 @@ from typing import *
 import numpy as onp
 import pyvista as pv
 from anytree import PostOrderIter, PreOrderIter
+from numpy.ma import copy
 from pyvista import Plotter
 
 from nndt.space2 import (
@@ -17,6 +18,14 @@ from nndt.space2 import (
 )
 
 pyvista_pre_params = dict()
+updateparams = pyvista_pre_params.copy()
+result = set(updateparams).difference(set(pyvista_pre_params))
+if result:
+    pyvista_pre_params.update(result)
+
+
+
+
 
 
 def _plot_pv_mesh(pl: Plotter, verts, faces, transform):
@@ -96,3 +105,4 @@ def _plot(
         pl.show(cpos=cpos)
     else:
         pl.show(screenshot=filepath, cpos=cpos)
+
