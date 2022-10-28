@@ -59,10 +59,3 @@ jobs:
           file: ./coverage.xml
           flags: pytest
           fail_ci_if_error: true
-
-
-      # - name: Upload coverage to Codecov
-      #   run: |
-      #     curl -Os https://uploader.codecov.io/latest/linux/codecov
-      #     chmod +x codecov
-      #     ./codecov -t ${CODECOV_TOKEN}
