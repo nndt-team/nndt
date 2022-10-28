@@ -26,6 +26,9 @@ def update_bbox(
 
 def save_verts_and_faces_to_obj(filepath: str, verts, faces):
     with open(filepath, "w") as fl:
+        if verts is onp.inf and faces is onp.inf:
+            return
+
         for v in verts:
             fl.write(f"v {v[0]} {v[1]} {v[2]}\n")
         for f in faces:
@@ -39,7 +42,7 @@ def array_to_vert_and_faces(
 ):
     level_ = level
     if not (array.min() < level_ < array.max()):
-        level_ = (array.max() + array.min()) / 2.0
+        return onp.inf, onp.inf
 
     verts, faces, _, _ = measure.marching_cubes(onp.array(array), level=level_)
 
