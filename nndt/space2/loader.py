@@ -34,6 +34,7 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
         Raises:
             FileNotFoundError: file or directory is requested but doesn’t exist.
         """
+
         super(FileSource, self).__init__(
             name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype="FS"
         )
@@ -92,23 +93,26 @@ class TXTLoader(AbstractLoader):
 
     @property
     def text(self):
-        """If loaded return text from file, otherwise should make load_data().
+        """Return text from file.
 
         Returns:
             str: File content.
         """
+
         if not self.is_load:
             self.load_data()
         return self._text
 
     def load_data(self):
-        """Load data in RAM from file."""
+        """Load data from file."""
+
         with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
     def unload_data(self):
-        """Unload data from RAM."""
+        """Clear data."""
+
         self._text = None
         self.is_load = False
 
@@ -118,6 +122,7 @@ class TXTLoader(AbstractLoader):
         Returns:
             bool: File load status.
         """
+
         return self.is_load
 
 
@@ -174,6 +179,13 @@ def _load_colors_from_ply(filepath):
 
 
 class MeshObjLoader(AbstractLoader):
+    """
+    Load mesh object.
+
+    Args:
+        filepath (str): Filepath.
+    """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -183,34 +195,66 @@ class MeshObjLoader(AbstractLoader):
         self._rgba = None
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        """Return boundary box size of object.
+
+        Returns:
+            (tuple), (tuple): boundary box: (Xmin, Xmax, Ymin), (Ymax, Zmin, Zmax)
+        """
+
         Xmin, Xmax, Ymin, Ymax, Zmin, Zmax = self.mesh.GetBounds()
         return (Xmin, Ymin, Zmin), (Xmax, Ymax, Zmax)
 
     @property
     def mesh(self) -> vtk.vtkPolyData:
+        """Return mesh of object.
+
+        Returns:
+            vtk.vtkPolyData: Mesh.
+        """
+
         if not self.is_load:
             self.load_data()
         return self._mesh
 
     @property
     def points(self) -> jnp.ndarray:
+        """Return points of object.
+
+        Returns:
+            jnp.ndarray: Points of object.
+        """
+
         if not self.is_load:
             self.load_data()
         return self._points
 
     @property
     def kdtree(self) -> KDTree:
+        """Return KDTree of object.
+
+        Returns:
+            KDTree: KDTree.
+        """
+
         if not self.is_load:
             self.load_data()
         return self._kdtree
 
     @property
     def rgba(self) -> Optional[jnp.ndarray]:
+        """Return rgba of object.
+
+        Returns:
+            Optional[jnp.ndarray]: Rgba of object.
+        """
+
         if not self.is_load:
             self.load_data()
         return self._rgba
 
     def load_data(self):
+        """Load data from file."""
+
         reader = vtk.vtkOBJReader()
         reader.SetFileName(self.filepath)
         reader.Update()
@@ -228,14 +272,30 @@ class MeshObjLoader(AbstractLoader):
         self.is_load = True
 
     def unload_data(self):
+        """Clear data."""
+
         self._mesh = None
         self.is_load = False
 
     def is_load(self) -> bool:
+        """Return is file loaded.
+
+        Returns:
+            bool: File load status.
+        """
+
         return self.is_load
 
 
 class SDTLoader(AbstractLoader):
+    """
+    Load signed distance tensor file.
+
+
+    Args:
+        filepath (str): Filepath.
+    """
+
     def __init__(self, filepath: str):
         self.filepath = filepath
         self.is_load = False
@@ -243,6 +303,12 @@ class SDTLoader(AbstractLoader):
         self._sdt_threshold_level = 0.0
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        """Return boundary box size of object.
+
+        Returns:
+            (tuple), (tuple): boundary box: (Xmin, Xmax, Ymin), (Ymax, Zmin, Zmax)
+        """
+
         mask_arr = self.sdt <= self._sdt_threshold_level
         Xmin = float(jnp.argmax(jnp.any(mask_arr, axis=(1, 2))))
         Ymin = float(jnp.argmax(jnp.any(mask_arr, axis=(0, 2))))
@@ -262,11 +328,19 @@ class SDTLoader(AbstractLoader):
 
     @property
     def sdt(self):
+        """Return sdt data.
+
+        Returns:
+            jnp.ndarray: Points of object.
+        """
+
         if not self.is_load:
             self.load_data()
         return self._sdt
 
     def load_data(self):
+        """Load data from file."""
+
         self._sdt = jnp.load(self.filepath)
         self.is_load = True
 
@@ -296,10 +370,18 @@ class SDTLoader(AbstractLoader):
         return result
 
     def unload_data(self):
+        """Clear data."""
+
         self._sdt = None
         self.is_load = False
 
     def is_load(self) -> bool:
+        """Return is file loaded.
+
+        Returns:
+            bool: File load status.
+        """
+
         return self.is_load
 
 
