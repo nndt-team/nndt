@@ -1,4 +1,4 @@
-__version__ = "0.0.3a2"
+__version__ = "0.0.3a3"
 
 import nndt.space2.plot_tree
 from nndt.math_core import *
@@ -10,7 +10,7 @@ from nndt.trainable_task import (
     SimpleSDF,
     SurfaceSegmentation,
 )
-from nndt.vizualize import BasicVizualization
+from nndt.vizualize import BasicVizualization, save_sdt_as_obj
 
 
 def init_colab(window_size: Tuple[int, int] = (600, 400)):

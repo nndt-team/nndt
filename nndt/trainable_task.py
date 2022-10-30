@@ -21,20 +21,16 @@ class AbstractTrainableTask:
 
 
 class SimpleSDF(AbstractTrainableTask):
-    FUNC = namedtuple(
-        "SimpleSDF_DATA",
-        [
-            "sdf",
-            "vec_sdf",
-            "sdf_dx",
-            "sdf_dy",
-            "sdf_dz",
-            "vec_sdf_dx",
-            "vec_sdf_dy",
-            "vec_sdf_dz",
-            "vec_main_loss",
-        ],
-    )
+    class FUNC(NamedTuple):
+        sdf: Callable
+        vec_sdf: Callable
+        sdf_dx: Callable
+        sdf_dy: Callable
+        sdf_dz: Callable
+        vec_sdf_dx: Callable
+        vec_sdf_dy: Callable
+        vec_sdf_dz: Callable
+        vec_main_loss: Callable
 
     class DATA(NamedTuple):
         X: jnp.ndarray  # [N]
@@ -138,7 +134,7 @@ class ApproximateSDF(AbstractTrainableTask):
                 Y=jnp.concatenate([self.Y, other.Y], axis=0),
                 Z=jnp.concatenate([self.Z, other.Z], axis=0),
                 T=jnp.concatenate([self.T, other.T], axis=0),
-                P=jnp.concatenate([self.P, other.P], axis=0),
+                P=jnp.concatenate([self.P, other.CONF], axis=0),
                 SDF=jnp.concatenate([self.SDF, other.SDF], axis=0),
             )
 
