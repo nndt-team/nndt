@@ -13,10 +13,10 @@ class TrainTaskSetNodeTestCase(BaseTestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-    def test_train_task_sdt2sdf(self):
-        space = load_from_path(PATH_TEST_ACDC)
-        space.preload("shift_and_scale")
-        space.patient009.train_task_sdt2sdf(FILE_TMP_IR1, epochs=1)
+    def setUp(self) -> None:
+        self.space = load_from_path(PATH_TEST_ACDC)
+        self.space.preload("shift_and_scale")
+        self.space.patient009.train_task_sdt2sdf(FILE_TMP_IR1, epochs=1)
 
     def test_load_ir1(self):
         space = load_implicit_ir1(FILE_TMP_IR1)
@@ -33,12 +33,8 @@ class TrainTaskSetNodeTestCase(BaseTestCase):
         )
         ns_sdt = space.default.surface_xyz2sdt(ns_xyz2)
 
-    def test_remove_this_test(self):
-        space = load_from_path(PATH_TEST_ACDC)
-        space.preload("shift_and_scale")
-        print(space.print("full"))
-        space.patient009.train_task_sdt2sdf(FILE_TMP_IR1, epochs=1)
-
+    def test_train_load(self):
+        print(self.space.print("full"))
         space = load_implicit_ir1(FILE_TMP_IR1)
         space.preload("identity")
         print(space.print("full"))
