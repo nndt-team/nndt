@@ -1,4 +1,5 @@
 import os
+import warnings
 from pathlib import Path
 
 from nndt import datasets
@@ -10,12 +11,16 @@ from nndt.datasets.utils import (
 )
 
 
-class dataset:
+class Dataset:
     def __init__(self, name=None, to_path=None):
         self.name = name
         self.to_path = to_path
         self.hash = None
         self.urls = None
+        self._dict = None
+
+    def dataset_list(self):
+        return [key for key in self._dict if "_test" not in key]
 
     def load(self) -> None:
 
@@ -32,7 +37,7 @@ class dataset:
                     assert _check_md5(z, self.hash)
                     _extract_7z_file(z, self.to_path)
                 except Exception as e:
-                    print(url, str(e))
+                    warnings.warn(str(e))
                     continue
             else:
                 try:
@@ -41,7 +46,7 @@ class dataset:
                     assert _check_md5(z, self.hash)
                     _extract_7z_file(z, self.to_path)
                 except Exception as e:
-                    print(url, str(e))
+                    warnings.warn(str(e))
                     continue
             complete = True
             os.remove(z)
