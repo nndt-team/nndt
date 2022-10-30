@@ -244,7 +244,7 @@ class IR1Loader(AbstractLoader):
         self.json_ = None
         self.functions_ = None
         self.params_ = None
-        self.bbox_ = None
+        self.bbox_ = ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
 
     @property
     def json(self):
@@ -295,6 +295,9 @@ class IR1Loader(AbstractLoader):
         self.bbox_ = bbox_
 
         self.is_load = True
+
+    def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        return self.bbox_
 
     def unload_data(self):
         self.json_ = None
