@@ -19,16 +19,19 @@ def main():
     :return:
     """
     space = load_from_path(P["dataset_path"])
-    space.preload("shift_and_scale")
+    space.preload("shift_and_scale", ns_padding=(0.1, 0.1, 0.1))
     print(space.print())
 
-    for width in [2, 4, 8, 16, 32, 64]:
-        for depth in [1, 2, 4, 8, 16, 32, 64]:
+    # for width in [2, 4, 8, 16, 32, 64]:
+    #     for depth in [1, 2, 4, 8, 16, 32, 64]:
+
+    for width in [64]:
+        for depth in [8]:
             for patient in space:
-                path = f"./{P['exp_name']}/{depth:02}_{width:02}/"
+                path = f"./{P['exp_name']}/{depth:02}_{width:02}/{patient.name}/"
                 os.makedirs(path, exist_ok=True)
                 patient.train_task_sdt2sdf(
-                    path + f"{patient.name}/imp_repr.ir1",
+                    path + f"imp_repr.ir1",
                     width=width,
                     depth=depth,
                 )

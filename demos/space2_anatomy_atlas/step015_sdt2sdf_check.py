@@ -6,7 +6,7 @@ P = {
     "epoch": 9001,
     "shape": (128, 128, 128),
     "dataset_path": "../../tests/acdc_for_test",
-    "flat_shape": 64 * 64 * 64,
+    "flat_shape": 128 * 128 * 128,
     "exp_name": "sdt2sdf_check",
     "log_folder": f"./sdt2sdf_default/",
     "preload_mode": "shift_and_scale",
@@ -22,7 +22,7 @@ def main():
     """
     IN = P["I"]
     space_orig = load_from_path(P["dataset_path"])
-    space_orig.preload("shift_and_scale")
+    space_orig.preload("shift_and_scale", ns_padding=(0.1, 0.1, 0.1))
     print(space_orig.print("sources"))
 
     for width in [IN["weight"]]:
@@ -41,7 +41,7 @@ def main():
                 )
 
             space_ir = load_from_path(path_in)
-            space_ir.preload("shift_and_scale")
+            space_ir.preload("identity")
             for patient in space_ir:
                 grid_xyz = patient.sampling_grid(P["shape"])
                 grid_sdt = patient.surface_xyz2sdt(grid_xyz)
