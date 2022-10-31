@@ -51,7 +51,8 @@ class IteratorWithTimeMeasurements:
 def save_sdt_as_obj(
     path: str, array: Union[jnp.ndarray, onp.ndarray], level: float = 0.0
 ):
-    """Run marching cubes over SDT and save results to file
+    """
+    Run marching cubes over SDT and save results to file
 
     Parameters
     ----------
@@ -79,6 +80,17 @@ def save_3D_slices(
     figsize=None,
     **kwargs,
 ):
+    """
+    Generates panel of images with slices of 3D array. This is a helper function for studying 3D tensors.
+
+    :param path: path to image for write
+    :param array: studied array
+    :param slice_num: number of slices over array axis
+    :param include_boundary: If True, image will include boundaries of array with indexes 0 and len(array)-1
+    :param figsize: size of image. If None, size will be calculated according to number of panels.
+    :param kwargs: set of parameter that is passed to the `.imshow()` method
+    :return: none
+    """
     panel_size = slice_num if include_boundary else slice_num - 2
     assert panel_size > 0
     assert array.ndim == 3

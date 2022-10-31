@@ -333,6 +333,15 @@ def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
 def split_node_test_train(
     rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3
 ):
+    """
+    Split node to two nodes according to requested proportion. This method creates nodes with test and train names.
+    New nodes are attached as new groups.
+
+    :param rng_key: a key for JAX's random generators
+    :param tree_path: node of the space model tree for the split
+    :param test_size: size of the test subset. value must range between 0 and 1.
+    :return: the root of the space model tree
+    """
     child_ = tree_path._container_only_list()
     indices = jnp.arange(len(child_))
 
@@ -351,13 +360,35 @@ def split_node_kfold(
     n_fold: int = 5,
     k_for_test: Union[Sequence[int], int] = 0,
 ):
+    """
+    Split node to several nodes according to k-fold approach. This method creates nodes with test and train names.
+    New nodes are attached as new groups.
+
+    :param tree_path: node of the space model tree for the split
+    :param n_fold: number of folds
+    :param k_for_test: index or list of indexes that were attached as the test group
+    :return: the root of the space model tree
+    """
     child_ = tree_path._container_only_list()
-    assert len(child_) >= n_fold
+    if len(child_) < n_fold:
+        raise ValueError(
+            "Number of node children is less than requested k-fold number."
+        )
+
     folds = jnp.array_split(jnp.arange(len(child_), dtype=int), n_fold)
     k_lst = [k_for_test] if isinstance(k_for_test, int) else list(k_for_test)
+
+    if len(k_lst) > len(set(k_lst)):
+        raise ValueError("All indexes in k_for_test must be unique.")
+
+    for k_val in k_lst:
+        if not (0 <= k_val <= len(child_)):
+            raise ValueError(
+                f"Index {k_val} in k_for_test is out of {n_fold}-fold range."
+            )
+
     train_ind = []
     test_ind = []
-
     for fold_i, fold_tpl in enumerate(folds):
         for i in fold_tpl:
             if fold_i in k_lst:
@@ -375,6 +406,13 @@ def split_node_kfold(
 def split_node_namelist(
     tree_path: AbstractBBoxNode, dict_nodename_namelist: Dict[str, Sequence[str]]
 ):
+    """
+    Split node to several nodes according to the dictionary. New nodes are attached as new groups.
+
+    :param tree_path: node of the space model tree for the split
+    :param dict_nodename_namelist: key is a name for the new group. value is a list of children for the new group.
+    :return: the root of the space model tree
+    """
     lst_nodenames = [child.name for child in tree_path]
     lst_temp = [child.name for child in tree_path]
     for nodename, namelist in dict_nodename_namelist.items():
