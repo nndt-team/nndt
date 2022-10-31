@@ -1,7 +1,11 @@
+from abc import ABC, abstractmethod
+
 import jax
 import jax.numpy as jnp
+from jax.random import KeyArray
 
 import nndt
+from nndt.trainable_task import ApproximateSDF
 
 
 def _rotation_matrix(yaw, pitch, roll):
@@ -55,7 +59,64 @@ def _scale_rotate_shift(
 _vec_scale_rotate_shift = jax.jit(jax.vmap(_scale_rotate_shift, (0, 0, 0, 0)))
 
 
-class DataGenForSegmentation:
+class AbstractDatagen(ABC):
+    @abstractmethod
+    def get(self, key: KeyArray, epoch: int, **kwargs):
+        pass
+
+
+class DataGenForShapeRegression(AbstractDatagen):
+    def __init__(self, node, spacing=(4.0, 4.0, 4.0), shift_sigma=0.05, augment=True):
+        self.node = node
+        self.spacing = spacing
+
+        self.augment = augment
+        if self.augment:
+            self.shift_sigma = shift_sigma
+        else:
+            self.shift_sigma = 0.0
+
+    def get(self, key, epoch, **kwargs):
+        num_of_obj = len(self.node)
+
+        X_list = []
+        Y_list = []
+        Z_list = []
+        T_list = []
+        P_list = []
+        SDF_list = []
+
+        xyz = self.node.sampling_grid_with_noise(
+            key, spacing=self.spacing, sigma=self.shift_sigma
+        )
+        xyz_flat = xyz.reshape((-1, 3))
+
+        for code, patient in enumerate(self.node):
+            sdf_flat = jnp.squeeze(patient.surface_xyz2sdt(xyz_flat))
+
+            p_array = jnp.array(jnp.zeros((sdf_flat.shape[0], num_of_obj)))
+            p_array = p_array.at[:, code].set(1.0)
+
+            X_list.append(xyz_flat[:, 0])
+            Y_list.append(xyz_flat[:, 1])
+            Z_list.append(xyz_flat[:, 2])
+            T_list.append(jnp.zeros(sdf_flat.shape[0]))
+            P_list.append(p_array)
+            SDF_list.append(sdf_flat)
+
+        DATA = ApproximateSDF.DATA(
+            X=jnp.concatenate(X_list, axis=0),
+            Y=jnp.concatenate(Y_list, axis=0),
+            Z=jnp.concatenate(Z_list, axis=0),
+            T=jnp.concatenate(T_list, axis=0),
+            P=jnp.concatenate(P_list, axis=0),
+            SDF=jnp.concatenate(SDF_list, axis=0),
+        )
+
+        return DATA
+
+
+class DataGenForSegmentation(AbstractDatagen):
     def __init__(
         self,
         node,
