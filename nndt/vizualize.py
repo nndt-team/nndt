@@ -8,7 +8,6 @@ import matplotlib.pylab as plt
 import numpy as onp
 
 from nndt.space2 import fix_file_extension
-from nndt.space.repr_mesh import SaveMesh
 
 
 class IteratorWithTimeMeasurements:
@@ -187,7 +186,7 @@ class BasicVizualization:
         """
         save_sdt_as_obj(os.path.join(self.folder, f"{filename}.obj"), array, level)
 
-    def save_mesh(self, name, save_method: SaveMesh, dict_):
+    def save_mesh(self, name, save_method, dict_):
         """Save mesh to .vtp file with data
 
         Parameters
