@@ -271,6 +271,28 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         _ = space.train.patient069
         _ = space.test.patient089
 
+    def test_split_node_kfold_protection(self):
+
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_kfold(space, n_fold=6, k_for_test=3)
+
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_kfold(space, n_fold=5, k_for_test=6)
+
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_kfold(space, n_fold=6, k_for_test=[0, 1, 2])
+
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_kfold(space, n_fold=5, k_for_test=[0, 1, 1])
+
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_kfold(space, n_fold=5, k_for_test=[0, 1, 6])
+
     def test_split_node_namelist(self):
         space = self.helper_load_kfold()
         space = split_node_namelist(

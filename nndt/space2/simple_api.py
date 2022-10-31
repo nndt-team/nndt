@@ -366,16 +366,29 @@ def split_node_kfold(
 
     :param tree_path: node of the space model tree for the split
     :param n_fold: number of folds
-    :param k_for_test: index of list of indexes that were attached as the test group
+    :param k_for_test: index or list of indexes that were attached as the test group
     :return: the root of the space model tree
     """
     child_ = tree_path._container_only_list()
-    assert len(child_) >= n_fold
+    if len(child_) < n_fold:
+        raise ValueError(
+            "Number of node children is less than requested k-fold number."
+        )
+
     folds = jnp.array_split(jnp.arange(len(child_), dtype=int), n_fold)
     k_lst = [k_for_test] if isinstance(k_for_test, int) else list(k_for_test)
+
+    if len(k_lst) > len(set(k_lst)):
+        raise ValueError("All indexes in k_for_test must be unique.")
+
+    for k_val in k_lst:
+        if not (0 <= k_val <= len(child_)):
+            raise ValueError(
+                f"Index {k_val} in k_for_test is out of {n_fold}-fold range."
+            )
+
     train_ind = []
     test_ind = []
-
     for fold_i, fold_tpl in enumerate(folds):
         for i in fold_tpl:
             if fold_i in k_lst:
