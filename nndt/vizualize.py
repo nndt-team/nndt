@@ -7,7 +7,7 @@ import jax.numpy as jnp
 import matplotlib.pylab as plt
 import numpy as onp
 
-from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
+from nndt.space2 import fix_file_extension
 from nndt.space.repr_mesh import SaveMesh
 
 
@@ -46,6 +46,29 @@ class IteratorWithTimeMeasurements:
 
     def __len__(self):
         return self.epochs
+
+
+def save_sdt_as_obj(
+    path: str, array: Union[jnp.ndarray, onp.ndarray], level: float = 0.0
+):
+    """Run marching cubes over SDT and save results to file
+
+    Parameters
+    ----------
+    filename : string
+        File name
+    array : ndarray
+        Signed distance tensor (SDT)
+    level : float
+        Isosurface level (defaults to 0.).
+    """
+    assert array.ndim == 3
+    array_ = onp.array(array)
+
+    from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
+
+    verts, faces = array_to_vert_and_faces(array_, level=level)
+    save_verts_and_faces_to_obj(fix_file_extension(path, ".obj"), verts, faces)
 
 
 class BasicVizualization:
@@ -162,13 +185,7 @@ class BasicVizualization:
         level : float
             Isosurface level (defaults to 0.).
         """
-        assert array.ndim == 3
-        array_ = onp.array(array)
-
-        verts, faces = array_to_vert_and_faces(array_, level=level)
-        save_verts_and_faces_to_obj(
-            os.path.join(self.folder, f"{filename}.obj"), verts, faces
-        )
+        save_sdt_as_obj(os.path.join(self.folder, f"{filename}.obj"), array, level)
 
     def save_mesh(self, name, save_method: SaveMesh, dict_):
         """Save mesh to .vtp file with data

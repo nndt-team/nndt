@@ -4,6 +4,7 @@ import unittest
 
 import numpy as np
 
+from nndt.space2 import fix_file_extension
 from nndt.vizualize import BasicVizualization
 from tests.base import BaseTestCase
 
@@ -18,7 +19,8 @@ class VizualizeTestCase(BaseTestCase):
         super().setUpClass()
 
     def tearDown(self) -> None:
-        shutil.rmtree(f"./{LOG_FOLDER}")
+        if os.path.exists(f"./{LOG_FOLDER}"):
+            shutil.rmtree(f"./{LOG_FOLDER}")
 
     def test_draw_loss(self):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
@@ -42,6 +44,23 @@ class VizualizeTestCase(BaseTestCase):
         viz.sdt_to_obj("state", test_box, level=0.5)
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state.obj"))
 
+    def test_sdf_to_obj_calc_level(self):
+        viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
+        test_box = np.zeros((100, 100, 100))
+        test_box[20:80, 20:80, 20:80] = 1
+        with self.assertWarns(Warning):
+            viz.sdt_to_obj("state", test_box, level=-1)
+        self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state.obj"))
+
+    def test_sdf_to_obj_array_of_the_equal_values(self):
+        viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
+        test_box = np.ones((100, 100, 100))
+        with self.assertWarns(Warning):
+            viz.sdt_to_obj("state", test_box, level=-1)
+        with open(f"./{LOG_FOLDER}/state.obj", "r") as fl:
+            lines = fl.readlines()
+        self.assertTrue(not lines)
+
     def test_save_3D_array(self):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
         test_box = np.zeros((100, 100, 100))
@@ -60,6 +79,16 @@ class VizualizeTestCase(BaseTestCase):
             if viz.is_print_on_epoch(epoch):
                 viz.draw_loss("TRAIN_LOSS", viz._records["loss"])
                 self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/TRAIN_LOSS.jpg"))
+
+    def test_fix_file_extension(self):
+        str = fix_file_extension("/something/file.txt", ".txt")
+        self.assertTrue("/something/file.txt", str)
+        str = fix_file_extension("/something/file.wow", ".txt")
+        self.assertTrue("/something/file.wow.txt", str)
+        str = fix_file_extension("/something/file", ".txt")
+        self.assertTrue("/something/file.txt", str)
+        str = fix_file_extension("/something/file.", ".txt")
+        self.assertTrue("/something/file..txt", str)
 
 
 if __name__ == "__main__":

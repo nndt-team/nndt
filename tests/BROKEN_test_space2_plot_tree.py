@@ -70,6 +70,24 @@ class MyTestCase(BaseTestCase):
             space.plot(filepath=FILE_TMP_PNG)
         self.assertTrue(os.path.exists(FILE_TMP_PNG))
 
+    def test_plot_windows_size(self):
+        with self.assertWarns(Warning):
+            space = load_from_path(PATH_TEST_ACDC)
+            space.plot(filepath=FILE_TMP_PNG)
+        self.assertTrue(os.path.exists(FILE_TMP_PNG))
+
+    def notest_for_manual_run(self):
+        with self.assertWarns(Warning):
+            space = load_from_path(PATH_TEST_ACDC)
+            space.preload(mode="identity", keep_in_memory=False)
+            space.plot()
+
+    def notest_for_manual_run2(self):
+        with self.assertWarns(Warning):
+            space = load_from_path(PATH_TEST_ACDC)
+            space.preload(mode="identity", keep_in_memory=False)
+            space.patient009.plot(window_size=(700, 700), cmap="Set1")
+
 
 if __name__ == "__main__":
     unittest.main()

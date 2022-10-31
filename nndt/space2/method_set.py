@@ -70,7 +70,6 @@ class SamplingMethodSetNode(MethodSetNode):
     def sampling_grid_with_noise(
         self, rng_key: PRNGKeyArray, spacing: (int, int, int) = (2, 2, 2), sigma=0.1
     ) -> jnp.ndarray:
-        assert sigma > 0.00000001
         lower, upper = self.parent.bbox
         shift_xyz = jax.random.normal(rng_key, shape=(3,)) * sigma
         basic_cube = (

@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from nndt.datasets import ACDC
+from nndt.datasets import ACDC, MICCAI2015
 from tests.base import BaseTestCase
 
 DATASETS_FOLDER = ".datasets"
@@ -38,3 +38,9 @@ class DatasetLoadingCase(BaseTestCase):
     def test_wrong_hash(self):
         with self.assertRaises(ConnectionError):
             ACDC("wrong_hash_test").load()
+
+    def test_dataset_list(self):
+        _list = MICCAI2015().dataset_list()
+        self.assertTrue(_list is not None)
+        self.assertTrue(len(_list) > 0)
+        self.assertTrue(len([item for item in _list if "_test" in item]) == 0)
