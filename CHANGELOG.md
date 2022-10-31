@@ -5,6 +5,7 @@
 * `nndt.datasets` for download of toy datasets
 * More methods support tensors of any shape
 * Imports are shorter for users
+* New data generators for out-of-box solvers: `DataGenForShapeRegression`, `DataGenForSegmentation`
 * New methods
   * Surface data (+2):  `.surface_xyz()`, `.surface_rgba()`
   * Space model modification (1): `split_node_kfold`
