@@ -1,44 +1,17 @@
-import os
+import pickle
 import warnings
 from typing import Optional
 
+import jax
 import jax.numpy as jnp
 import vtk
-from colorama import Fore
+from packaging import version
 from pykdtree.kdtree import KDTree
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
-from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader, IterAccessMixin
-
-
-class FileSource(AbstractBBoxNode, IterAccessMixin):
-    def __init__(
-        self,
-        name,
-        filepath: str,
-        loader_type: str,
-        bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
-        parent=None,
-    ):
-        super(FileSource, self).__init__(
-            name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype="FS"
-        )
-        if not os.path.exists(filepath):
-            raise FileNotFoundError()
-        self.filepath = filepath
-        self.loader_type = loader_type
-        self._loader = None
-
-    def __repr__(self):
-        star_bool = self._loader.is_load if self._loader is not None else False
-        star = "^" if star_bool else ""
-        return (
-            self._print_color
-            + f"{self._nodetype}:{self.name}"
-            + Fore.WHITE
-            + f" {self.loader_type}{star} {self.filepath}"
-            + Fore.RESET
-        )
+import nndt
+from nndt.space2.abstracts import AbstractLoader
+from nndt.trainable_task import SimpleSDF
 
 
 class EmptyLoader(AbstractLoader):
@@ -263,10 +236,84 @@ class SDTLoader(AbstractLoader):
         return self.is_load
 
 
+class IR1Loader(AbstractLoader):
+    def __init__(self, filepath: str):
+        self.filepath = filepath
+        self.is_load = False
+
+        self.json_ = None
+        self.functions_ = None
+        self.params_ = None
+        self.bbox_ = ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
+
+    @property
+    def json(self):
+        if not self.is_load:
+            self.load_data()
+        return self.json_
+
+    @property
+    def functions(self):
+        if not self.is_load:
+            self.load_data()
+        return self.functions_
+
+    @property
+    def params(self):
+        if not self.is_load:
+            self.load_data()
+        return self.params_
+
+    @property
+    def bbox(self):
+        if not self.is_load:
+            self.load_data()
+        return self.bbox_
+
+    def load_data(self):
+        with open(self.filepath, "rb") as input_file:
+            self.json_ = pickle.load(input_file)
+            version_ = self.json_["version"]
+            trainable_task_ = self.json_["trainable_task"]
+            repr_ = self.json_["repr"]
+
+            history_loss_ = self.json_["history_loss"]
+            params_ = self.json_["params"]
+            bbox_ = self.json_["bbox"]
+
+        if version.parse(nndt.__version__) < version.parse(version_):
+            warnings.warn(
+                "Loaded neural network was created on earlier version of NNDT!"
+            )
+
+        task = SimpleSDF(**trainable_task_)
+        rng = jax.random.PRNGKey(42)
+        _, self.F = task.init_and_functions(rng)
+
+        self.functions_ = self.F
+        self.params_ = params_
+        self.bbox_ = bbox_
+
+        self.is_load = True
+
+    def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        return self.bbox_
+
+    def unload_data(self):
+        self.json_ = None
+        self.functions_ = None
+        self.params_ = None
+        self.bbox_ = None
+
+    def is_load(self) -> bool:
+        return self.is_load
+
+
 DICT_LOADERTYPE_CLASS = {
     "txt": TXTLoader,
     "sdt": SDTLoader,
     "mesh_obj": MeshObjLoader,
+    "implicit_ir1": IR1Loader,
     "undefined": EmptyLoader,
 }
 DICT_CLASS_LOADERTYPE = {(v, k) for k, v in DICT_LOADERTYPE_CLASS.items()}

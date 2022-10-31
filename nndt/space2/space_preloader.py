@@ -15,6 +15,8 @@ from nndt.space2 import (
     pad_bbox,
     update_bbox,
 )
+from nndt.space2.implicit_representation import IR1SDF, ImpRepr
+from nndt.space2.method_set_train_task import TrainTaskSetNode
 
 
 def _update_bbox_bottom_to_up(node):
@@ -84,12 +86,32 @@ class DefaultPreloader:
         _update_bbox_bottom_to_up(node)
         self._add_sampling_node(node)
 
+    def _process_ir1_source(self, node: Object3D):
+        ir1_array_list = [
+            source
+            for source in node.children
+            if isinstance(source, FileSource) and source.loader_type == "implicit_ir1"
+        ]
+
+        imp_repr = 0
+        if len(ir1_array_list) > 0:
+            params = ir1_array_list[0]._loader.params
+            bbox = ir1_array_list[0]._loader.bbox
+            functions = ir1_array_list[0]._loader.functions
+
+            ir1_sdf = IR1SDF(functions, params, bbox)
+
+            imp_repr = ImpRepr("ir1", ir1_sdf, parent=node)
+
+        return imp_repr
+
     def _process_sdt_source(self, node: Object3D):
 
         sdt_array_list = [
             source
             for source in node.children
-            if isinstance(source, FileSource) and source.loader_type == "sdt"
+            if isinstance(source, FileSource)
+            and source.loader_type in ("sdt", "implicit_ir1")
         ]
         transform = None
         if len(sdt_array_list) > 0:
@@ -124,11 +146,21 @@ class DefaultPreloader:
             node.bbox = update_bbox(node.bbox, transform.bbox)
             node.bbox = pad_bbox(node.bbox, self.ns_padding)
 
-            if len(sdt_array_list) and transform is not None:
-                sdt = sdt_array_list[0]
-                SDTMethodSetNode(node, sdt, transform, parent=node)
-
         return transform
+
+    def _process_sdt_source2(self, node: Object3D, transform):
+
+        sdt_array_list = [
+            source
+            for source in node.children
+            if (isinstance(source, FileSource) and source.loader_type == "sdt")
+            or (isinstance(source, ImpRepr))
+        ]
+
+        if len(sdt_array_list) > 0 and transform is not None:
+            sdt = sdt_array_list[0]
+            SDTMethodSetNode(node, sdt, transform, parent=node)
+            TrainTaskSetNode(node, sdt, transform, parent=node)
 
     def _process_mesh_obj_source(
         self, node: Object3D, transform: AbstractTransformation
@@ -146,7 +178,9 @@ class DefaultPreloader:
                 ColorMethodSetNode(node, mesh, transform, parent=node)
 
     def _init_Object3D(self, node: Object3D):
+        ir1 = self._process_ir1_source(node)
         transform = self._process_sdt_source(node)
+        self._process_sdt_source2(node, transform)
         self._process_mesh_obj_source(node, transform)
         self._add_sampling_node(node)
 

@@ -279,9 +279,9 @@ class BarycentricGridTestCase(unittest.TestCase):
         self.assertTrue(abs(float(jnp.dot(M[0], M[1]))) < 0.0000001)
         self.assertTrue(abs(float(jnp.dot(M[1], M[2]))) < 0.0000001)
         self.assertTrue(abs(float(jnp.dot(M[0], M[2]))) < 0.0000001)
-        self.assertTrue(abs(float(jnp.linalg.norm(M[0])) - 1.0) < 0.0000001)
-        self.assertTrue(abs(float(jnp.linalg.norm(M[1])) - 1.0) < 0.0000001)
-        self.assertTrue(abs(float(jnp.linalg.norm(M[2])) - 1.0) < 0.0000001)
+        self.assertTrue(abs(float(jnp.linalg.norm(M[0])) - 1.0) < 0.000001)
+        self.assertTrue(abs(float(jnp.linalg.norm(M[1])) - 1.0) < 0.000001)
+        self.assertTrue(abs(float(jnp.linalg.norm(M[2])) - 1.0) < 0.000001)
 
     def test_scale_xyz(self):
         xyz = jnp.array([1.0, 2.0, 3.0])
