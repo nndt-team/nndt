@@ -1,4 +1,4 @@
-__version__ = "0.0.3a3"
+__version__ = "0.0.3b1"
 
 import nndt.space2.plot_tree
 from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
