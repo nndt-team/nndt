@@ -198,7 +198,9 @@ class AbstractBBoxNode(AbstractTreeElement):
         return _pretty_print(self, mode)
 
     @node_method("plot(default, filepath=None)")
-    def plot(self, mode: Optional[str] = "default", filepath: Optional[str] = None):
+    def plot(
+        self, mode: Optional[str] = "default", filepath: Optional[str] = None, **kwargs
+    ):
         """
         Iterate over all Object3D in tree and show plot if filepath is None.
         Save plot in file if filepath is not None.
@@ -207,11 +209,11 @@ class AbstractBBoxNode(AbstractTreeElement):
             mode (Optional[str], optional):
                 Only the "default" mode is supported yet. Defaults to "default".
             filepath (Optional[str], optional):
-                File name. If it exist save there otherwise show. Defaults to None.
+                File name. If it exists save there otherwise show. Defaults to None.
         """
         from nndt.space2.plot_tree import _plot
 
-        _plot(self, mode, filepath)
+        _plot(self, mode, filepath, **kwargs)
 
     @node_method("unload_from_memory()")
     def unload_from_memory(self):
