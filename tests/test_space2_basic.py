@@ -271,6 +271,45 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         _ = space.train.patient069
         _ = space.test.patient089
 
+    def test_split_node_namelist(self):
+        space = self.helper_load_kfold()
+        space = split_node_namelist(
+            space,
+            {
+                "part01": ["patient009", "patient029"],
+                "part02": ["patient049", "patient069"],
+                "part03": ["patient089"],
+            },
+        )
+        print(space.print("source"))
+        _ = space.part01.patient009
+        _ = space.part01.patient029
+        _ = space.part02.patient049
+        _ = space.part02.patient069
+        _ = space.part03.patient089
+
+    def test_split_node_namelist_value_errors(self):
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_namelist(
+                space,
+                {
+                    "part01": ["patient009", "patient009"],
+                    "part02": ["patient049", "patient069"],
+                    "part03": ["patient089"],
+                },
+            )
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_namelist(
+                space,
+                {
+                    "part01": ["patient009", "patient029"],
+                    "part02": ["patient049", "patient069"],
+                    "part03": [],
+                },
+            )
+
     def test_helper_in_node_method(self):
 
         space = load_from_path(PATH_TEST_ACDC)
