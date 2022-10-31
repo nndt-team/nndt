@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import numpy as onp
 import vtk
 from colorama import Fore
-from jax.random import KeyArray, PRNGKeyArray
+from jax.random import KeyArray
 from vtkmodules.util.numpy_support import numpy_to_vtk
 
 from nndt.math_core import grid_in_cube, grid_in_cube2, take_each_n, uniform_in_cube
