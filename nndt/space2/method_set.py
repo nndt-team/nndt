@@ -199,6 +199,9 @@ class MeshObjMethodSetNode(MethodSetNode):
         Save a surface mesh to .vtp file.
         Dictionary may include data for storage. The dict key is an array name, the dict value is an array for the storage.
 
+        Data transformation
+        save_mesh(filepath, {name, array})
+
         :param filepath: Path to the .vtp file
         :param name_value: Dictionary with name of vtk-arrays and data for the storage.
         :return:
@@ -240,6 +243,9 @@ class MeshObjMethodSetNode(MethodSetNode):
         Sample points from the mesh. This is deterministic sampler, that return each `step` point from the mesh vertex sequence.
         If an iteration pointer overcome array length, then it bring to the beginning.
 
+        Data transformation
+        sampling_eachN_from_mesh(count=N, step=M, shift=K) -> (ns_ind[N], ns_xyz[N])
+
         :param count: Number of the requested points
         :param step: Step of the iterator
         :param shift: Shift of the first iteration from the zero index.
@@ -269,6 +275,18 @@ class SDTMethodSetNode(MethodSetNode):
 
     @node_method("surface_xyz2sdt(ns_xyz[..,3]) -> ns_sdt[..,1]")
     def surface_xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+        """
+        Converts coordinates of points to signed distance from the points to an object surface.
+        Result of method is a tensor with values of signed distance function (SDT).
+        This transformation keeps shape of the tensor.
+        Transformation is performed along the last axis.
+
+        Data transformation
+        surface_xyz2sdt(ns_xyz[..,3]) -> ns_sdt[..,1]
+
+        :param ns_xyz: coordinates in the normalized space
+        :return: tensor with distances from points to the surface
+        """
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
         ps_sdt = self.sdt._loader.request(ps_xyz)
         ns_sdt = self.transform.transform_sdt_ps2ns(ps_sdt)
