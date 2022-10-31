@@ -1,3 +1,4 @@
+import warnings
 from typing import *
 
 import jax.numpy as jnp
@@ -42,9 +43,15 @@ def array_to_vert_and_faces(
 ):
     level_ = level
     if not (array.min() < level_ < array.max()):
-        return onp.inf, onp.inf
+        warnings.warn(
+            "Threshold level for marching cubes cannot be applied. The level was replaced with the `(max-min)/2` value."
+        )
+        level_ = (array.max() + array.min()) / 2.0
 
-    verts, faces, _, _ = measure.marching_cubes(onp.array(array), level=level_)
+    if array.min() < level < array.max():
+        verts, faces, _, _ = measure.marching_cubes(onp.array(array), level=level_)
+    else:
+        verts, faces = onp.array([]), onp.array([])
 
     if for_vtk_cell_array:
         faces = onp.concatenate([onp.full((faces.shape[0], 1), 3), faces], axis=1)

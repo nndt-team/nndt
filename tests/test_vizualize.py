@@ -42,22 +42,19 @@ class VizualizeTestCase(BaseTestCase):
         viz.sdt_to_obj("state", test_box, level=0.5)
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state.obj"))
 
-    def test_sdf_to_obj_array_greater_than_level(self):
+    def test_sdf_to_obj_calc_level(self):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
         test_box = np.zeros((100, 100, 100))
         test_box[20:80, 20:80, 20:80] = 1
-        viz.sdt_to_obj("state", test_box, level=-1)
+        with self.assertWarns(Warning):
+            viz.sdt_to_obj("state", test_box, level=-1)
+        self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state.obj"))
 
-        with open(f"./{LOG_FOLDER}/state.obj", "r") as fl:
-            lines = fl.readlines()
-        self.assertTrue(not lines)
-
-    def test_sdf_to_obj_array_smaller_than_level(self):
+    def test_sdf_to_obj_array_of_the_equal_values(self):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=100)
-        test_box = np.zeros((100, 100, 100))
-        test_box[20:80, 20:80, 20:80] = 1
-        viz.sdt_to_obj("state", test_box, level=1000)
-
+        test_box = np.ones((100, 100, 100))
+        with self.assertWarns(Warning):
+            viz.sdt_to_obj("state", test_box, level=-1)
         with open(f"./{LOG_FOLDER}/state.obj", "r") as fl:
             lines = fl.readlines()
         self.assertTrue(not lines)
