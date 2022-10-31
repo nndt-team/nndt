@@ -134,7 +134,7 @@ class ApproximateSDF(AbstractTrainableTask):
                 Y=jnp.concatenate([self.Y, other.Y], axis=0),
                 Z=jnp.concatenate([self.Z, other.Z], axis=0),
                 T=jnp.concatenate([self.T, other.T], axis=0),
-                P=jnp.concatenate([self.P, other.CONF], axis=0),
+                P=jnp.concatenate([self.P, other.P], axis=0),
                 SDF=jnp.concatenate([self.SDF, other.SDF], axis=0),
             )
 

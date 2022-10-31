@@ -5,10 +5,10 @@ from typing import *
 
 import jax.numpy as jnp
 import matplotlib.pylab as plt
+import numpy as np
 import numpy as onp
 
 from nndt.space2 import fix_file_extension
-from nndt.space.repr_mesh import SaveMesh
 
 
 class IteratorWithTimeMeasurements:
@@ -69,6 +69,48 @@ def save_sdt_as_obj(
 
     verts, faces = array_to_vert_and_faces(array_, level=level)
     save_verts_and_faces_to_obj(fix_file_extension(path, ".obj"), verts, faces)
+
+
+def save_3D_slices(
+    path: str,
+    array: Union[onp.ndarray, jnp.ndarray],
+    slice_num: int = 5,
+    include_boundary=True,
+    figsize=None,
+    **kwargs,
+):
+    panel_size = slice_num if include_boundary else slice_num - 2
+    assert panel_size > 0
+    assert array.ndim == 3
+
+    if figsize is None:
+        figsize = (3 * panel_size, 3 * 3)
+
+    fig, axs = plt.subplots(3, panel_size, figsize=figsize)
+    slices_x = np.linspace(0, array.shape[0] - 1, slice_num).astype(int)
+    slices_y = np.linspace(0, array.shape[1] - 1, slice_num).astype(int)
+    slices_z = np.linspace(0, array.shape[2] - 1, slice_num).astype(int)
+
+    if not include_boundary:
+        slices_x = slices_x[1:-1]
+        slices_y = slices_y[1:-1]
+        slices_z = slices_z[1:-1]
+
+    for ind_panel, ind_x in enumerate(slices_x):
+        axs[0, ind_panel].imshow(array[ind_x, :, :], **kwargs)
+        axs[0, ind_panel].set(ylabel="x", xlabel=str(ind_x))
+    for ind_panel, ind_y in enumerate(slices_y):
+        axs[1, ind_panel].imshow(array[:, ind_y, :], **kwargs)
+        axs[1, ind_panel].set(ylabel="y", xlabel=str(ind_y))
+    for ind_panel, ind_z in enumerate(slices_z):
+        axs[2, ind_panel].imshow(array[:, :, ind_z], **kwargs)
+        axs[2, ind_panel].set(ylabel="z", xlabel=str(ind_z))
+
+    for ax in axs.flat:
+        ax.label_outer()
+
+    fig.tight_layout()
+    fig.savefig(path)
 
 
 class BasicVizualization:
@@ -187,7 +229,7 @@ class BasicVizualization:
         """
         save_sdt_as_obj(os.path.join(self.folder, f"{filename}.obj"), array, level)
 
-    def save_mesh(self, name, save_method: SaveMesh, dict_):
+    def save_mesh(self, name, save_method, dict_):
         """Save mesh to .vtp file with data
 
         Parameters

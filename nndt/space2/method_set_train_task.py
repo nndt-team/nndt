@@ -91,7 +91,8 @@ class TrainTaskSetNode(MethodSetNode):
 
         min_loss = 99999999
         loss_history = []
-        for epoch in (pbar := tqdm(range(epochs))):
+        pbar = tqdm(range(epochs))
+        for epoch in pbar:
 
             loss, params, rng, opt_state = train_step(params, rng, opt_state, D1)
             loss_history.append(float(loss))

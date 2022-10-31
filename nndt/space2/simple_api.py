@@ -1,7 +1,7 @@
 import fnmatch
 import os
 import warnings
-from typing import Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union
 
 import jax
 import jax.numpy as jnp
@@ -312,18 +312,20 @@ def to_json(space: Space):
     return json_exp.export(space)
 
 
-def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
+def __reconstruct_tree_one_node(
+    tree_path: AbstractBBoxNode, nodelist: list, nodename: str
+):
     from nndt.space2.space_preloader import _update_bbox_bottom_to_up
 
-    train_node = Group("train", parent=tree_path)
-    for node in train:
+    train_node = Group(nodename, parent=tree_path)
+    for node in nodelist:
         node.parent = train_node
     _update_bbox_bottom_to_up(train_node)
-    test_node = Group("test", parent=tree_path)
-    for node in test:
-        node.parent = test_node
-    _update_bbox_bottom_to_up(test_node)
 
+
+def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
+    __reconstruct_tree_one_node(tree_path, train, "train")
+    __reconstruct_tree_one_node(tree_path, test, "test")
     tree_path.root.init()
     return tree_path.root
 
@@ -368,6 +370,36 @@ def split_node_kfold(
 
     root = __reconstruct_tree(tree_path, train, test)
     return root
+
+
+def split_node_namelist(
+    tree_path: AbstractBBoxNode, dict_nodename_namelist: Dict[str, Sequence[str]]
+):
+    lst_nodenames = [child.name for child in tree_path]
+    lst_temp = [child.name for child in tree_path]
+    for nodename, namelist in dict_nodename_namelist.items():
+        for name in namelist:
+            if name not in lst_nodenames:
+                raise ValueError(
+                    f"Name {name} is not a valid child of {tree_path.name}"
+                )
+            if name not in lst_temp:
+                raise ValueError(f"Name {name} is duplicated in dict_nodename_namelist")
+            else:
+                lst_temp.remove(name)
+
+    if len(lst_temp):
+        raise ValueError(
+            f"The following names are not mentioned in dict_nodename_namelist: {lst_temp}"
+        )
+
+    for nodename, namelist in dict_nodename_namelist.items():
+        __reconstruct_tree_one_node(
+            tree_path, [tree_path[name] for name in namelist], nodename
+        )
+
+    tree_path.root.init()
+    return tree_path.root
 
 
 def add_sphere(

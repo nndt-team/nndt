@@ -27,33 +27,43 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def test_no_double_init(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
-        print(text1 := space.print())
+        text1 = space.print()
+        print(text1)
         space.init()
-        print(text2 := space.print())
+        text2 = space.print()
+        print(text2)
         self.assertEqual(text1, text2)
 
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
-        print(text1 := space.print())
+        text1 = space.print()
+        print(text1)
         space.init()
-        print(text2 := space.print())
+        text2 = space.print()
+        print(text2)
         self.assertEqual(text1, text2)
 
     def test_space_models_TEST_STRUCTURE(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
-        print(text1 := space.print("source"))
-        print(text2 := space.print("default"))
-        print(text3 := space.print("full"))
+        text1 = space.print("source")
+        print(text1)
+        text2 = space.print("default")
+        print(text2)
+        text3 = space.print("full")
+        print(text3)
         self.assertLessEqual(len(text1), len(text2))
         self.assertLessEqual(len(text2), len(text3))
 
     def test_space_models_ACDC(self):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
-        print(text1 := space.print("source"))
-        print(text2 := space.print("default"))
-        print(text3 := space.print("full"))
+        text1 = space.print("source")
+        print(text1)
+        text2 = space.print("default")
+        print(text2)
+        text3 = space.print("full")
+        print(text3)
         self.assertLessEqual(len(text1), len(text2))
         self.assertLessEqual(len(text2), len(text3))
 
@@ -98,9 +108,12 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
-        print(text1 := space.patient009.print())
-        print(text2 := space[0].print())
-        print(text3 := space["patient009"].print())
+        text1 = space.patient009.print()
+        print(text1)
+        text2 = space[0].print()
+        print(text2)
+        text3 = space["patient009"].print()
+        print(text3)
 
         self.assertEqual(text1, text2)
         self.assertEqual(text1, text3)
@@ -108,11 +121,13 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def helper_save_space_and_load_space(self, pathname):
         space = load_from_path(pathname)
         space.init()
-        print(text1 := space.print())
+        text1 = space.print()
+        print(text1)
         space.save_space_to_file(FILE_TMP)
         space2 = read_space_from_file(FILE_TMP)
         space2.init()
-        print(text2 := space2.print())
+        text2 = space2.print()
+        print(text2)
         self.assertEqual(text1, text2)
         space2.save_space_to_file(FILE_TMP2)
         with open(FILE_TMP, "r") as fl:
@@ -126,11 +141,13 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def helper_to_json_and_from_json(self, pathname):
         space = load_from_path(pathname)
         space.init()
-        print(text1 := space.print())
+        text1 = space.print()
+        print(text1)
         json1 = space.to_json()
         space2 = from_json(json1)
         space2.init()
-        print(text2 := space2.print())
+        text2 = space2.print()
+        print(text2)
         self.assertEqual(text1, text2)
         json2 = space2.to_json()
         self.assertEqual(json1, json2)
@@ -180,19 +197,22 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
 
     def test_load_from_path_None_in_template(self):
         space = load_from_path(PATH_TEST_ACDC, template_sdt=None)
-        print(tree := space.print("full"))
+        tree = space.print("full")
+        print(tree)
         self.assertNotIn("sdf_npy", tree)
         self.assertIn("colored_obj", tree)
 
         space = load_from_path(PATH_TEST_ACDC, template_mesh_obj=None)
-        print(tree := space.print("full"))
+        tree = space.print("full")
+        print(tree)
         self.assertIn("sdf_npy", tree)
         self.assertNotIn("colored_obj", tree)
 
         space = load_from_path(
             PATH_TEST_ACDC, template_sdt=None, template_mesh_obj=None
         )
-        print(tree := space.print("full"))
+        tree = space.print("full")
+        print(tree)
         self.assertNotIn("sdf_npy", tree)
         self.assertNotIn("colored_obj", tree)
 
@@ -250,6 +270,45 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         _ = space.train.patient049
         _ = space.train.patient069
         _ = space.test.patient089
+
+    def test_split_node_namelist(self):
+        space = self.helper_load_kfold()
+        space = split_node_namelist(
+            space,
+            {
+                "part01": ["patient009", "patient029"],
+                "part02": ["patient049", "patient069"],
+                "part03": ["patient089"],
+            },
+        )
+        print(space.print("source"))
+        _ = space.part01.patient009
+        _ = space.part01.patient029
+        _ = space.part02.patient049
+        _ = space.part02.patient069
+        _ = space.part03.patient089
+
+    def test_split_node_namelist_value_errors(self):
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_namelist(
+                space,
+                {
+                    "part01": ["patient009", "patient009"],
+                    "part02": ["patient049", "patient069"],
+                    "part03": ["patient089"],
+                },
+            )
+        space = self.helper_load_kfold()
+        with self.assertRaises(ValueError):
+            space = split_node_namelist(
+                space,
+                {
+                    "part01": ["patient009", "patient029"],
+                    "part02": ["patient049", "patient069"],
+                    "part03": [],
+                },
+            )
 
     def test_helper_in_node_method(self):
 
