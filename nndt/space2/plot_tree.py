@@ -1,11 +1,14 @@
+import copy
 import warnings
 from typing import *
 
+import matplotlib as mpl
 import numpy as onp
 import pyvista as pv
 from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
+from nndt.global_config import PYVISTA_PRE_PARAMS
 from nndt.space2 import (
     AbstractBBoxNode,
     AbstractTransformation,
@@ -16,36 +19,34 @@ from nndt.space2 import (
     SDTLoader,
 )
 
-pyvista_pre_params = dict()
 
-
-def _plot_pv_mesh(pl: Plotter, verts, faces, transform):
+def _plot_pv_mesh(pl: Plotter, verts, faces, transform, color):
     verts = transform(verts)
     poly_data = pv.PolyData(var_inp=onp.array(verts), faces=faces)
-    pl.add_mesh(poly_data)
+    pl.add_mesh(poly_data, color=color)
 
 
-def _plot_mesh(pl: Plotter, loader: MeshObjLoader, transform):
+def _plot_mesh(pl: Plotter, loader: MeshObjLoader, transform, color):
     obj_mesh = loader.mesh
     pv_mesh = pv.PolyData(obj_mesh)
     verts = pv_mesh.points
     faces = pv_mesh.faces
-    _plot_pv_mesh(pl, verts, faces, transform)
+    _plot_pv_mesh(pl, verts, faces, transform, color)
 
 
-def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable):
+def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable, color):
     sdt = loader.sdt
     from nndt.space2 import array_to_vert_and_faces
 
     verts, faces = array_to_vert_and_faces(sdt, level=0.0, for_vtk_cell_array=True)
-    _plot_pv_mesh(pl, verts, faces, transform)
+    _plot_pv_mesh(pl, verts, faces, transform, color)
 
 
-def _plot_filesource(pl, node: FileSource, transform: Callable):
+def _plot_filesource(pl, node: FileSource, transform: Callable, color):
     if isinstance(node._loader, MeshObjLoader):
-        _plot_mesh(pl, node._loader, transform)
+        _plot_mesh(pl, node._loader, transform, color)
     elif isinstance(node._loader, SDTLoader):
-        _plot_sdt(pl, node._loader, transform)
+        _plot_sdt(pl, node._loader, transform, color)
     else:
         warnings.warn(f"node._loader is None or unknown. Something goes wrong.")
 
@@ -55,17 +56,25 @@ def _plot(
     mode: Optional[str] = "default",
     filepath: Optional[str] = None,
     cpos=None,
-    level: float = 0.0,
+    cmap: str = "Set3",
+    **kwargs,
 ):
     if not node.root._is_preload:
         warnings.warn(
             "This space model is not preloaded. Output image is empty. Call .preload() from the root node to fix!"
         )
 
+    plotter_params_ = copy.deepcopy(PYVISTA_PRE_PARAMS)
+    plotter_params_.update(kwargs)
+
+    if isinstance(cmap, str):
+        cmap = mpl.colormaps.get_cmap(cmap)
+    cmap_index = 0
+
     if filepath is None:
-        pl = pv.Plotter(**pyvista_pre_params)
+        pl = pv.Plotter(**plotter_params_)
     else:
-        pl = pv.Plotter(off_screen=True, **pyvista_pre_params)
+        pl = pv.Plotter(off_screen=True, **plotter_params_)
 
     default_transform = lambda xyz: xyz
 
@@ -90,7 +99,8 @@ def _plot(
                 # Run over filesources
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
-                        _plot_filesource(pl, node_src, transform)
+                        _plot_filesource(pl, node_src, transform, cmap(cmap_index))
+                        cmap_index += 1
 
     if filepath is None:
         pl.show(cpos=cpos)

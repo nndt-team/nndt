@@ -1,6 +1,7 @@
 __version__ = "0.0.3a3"
 
 import nndt.space2.plot_tree
+from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
 from nndt.math_core import *
 from nndt.primitive_sdf import SphereSDF
 from nndt.trainable_task import (
@@ -10,21 +11,4 @@ from nndt.trainable_task import (
     SimpleSDF,
     SurfaceSegmentation,
 )
-from nndt.vizualize import BasicVizualization, save_sdt_as_obj
-
-
-def init_colab(window_size: Tuple[int, int] = (600, 400)):
-    import os
-
-    os.system("/usr/bin/Xvfb :99 -screen 0 1024x768x24 &")
-    os.environ["DISPLAY"] = ":99"
-
-    import panel as pn
-    import pyvista as pv
-
-    pn.extension("vtk")
-
-    nndt.space2.plot_tree.pyvista_pre_params = {
-        "notebook": True,
-        "window_size": window_size,
-    }
+from nndt.vizualize import BasicVizualization
