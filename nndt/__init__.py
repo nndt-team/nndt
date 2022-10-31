@@ -11,4 +11,4 @@ from nndt.trainable_task import (
     SimpleSDF,
     SurfaceSegmentation,
 )
-from nndt.vizualize import BasicVizualization
+from nndt.vizualize import BasicVizualization, save_3D_slices, save_sdt_as_obj

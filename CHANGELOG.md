@@ -2,13 +2,16 @@
 
 
 ## NNDT 0.0.3XX [IN DEVELOPMENT!]
+* Space model of the first version is purged
 * `nndt.datasets` for download of toy datasets
 * More methods support tensors of any shape
 * Imports are shorter for users
-* New data generators for out-of-box solvers: `DataGenForShapeRegression`, `DataGenForSegmentation`
+* New data generators for out-of-the-box solvers: `DataGenForShapeRegression`, `DataGenForSegmentation`
+* Added new color iterations for `.plot()`, and new color scheme for `.print()`
 * New methods
   * Surface data (+2):  `.surface_xyz()`, `.surface_rgba()`
-  * Space model modification (1): `split_node_kfold`
+  * Space model modification (1): `split_node_kfold`, `split_node_namelist`
+  * Visualization (+2): `save_sdt_as_obj`, `save_3D_slices`
 * Code quality
   * CI pipeline become faster for new PR
   * 75% of code coverage in CodeCov
