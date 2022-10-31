@@ -1,17 +1,24 @@
 from nndt.datasets.dataset import Dataset
 
 
-class ACDC(Dataset):
-    def __init__(self, name="ACDC_5", to_path=None):
+class MICCAI2015(Dataset):
+    def __init__(self, name="left_adrenal_gland_10", to_path=None):
         super().__init__(name=name, to_path=to_path)
 
         self._dict = {
-            "ACDC_5": [
+            "left_adrenal_gland_10": [
                 [
-                    "https://drive.google.com/file/d/1UzC2WPkjMQSxzI5sj1rMT47URuZbQhYb/view?usp=sharing",
-                    "https://www.dropbox.com/s/6fomqxbjs0iu79m/ACDC_5.7z?raw=1",
+                    "https://drive.google.com/file/d/1LFJs5tW-acZOXTVVHh-WpWRNkAgtKaDd/view?usp=sharing",
+                    "https://www.dropbox.com/s/xyarraopmj069de/left_adrenal_gland.7z?raw=1",
                 ],
-                "34d007546353673899c73337d38c9c12",
+                "03c5f5c7e33a57ed71f497725d6925db",
+            ],
+            "stomach_10": [
+                [
+                    "https://drive.google.com/file/d/189tTsVX89qUijClkPkZfBiX5hRMupW03/view?usp=sharing",
+                    "https://www.dropbox.com/s/uzhurjucqqnansh/stomach.7z?raw=1",
+                ],
+                "3a7a817748c43194fa75b1e5ab798d56",
             ],
             "wrong_url_test": [
                 [
@@ -21,7 +28,7 @@ class ACDC(Dataset):
                     "https://a.com",
                     "https://www.dropbox.com/s/m",
                 ],
-                "34d007546353673899c73337d38c9c12",
+                "03c5f5c7e33a57ed71f497725d6925db",
             ],
             "wrong_hash_test": [
                 [
@@ -31,18 +38,18 @@ class ACDC(Dataset):
                 "34d007546353673899c73337d38c9c12  ",
             ],
             "dropbox_test": [
-                ["https://www.dropbox.com/s/6fomqxbjs0iu79m/ACDC_5.7z?raw=1"],
-                "34d007546353673899c73337d38c9c12",
+                [
+                    "https://www.dropbox.com/s/xyarraopmj069de/left_adrenal_gland.7z?raw=1"
+                ],
+                "03c5f5c7e33a57ed71f497725d6925db",
             ],
         }
 
         if name in self._dict.keys():
-            if "test" in name:
-                self.name = "ACDC_5"
-            else:
-                self.name = name
+            self.name = "MICCAI2015"
             self.to_path = to_path
             self.urls, self.hash = self._dict[name]
+
         else:
             raise ValueError(
                 f'name must be in {[key for key in self._dict if "_test" not in key]}'
