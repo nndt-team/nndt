@@ -11,7 +11,7 @@
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-[Wiki](https://github.com/nndt-team/nndt/wiki) | [Change logs](https://github.com/nndt-team/nndt/blob/v0.0.1rc/CHANGELOG.md)
+[Wiki](https://github.com/nndt-team/nndt/wiki) | [Change logs](https://github.com/nndt-team/nndt/blob/main/CHANGELOG.md)
 
 This is experimental library for unusual neural network applications. Description and docs will come soon!
 
