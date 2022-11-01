@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from nndt.space2 import fix_file_extension
+from nndt.space2.utils import fix_file_extension
 from nndt.vizualize import BasicVizualization, save_3D_slices
 from tests.base import BaseTestCase
 

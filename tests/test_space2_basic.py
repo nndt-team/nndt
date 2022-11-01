@@ -1,7 +1,11 @@
 import os.path
 import unittest
 
+import jax
+
 from nndt.space2 import *
+from nndt.space2.space import Space
+from nndt.space2.utils import update_bbox
 from tests.base import PATH_TEST_ACDC, PATH_TEST_STRUCTURE, BaseTestCase
 
 FILE_TMP = "./test_file.space"

@@ -2,14 +2,11 @@ from typing import Optional
 
 from anytree import RenderTree
 
-from nndt.space2 import (
-    AbstractBBoxNode,
-    AbstractTransformation,
-    AbstractTreeElement,
-    FileSource,
-    ImpRepr,
-    MethodSetNode,
-)
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.filesource import FileSource
+from nndt.space2.implicit_representation import ImpRepr
+from nndt.space2.method_set import MethodSetNode
+from nndt.space2.transformation import AbstractTransformation
 
 
 def _construct_filter(child_classes, not_parent_classes):

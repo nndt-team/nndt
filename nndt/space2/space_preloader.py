@@ -1,22 +1,20 @@
 from anytree import PostOrderIter, PreOrderIter
 
-from nndt.space2 import (
-    DICT_NODETYPE_PRIORITY,
-    AbstractBBoxNode,
-    AbstractTransformation,
+from nndt.space2.abstracts import DICT_NODETYPE_PRIORITY, AbstractBBoxNode
+from nndt.space2.filesource import FileSource
+from nndt.space2.group import Group
+from nndt.space2.implicit_representation import IR1SDF, ImpRepr
+from nndt.space2.method_set import (
     ColorMethodSetNode,
-    FileSource,
-    Group,
     MeshObjMethodSetNode,
-    Object3D,
     SamplingMethodSetNode,
     SDTMethodSetNode,
-    Space,
-    pad_bbox,
-    update_bbox,
 )
-from nndt.space2.implicit_representation import IR1SDF, ImpRepr
 from nndt.space2.method_set_train_task import TrainTaskSetNode
+from nndt.space2.object3D import Object3D
+from nndt.space2.space import Space
+from nndt.space2.transformation import AbstractTransformation
+from nndt.space2.utils import pad_bbox, update_bbox
 
 
 def _update_bbox_bottom_to_up(node):
@@ -186,7 +184,7 @@ class DefaultPreloader:
 
     def _init_FileSource(self, node: FileSource):
 
-        from nndt.space2 import DICT_LOADERTYPE_CLASS
+        from nndt.space2.loader import DICT_LOADERTYPE_CLASS
 
         if node.loader_type not in DICT_LOADERTYPE_CLASS:
             raise NotImplementedError(f"{node.loader_type} is unknown loader")

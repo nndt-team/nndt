@@ -8,9 +8,10 @@ from tqdm import tqdm
 
 import nndt
 from nndt import SimpleSDF
-from nndt.space2 import FileSource, MethodSetNode, node_method
-from nndt.space2.abstracts import AbstractBBoxNode
+from nndt.space2.abstracts import AbstractBBoxNode, node_method
+from nndt.space2.filesource import FileSource
 from nndt.space2.implicit_representation import ImpRepr
+from nndt.space2.method_set import MethodSetNode
 from nndt.space2.transformation import AbstractTransformation
 
 
