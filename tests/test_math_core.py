@@ -293,6 +293,12 @@ class BarycentricGridTestCase(unittest.TestCase):
             jnp.array([0.0, 0.0, 0.0]), scale_xyz(xyz, scale=(3.0, -4.0, 5.0))
         )
 
+    def test_shift_xyz(self):
+        xyz = jnp.array([1.0, 2.0, 3.0])
+        assert jnp.allclose(
+            jnp.array([4.0, -2.0, 8.0]), shift_xyz(xyz, shift=(3.0, -4.0, 5.0))
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

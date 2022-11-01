@@ -351,3 +351,22 @@ def scale_xyz(xyz, scale=(1.0, 1.0, 1.0)):
     scale = jnp.array(scale)
     xyz = scale * xyz
     return xyz
+
+
+def shift_xyz(xyz, shift=(1.0, 1.0, 1.0)):
+    """
+    Shift array of points to the `shift` factor.
+
+    Parameters
+    ----------
+    :param xyz: Array of points
+    :param scale: The scale factor
+
+    Returns
+    -------
+    :return: Scaled array of points with shape equal to shape of `xyz` array
+    """
+    assert xyz.shape[-1] == 3
+    shift = jnp.array(shift)
+    xyz = xyz + shift
+    return xyz
