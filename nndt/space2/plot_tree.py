@@ -68,7 +68,7 @@ def _plot(
     plotter_params_.update(kwargs)
 
     if isinstance(cmap, str):
-        cmap = mpl.colormaps.get_cmap(cmap)
+        cmap = mpl.cm.get_cmap(cmap)
     cmap_index = 0
 
     if filepath is None:
