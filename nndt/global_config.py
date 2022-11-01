@@ -4,6 +4,12 @@ PYVISTA_PRE_PARAMS = dict()
 
 
 def init_colab(window_size: Tuple[int, int] = (600, 400)):
+    """
+    This method rewrites global parameters and allows NNDT works inside the Google Colaboratory environment
+
+    :param window_size: default size of output 3D images
+    :return: none
+    """
     import os
 
     os.system("/usr/bin/Xvfb :99 -screen 0 1024x768x24 &")
