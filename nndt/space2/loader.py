@@ -223,7 +223,7 @@ class MeshObjLoader(AbstractLoader):
 
         try:
             self._rgba = _load_colors_from_obj(self.filepath)
-        except:
+        except Exception:
             warnings.warn("Colors cannot be loaded from mesh.")
             self._rgba = None
 

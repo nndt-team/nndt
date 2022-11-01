@@ -4,14 +4,14 @@
 [![docstr_coverage](https://github.com/nndt-team/nndt/blob/main/docstr-cov-badge.svg)](https://github.com/nndt-team/nndt)
 [![codecov](https://codecov.io/gh/nndt-team/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/nndt-team/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/nndt-team/nndt/badge)](https://www.codefactor.io/repository/github/nndt-team/nndt)
-[![ci-test workflow](https://github.com/nndt-team/nndt/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/nndt-team/nndt/actions/workflows/ci-workflow.yml)
+[![ci-build workflow](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml/badge.svg)](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml)
 [![License](https://img.shields.io/github/license/nndt-team/nndt)](https://github.com/nndt-team/nndt/blob/main/LICENSE)
 [![Python version](https://github.com/nndt-team/nndt/blob/main/python-badge.svg)](https://www.python.org/downloads/release/python-3110/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nndt-team/nndt)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-[Wiki](https://github.com/nndt-team/nndt/wiki) | [Change logs](https://github.com/nndt-team/nndt/blob/v0.0.1rc/CHANGELOG.md)
+[Wiki](https://github.com/nndt-team/nndt/wiki) | [Change logs](https://github.com/nndt-team/nndt/blob/main/CHANGELOG.md)
 
 This is experimental library for unusual neural network applications. Description and docs will come soon!
 

@@ -8,9 +8,10 @@ from tqdm import tqdm
 
 import nndt
 from nndt import SimpleSDF
-from nndt.space2 import FileSource, MethodSetNode, node_method
-from nndt.space2.abstracts import AbstractBBoxNode
+from nndt.space2.abstracts import AbstractBBoxNode, node_method
+from nndt.space2.filesource import FileSource
 from nndt.space2.implicit_representation import ImpRepr
+from nndt.space2.method_set import MethodSetNode
 from nndt.space2.transformation import AbstractTransformation
 
 
@@ -91,7 +92,8 @@ class TrainTaskSetNode(MethodSetNode):
 
         min_loss = 99999999
         loss_history = []
-        for epoch in (pbar := tqdm(range(epochs))):
+        pbar = tqdm(range(epochs))
+        for epoch in pbar:
 
             loss, params, rng, opt_state = train_step(params, rng, opt_state, D1)
             loss_history.append(float(loss))

@@ -4,8 +4,8 @@ import unittest
 
 import numpy as np
 
-from nndt.space2 import fix_file_extension
-from nndt.vizualize import BasicVizualization
+from nndt.space2.utils import fix_file_extension
+from nndt.vizualize import BasicVizualization, save_3D_slices
 from tests.base import BaseTestCase
 
 LOG_FOLDER = "test_log"
@@ -70,6 +70,15 @@ class VizualizeTestCase(BaseTestCase):
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state_0.jpg"))
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state_1.jpg"))
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/state_2.jpg"))
+
+    def test_save_3D_slices(self):
+        test_box = np.zeros((100, 100, 100))
+        test_box[20:80, 20:80, 20:80] = 1
+        os.makedirs(f"./{LOG_FOLDER}/")
+        save_3D_slices(f"./{LOG_FOLDER}/slices0.png", test_box)
+        save_3D_slices(f"./{LOG_FOLDER}/slices1.png", test_box, include_boundary=False)
+        self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/slices0.png"))
+        self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/slices1.png"))
 
     def test_train(self):
         viz = BasicVizualization(LOG_FOLDER, EXP_NAME, print_on_each_epoch=10)

@@ -9,15 +9,11 @@ from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
 from nndt.global_config import PYVISTA_PRE_PARAMS
-from nndt.space2 import (
-    AbstractBBoxNode,
-    AbstractTransformation,
-    AbstractTreeElement,
-    FileSource,
-    MeshObjLoader,
-    Object3D,
-    SDTLoader,
-)
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.filesource import FileSource
+from nndt.space2.loader import MeshObjLoader, SDTLoader
+from nndt.space2.object3D import Object3D
+from nndt.space2.transformation import AbstractTransformation
 
 
 def _plot_pv_mesh(pl: Plotter, verts, faces, transform, color):
@@ -36,7 +32,7 @@ def _plot_mesh(pl: Plotter, loader: MeshObjLoader, transform, color):
 
 def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable, color):
     sdt = loader.sdt
-    from nndt.space2 import array_to_vert_and_faces
+    from nndt.space2.utils import array_to_vert_and_faces
 
     verts, faces = array_to_vert_and_faces(sdt, level=0.0, for_vtk_cell_array=True)
     _plot_pv_mesh(pl, verts, faces, transform, color)
@@ -68,7 +64,7 @@ def _plot(
     plotter_params_.update(kwargs)
 
     if isinstance(cmap, str):
-        cmap = mpl.colormaps.get_cmap(cmap)
+        cmap = mpl.cm.get_cmap(cmap)
     cmap_index = 0
 
     if filepath is None:
@@ -99,7 +95,9 @@ def _plot(
                 # Run over filesources
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
-                        _plot_filesource(pl, node_src, transform, cmap(cmap_index))
+                        _plot_filesource(
+                            pl, node_src, transform, cmap(cmap_index % cmap.N)
+                        )
                         cmap_index += 1
 
     if filepath is None:

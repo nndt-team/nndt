@@ -1,0 +1,52 @@
+name: ci-dev
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Python
+        id: setup_python
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.8
+
+      - name: Cache python modules
+        uses: actions/cache@master
+        id: cache-modules
+        with:
+          path: ./.venv/
+          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install requirements
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: |
+          python -m venv ./.venv
+          . ./.venv/bin/activate
+          python setup.py install
+          pip install pytest pytest-cov
+
+      - name: Unpack testing data
+        run: |
+          . ./.venv/bin/activate
+          7z x tests/tree_for_test.7z
+          7z x tests/acdc_for_test.7z
+
+      - name: Generate coverage report
+        run: |
+          . ./.venv/bin/activate
+          pytest --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: pytest
+          fail_ci_if_error: true

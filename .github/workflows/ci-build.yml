@@ -1,6 +1,9 @@
-name: ci-workflow
+name: ci-build
 
 on:
+  schedule:
+    - cron: "0 6 * * *" # daily at 11:00 UTC+5
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -9,7 +12,8 @@ jobs:
   ci:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest, macos-latest ]
+        py-version: ["3.10", "3.9", "3.8"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
@@ -17,7 +21,7 @@ jobs:
         id: setup_python
         uses: actions/setup-python@master
         with:
-          python-version: 3.8
+          python-version: ${{ matrix.py-version }}
 
       - name: Cache python modules
         uses: actions/cache@master
@@ -34,28 +38,28 @@ jobs:
           python -m venv ./.venv
           . ./.venv/bin/activate
           python setup.py install
+          pip install pytest pytest-cov
+          pip install black black[jupyter]
 
       - name: Check code style
         run: |
           . ./.venv/bin/activate
-          pip install black black[jupyter]
           black --check .
 
       - name: Unpack testing data
         run: |
           . ./.venv/bin/activate
+          7z x tests/tree_for_test.7z
           7z x tests/acdc_for_test.7z
 
-      - name: Generate coverage report
+      - name: Generate coverage report for python ${{ matrix.py-version }} on ${{ matrix.os }}
         run: |
           . ./.venv/bin/activate
-          pip install pytest pytest-cov
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           flags: pytest
           fail_ci_if_error: true
