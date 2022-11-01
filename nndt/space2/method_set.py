@@ -298,6 +298,21 @@ class SDTMethodSetNode(MethodSetNode):
     def surface_xyz2localsdt(
         self, ns_xyz: jnp.ndarray, spacing=(2, 2, 2), scale=1.0
     ) -> (jnp.ndarray, jnp.ndarray):
+        """
+        This method is an encoding of geometrical features for points surroundings.
+        The method creates boxes around the requested points.
+        Then, it defines uniform grid (UG) with the requested `spacing` inside the bbox.
+        Each vertex of the uniform grid (UG) are converted to value of the signed distance function.
+        Thus, the method convert points to signed distance tensors (SDF) of their surroundings.
+
+        Data transformation:
+        surface_xyz2localsdt(ns_xyz[3], spacing=(D,H,W), scale=1.) -> ns_xyz[D,H,W,3], ns_localsdt[D,H,W,1]
+
+        :param ns_xyz: coordinates of points in normalized space
+        :param spacing: Number of slices for each coordinates of the box
+        :param scale: scale factor for the box in normalized space
+        :return: tensor of UG and SDF
+        """
         ns_cube = grid_in_cube(
             spacing=spacing, scale=scale, center_shift=(0.0, 0.0, 0.0)
         )
@@ -327,11 +342,28 @@ class ColorMethodSetNode(MethodSetNode):
 
     @node_method("surface_rgba() -> xyz[N,4]")
     def surface_rgba(self) -> jnp.ndarray:
+        """
+        Get colors of the all surface vertexes
+
+        Data transformation
+        surface_rgba() -> xyz[N,4]
+
+        :return: colors in RGBA format
+        """
         rgba = self.mesh._loader.rgba
         return rgba
 
     @node_method("surface_ind2rgba(ind[..,1]) -> rgba[..,4]")
     def surface_ind2rgba(self, ind: jnp.ndarray) -> jnp.ndarray:
+        """
+        Convert indexes of the surface vertex to their colors
+
+        Data transformation
+        surface_ind2rgba(ind[..,1]) -> rgba[..,4]
+
+        :param ind: index of surface vertexes
+        :return: colors in RGBA format
+        """
         if ind.shape[-1] != 1:
             ind = ind[..., jnp.newaxis]
         ret_shape = calc_ret_shape(ind, 4)
@@ -343,6 +375,15 @@ class ColorMethodSetNode(MethodSetNode):
 
     @node_method("surface_xyz2rgba(ns_xyz[..,3]) -> rgba[..,4]")
     def surface_xyz2rgba(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
+        """
+        Convert coordinates of points to colors of the nearest vertex on the surface.
+
+        Data transformation
+        surface_xyz2rgba(ns_xyz[..,3]) -> rgba[..,4]
+
+        :param ns_xyz: coordinates of points in normalized space
+        :return: colors in RGBA format
+        """
         ret_shape = calc_ret_shape(ns_xyz, 4)
 
         ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
