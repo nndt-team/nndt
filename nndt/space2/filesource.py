@@ -7,18 +7,18 @@ from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 class FileSource(AbstractBBoxNode, IterAccessMixin):
     """
-    This class show location of file for processing.
+    This class keeps location of file for processing.
 
     Args:
-        name (str): file name.
-        filepath (str): file path. If not exists raise FileNotFoundError.
+        name (str): name ot the node
+        filepath (str): file path. If it does not exist raise FileNotFoundError.
         loader_type (str): loader type, this string notes type of information for uploading
         bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)).
                                 Defaults to ((0., 0., 0.), (0., 0., 0.)).
         parent (_type_, optional): parent node. Defaults to None.
 
     Raises:
-        FileNotFoundError: file or directory is requested but doesn’t exist.
+        FileNotFoundError: file or directory is requested but doesn't exist.
     """
 
     def __init__(

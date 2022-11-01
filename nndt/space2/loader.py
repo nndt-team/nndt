@@ -9,60 +9,17 @@ from packaging import version
 from pykdtree.kdtree import KDTree
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
-from nndt.space2.abstracts import AbstractBBoxNode, AbstractLoader, IterAccessMixin
-
-
-class FileSource(AbstractBBoxNode, IterAccessMixin):
-    def __init__(
-        self,
-        name,
-        filepath: str,
-        loader_type: str,
-        bbox=((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
-        parent=None,
-    ):
-        """
-        This class show location of file for processing.
-
-        Args:
-            name (str): file name.
-            filepath (str): file path. If not exists raise FileNotFoundError.
-            loader_type (str): loader type, this string notes type of information for uploading
-            bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)).
-                                    Defaults to ((0., 0., 0.), (0., 0., 0.)).
-            parent (_type_, optional): parent node. Defaults to None.
-
-        Raises:
-            FileNotFoundError: file or directory is requested but doesn’t exist.
-        """
-
-        super(FileSource, self).__init__(
-            name, parent=parent, bbox=bbox, _print_color=Fore.CYAN, _nodetype="FS"
-        )
-        if not os.path.exists(filepath):
-            raise FileNotFoundError()
-        self.filepath = filepath
-        self.loader_type = loader_type
-        self._loader = None
-
-    def __repr__(self):
-        star_bool = self._loader.is_load if self._loader is not None else False
-        star = "^" if star_bool else ""
-        return (
-            self._print_color
-            + f"{self._nodetype}:{self.name}"
-            + Fore.WHITE
-            + f" {self.loader_type}{star} {self.filepath}"
-            + Fore.RESET
-        )
+import nndt
+from nndt.space2.abstracts import AbstractLoader
+from nndt.trainable_task import SimpleSDF
 
 
 class EmptyLoader(AbstractLoader):
     """
-    Does nothing.
+    Dummy loader, that does nothing.
 
     Args:
-        filepath (str): Filepath.
+        filepath (str): path to the file
     """
 
     def __init__(self, filepath: str):
@@ -81,10 +38,10 @@ class EmptyLoader(AbstractLoader):
 
 class TXTLoader(AbstractLoader):
     """
-    Load txt file.
+    Load txt file
 
     Args:
-        filepath (str): Filepath.
+        filepath (str): path to the file
     """
 
     def __init__(self, filepath: str):
@@ -181,10 +138,10 @@ def _load_colors_from_ply(filepath):
 
 class MeshObjLoader(AbstractLoader):
     """
-    Load mesh object.
+    Load .obj file with mesh.
 
     Args:
-        filepath (str): Filepath.
+        filepath (str): path to the file
     """
 
     def __init__(self, filepath: str):
@@ -294,7 +251,7 @@ class SDTLoader(AbstractLoader):
 
 
     Args:
-        filepath (str): Filepath.
+        filepath (str): path to the file
     """
 
     def __init__(self, filepath: str):
@@ -377,12 +334,6 @@ class SDTLoader(AbstractLoader):
         self.is_load = False
 
     def is_load(self) -> bool:
-        """Return is file loaded.
-
-        Returns:
-            bool: File load status.
-        """
-
         return self.is_load
 
 
@@ -456,6 +407,12 @@ class IR1Loader(AbstractLoader):
         self.bbox_ = None
 
     def is_load(self) -> bool:
+        """Return is file loaded.
+
+        Returns:
+            bool: File load status.
+        """
+
         return self.is_load
 
 
