@@ -2,10 +2,10 @@ from anytree import PostOrderIter, PreOrderIter
 from colorama import Fore
 
 import nndt
-from nndt.space2 import AbstractBBoxNode
 from nndt.space2.abstracts import (
     DICT_NODETYPE_PRIORITY,
     NODE_METHOD_DICT,
+    AbstractBBoxNode,
     AbstractTreeElement,
     IterAccessMixin,
     node_method,
@@ -22,7 +22,7 @@ def _get_class_hierarchy(obj):
 def _add_explicit_methods_to_node(node: AbstractTreeElement):
     class_hierarchy = _get_class_hierarchy(node)
     class_hierarchy = list([str(class_.__name__) for class_ in class_hierarchy])
-    from nndt.space2 import MethodNode
+    from nndt.space2.method_set import MethodNode
 
     for class_name in class_hierarchy:
         if class_name in NODE_METHOD_DICT:
@@ -34,7 +34,9 @@ def _add_explicit_methods_to_node(node: AbstractTreeElement):
 
 
 def _add_method_sets_to_node(node: AbstractTreeElement):
-    from nndt.space2 import AbstractTransformation, ImpRepr, MethodNode, MethodSetNode
+    from nndt.space2.implicit_representation import ImpRepr
+    from nndt.space2.method_set import MethodNode, MethodSetNode
+    from nndt.space2.transformation import AbstractTransformation
 
     elements = [
         child

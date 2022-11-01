@@ -8,7 +8,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import numpy as onp
 
-from nndt.space2 import fix_file_extension
+from nndt.space2.utils import fix_file_extension
 
 
 class IteratorWithTimeMeasurements:
@@ -66,7 +66,7 @@ def save_sdt_as_obj(
     assert array.ndim == 3
     array_ = onp.array(array)
 
-    from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
+    from nndt.space2.utils import array_to_vert_and_faces, save_verts_and_faces_to_obj
 
     verts, faces = array_to_vert_and_faces(array_, level=level)
     save_verts_and_faces_to_obj(fix_file_extension(path, ".obj"), verts, faces)
