@@ -5,41 +5,12 @@ import jax.numpy as jnp
 from jax.random import KeyArray
 
 import nndt
+from nndt.math_core import rotation_matrix, scale_xyz
 from nndt.trainable_task import ApproximateSDF
 
 
-def _rotation_matrix(yaw, pitch, roll):
-    Rz = jnp.array(
-        [
-            [jnp.cos(yaw), -jnp.sin(yaw), 0.0],
-            [jnp.sin(yaw), jnp.cos(yaw), 0.0],
-            [0.0, 0.0, 1.0],
-        ]
-    )
-    Ry = jnp.array(
-        [
-            [jnp.cos(pitch), 0, jnp.sin(pitch)],
-            [0, 1, 0],
-            [-jnp.sin(pitch), 0.0, jnp.cos(pitch)],
-        ]
-    )
-    Rx = jnp.array(
-        [
-            [1.0, 0.0, 0.0],
-            [0.0, jnp.cos(roll), -jnp.sin(roll)],
-            [0.0, jnp.sin(roll), jnp.cos(roll)],
-        ]
-    )
-
-    return Rz @ Ry @ Rx
-
-
-def _scale_xyz(cube, scale):
-    return scale * cube
-
-
 def _rotate_xyz(cube, M):
-    M = _rotation_matrix(M[0], M[1], M[2]).T
+    M = rotation_matrix(M[0], M[1], M[2]).T
     return cube @ M
 
 
@@ -50,7 +21,7 @@ def _shift_xyz(cube, shift):
 def _scale_rotate_shift(
     cube, scale=(1.0, 1.0, 1.0), rotation=(0.0, 0.0, 0.0), shift=(0.0, 0.0, 0.0)
 ):
-    cube = _scale_xyz(cube, scale)
+    cube = scale_xyz(cube, scale)
     cube = _rotate_xyz(cube, rotation)
     cube = _shift_xyz(cube, shift)
     return cube
