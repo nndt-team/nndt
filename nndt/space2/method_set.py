@@ -9,8 +9,8 @@ from jax.random import KeyArray
 from vtkmodules.util.numpy_support import numpy_to_vtk
 
 from nndt.math_core import grid_in_cube, grid_in_cube2, take_each_n, uniform_in_cube
-from nndt.space2 import FileSource, node_method
-from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement, node_method
+from nndt.space2.filesource import FileSource
 from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.transformation import AbstractTransformation
 from nndt.space2.utils import calc_ret_shape

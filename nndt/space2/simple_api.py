@@ -11,7 +11,7 @@ from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
 from nndt.primitive_sdf import SphereSDF
-from nndt.space2 import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
 from nndt.space2.filesource import FileSource
 from nndt.space2.group import Group
 from nndt.space2.implicit_representation import ImpRepr

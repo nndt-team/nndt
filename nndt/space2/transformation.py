@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import numpy as onp
 from colorama import Fore
 
-from nndt.space2 import AbstractBBoxNode, node_method
+from nndt.space2.abstracts import AbstractBBoxNode, node_method
 
 
 class AbstractTransformation(AbstractBBoxNode):
