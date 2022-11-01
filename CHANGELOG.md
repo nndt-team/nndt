@@ -10,7 +10,7 @@
 * Added new color iterations for `.plot()`, and new color scheme for `.print()`
 * New methods
   * Surface data (+2):  `.surface_xyz()`, `.surface_rgba()`
-  * Space model modification (1): `split_node_kfold`, `split_node_namelist`
+  * Space model modification (+2): `split_node_kfold`, `split_node_namelist`
   * Visualization (+2): `save_sdt_as_obj`, `save_3D_slices`
 * Code quality
   * CI pipeline become faster for new PR
