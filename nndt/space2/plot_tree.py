@@ -99,7 +99,9 @@ def _plot(
                 # Run over filesources
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
-                        _plot_filesource(pl, node_src, transform, cmap(cmap_index))
+                        _plot_filesource(
+                            pl, node_src, transform, cmap(cmap_index % cmap.N)
+                        )
                         cmap_index += 1
 
     if filepath is None:
