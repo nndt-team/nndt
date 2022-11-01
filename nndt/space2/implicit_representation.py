@@ -1,7 +1,9 @@
+import jax
 from colorama import Fore
 
 from nndt.primitive_sdf import AbstractSDF
 from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin, node_method
+from nndt.trainable_task import SimpleSDF
 
 
 class ImpRepr(AbstractBBoxNode, IterAccessMixin):
@@ -54,3 +56,24 @@ class ImpRepr(AbstractBBoxNode, IterAccessMixin):
     def purefun_vec_sdf_dz(self):
         """Return signed distance function in vector view along the Z-axis"""
         return self.abstract_sdf.vec_fun_dz
+
+
+class IR1SDF(AbstractSDF):
+    def __init__(self, func: SimpleSDF.FUNC, params, bbox):
+        self.func = func
+        self.params = params
+        self._bbox = bbox
+
+        key = jax.random.PRNGKey(42)
+        self._fun = lambda x, y, z: self.func.sdf(params, key, x, y, z)
+        self._vec_fun = lambda x, y, z: self.func.vec_sdf(params, key, x, y, z)
+        self._vec_fun_x = lambda x, y, z: self.func.vec_sdf_dx(params, key, x, y, z)
+        self._vec_fun_y = lambda x, y, z: self.func.vec_sdf_dy(params, key, x, y, z)
+        self._vec_fun_z = lambda x, y, z: self.func.vec_sdf_dz(params, key, x, y, z)
+
+    @property
+    def bbox(self) -> ((float, float, float), (float, float, float)):
+        return self._bbox
+
+    def _get_fun(self):
+        return self._fun
