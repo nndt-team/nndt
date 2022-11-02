@@ -31,15 +31,12 @@ pip install git+https://github.com/nndt-team/nndt.git@dev
 
 ## Test
 
-How to run the tests?
- - Unpack `./test/acdc_for_test.7z`.
- - Configure your IDE to run test from `test` folder and assume `nndt/nndt` as a source root.
- - Run test;)
+For the test runs, configure your IDE to run test from `test` folder and assume `nndt/nndt` as a source root. 
+Another option is to copy `test` into `nndt` folder and run all together.
  
 ## Tutorials and examples
 
 NOTE! This project is in an early stage. API and examples are changed every day. 
-The following notebooks use `v0.0.1rc` branch.
 
 Tutorials
 1. [Basics for space models](tutorials/tutorial1_space_model.ipynb)
