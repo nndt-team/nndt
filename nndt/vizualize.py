@@ -100,6 +100,7 @@ def save_3D_slices(
     assert panel_size > 0
     assert slice_num > 0 and panel_size > 0
     assert array.ndim == 3 or (array.ndim == 4 and (array.shape[-1] in (1, 3, 4)))
+    assert len(levels) == len(level_colors)
 
     is_color = array.ndim == 4 and (array.shape[-1] in (3, 4))
 
@@ -144,7 +145,7 @@ def save_3D_slices(
             vmax=float(jnp.nanmax(array_)),
             **kwargs,
         )
-        if not is_color:
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
             _cs2 = ax.contour(
                 array_[ind_ax, :, :, 0:3].squeeze(),
                 levels=levels,
@@ -158,7 +159,7 @@ def save_3D_slices(
             vmax=float(jnp.nanmax(array_)),
             **kwargs,
         )
-        if not is_color:
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
             _cs2 = ax.contour(
                 array_[:, ind_ax, :, 0:3].squeeze(),
                 levels=levels,
@@ -172,7 +173,7 @@ def save_3D_slices(
             vmax=float(jnp.nanmax(array_)),
             **kwargs,
         )
-        if not is_color:
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
             _cs2 = ax.contour(
                 array_[:, :, ind_ax, 0:3].squeeze(),
                 levels=levels,
@@ -183,7 +184,7 @@ def save_3D_slices(
     if not is_color:
         cbar = ax.cax.colorbar(im)
         cbar = grid.cbar_axes[0].colorbar(im)
-        if not is_color:
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
             cbar.add_lines(_cs2)
 
     if path is not None:
