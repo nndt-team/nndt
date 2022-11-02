@@ -19,7 +19,7 @@ This is experimental library for unusual neural network applications. Descriptio
  
 The last stable release:
 ```
-pip install git+https://github.com/nndt-team/nndt/releases/tag/v0.0.2
+pip install git+https://github.com/nndt-team/nndt.git@v0.0.2
 ```
 
 The developer release:
