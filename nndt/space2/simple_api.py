@@ -83,6 +83,13 @@ def load_mesh_obj(fullpath):
 
 
 def load_implicit_ir1(fullpath):
+    """
+    Create a space model tree with group `default` and one 3D object.
+    3D object includes FileSource for `.ir1` files.
+
+    :param fullpath: path to files
+    :return: root of the space model tree
+    """
     return load_only_one_file(fullpath, loader_type="implicit_ir1")
 
 
@@ -118,6 +125,21 @@ def load_from_path(
     template_mesh_obj="*.obj",
     template_implicit_ir1="*.ir1",
 ):
+    """
+    Load all data from the directory as a space model tree.
+    Folders determine groups and 3D objects. Files become a FileSources.
+    Templates allow user to mask some files from consideration.
+
+    NOTE, This version of NNDT only supports folder structures with equal depth.
+    FileSources must be located in terminate folders.
+
+    :param root_path: path to folder with dataset
+    :param template_txt: template for text files. None value forces to ignore all `.txt` files.
+    :param template_sdt: template for `.npy` files with SDT data. None value forces to ignore all `.npy` files.
+    :param template_mesh_obj: template for `.obj` files with surface mesh data. None value forces to ignore all `.obj` files.
+    :param template_implicit_ir1: template for `.ir1` files with surface mesh data. None value forces to ignore all `.ir1` files.
+    :return: root of the space model tree
+    """
     if not os.path.exists(root_path):
         raise FileNotFoundError(
             f"Path {root_path} is not exist. Check relative path or folder presence."
@@ -185,6 +207,21 @@ def load_from_file_lists(
     ir1_list: Optional[Sequence[str]] = None,
     test_size: Optional[float] = None,
 ) -> Space:
+    """
+    Create the space model tree with a default structure from the lists of files.
+    If the test_size is None, the tree includes root and group with name `default`.
+    If the test_size is set, the tree includes root and groups with name `test` and `train`.
+
+    Note, the current verion of NNDT can load only SDT or only IR.
+    Both type of files together are not yet supported.
+
+    :param name_list: list of the node names
+    :param mesh_list: list of the meshes. Only the `.obj` is supported now.
+    :param sdt_list: list of the sdt array. Only the `.npy` is supported now.
+    :param ir1_list: list of implicit representations. Only the `.ir1` is supported now.
+    :param test_size: size of test subset from the whole dataset.
+    :return: root of the space model tree
+    """
     if mesh_list is not None:
         assert len(name_list) == len(mesh_list)
     if sdt_list is not None:
@@ -279,6 +316,11 @@ def load_from_file_lists(
 
 
 def read_space_from_file(filepath: str):
+    """
+    Create the space model from `.space` file or any file with proper json inside.
+    :param filepath: path to file
+    :return: root of the space model tree
+    """
     if not os.path.exists(filepath):
         raise FileNotFoundError()
 
@@ -292,6 +334,12 @@ def read_space_from_file(filepath: str):
 
 
 def from_json(json: str):
+    """
+    Create the space model tree from the json string.
+
+    :param json: json string
+    :return: the space model
+    """
     dict_imp = DictImporter(nodecls=_nodecls_function)
     json_imp = JsonImporter(dictimporter=dict_imp)
     space = json_imp.import_(json)
@@ -301,12 +349,25 @@ def from_json(json: str):
 
 
 def save_space_to_file(space: Space, filepath: str):
+    """
+    Store a space model tree to `.space` file using json format
+
+    :param space: root of a space model tree
+    :param filepath: path to file
+    :return:
+    """
     filepath_with_ext = filepath if filepath.endswith(".space") else filepath + ".space"
     with open(filepath_with_ext, "w", encoding="utf-8") as fl:
         fl.write(space.to_json())
 
 
 def to_json(space: Space):
+    """
+    Convert a space model tree to json format
+
+    :param space: root of a space model tree
+    :return: json as a string
+    """
     dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
     json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
     return json_exp.export(space)
@@ -443,6 +504,15 @@ def split_node_namelist(
 def add_sphere(
     tree_path: AbstractBBoxNode, name, center: (float, float, float), radius: float
 ):
+    """
+    Add sphere primitive to the space model tree
+
+    :param tree_path: node in the space model tree
+    :param name: name of the primitive
+    :param center: center of the sphere
+    :param radius: radius of the sphere
+    :return: root of the tree
+    """
     assert isinstance(tree_path, (Space, Group))
 
     sph = SphereSDF(center=center, radius=radius)
