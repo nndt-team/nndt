@@ -14,7 +14,10 @@ def fix_file_extension(path: str, ext: str):
 
 def calc_ret_shape(array: Union[jnp.ndarray, onp.ndarray], last_axis: int):
     ret_shape = list(array.shape)
-    ret_shape[-1] = last_axis
+    if len(ret_shape) == 1:
+        ret_shape.append(last_axis)
+    else:
+        ret_shape[-1] = last_axis
     ret_shape = tuple(ret_shape)
     return ret_shape
 

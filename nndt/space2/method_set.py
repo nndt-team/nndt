@@ -161,9 +161,11 @@ class MeshObjMethodSetNode(MethodSetNode):
         :param ind: indexes of points
         :return: tensor, the last axis is (x,y,z) point position
         """
+        assert ind.shape[-1] == 1 or ind.ndim == 1
         ret_shape = calc_ret_shape(ind, 3)
+        ind_flat = ind.flatten()
 
-        result_ps = jnp.take(self.mesh._loader.points, ind, axis=0)
+        result_ps = jnp.take(self.mesh._loader.points, ind_flat, axis=0)
         result_ns = self.transform.transform_xyz_ps2ns(result_ps)
 
         result_ns = result_ns.reshape(ret_shape)
@@ -183,9 +185,11 @@ class MeshObjMethodSetNode(MethodSetNode):
         :param ns_xyz: points in the normalized space
         :return: distances and indexes of the surface mesh points
         """
+        assert ns_xyz.shape[-1] == 3
         ret_shape = calc_ret_shape(ns_xyz, 1)
+        ns_xyz_flat = ns_xyz.reshape((-1, 3))
 
-        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
+        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz_flat)
         ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
         ind = jnp.array(ind).reshape(ret_shape)
         ns_dist = self.transform.transform_sdt_ps2ns(ps_dist)
@@ -364,11 +368,11 @@ class ColorMethodSetNode(MethodSetNode):
         :param ind: index of surface vertexes
         :return: colors in RGBA format
         """
-        if ind.shape[-1] != 1:
-            ind = ind[..., jnp.newaxis]
+        assert ind.shape[-1] == 1 or ind.ndim == 1
         ret_shape = calc_ret_shape(ind, 4)
 
-        rgba = jnp.take(self.mesh._loader.rgba, ind, axis=0)
+        ind_flat = ind.flatten()
+        rgba = jnp.take(self.mesh._loader.rgba, ind_flat, axis=0)
 
         rgba = rgba.reshape(ret_shape)
         return rgba
@@ -384,10 +388,12 @@ class ColorMethodSetNode(MethodSetNode):
         :param ns_xyz: coordinates of points in normalized space
         :return: colors in RGBA format
         """
+        assert ns_xyz.shape[-1] == 3
         ret_shape = calc_ret_shape(ns_xyz, 4)
 
-        ps_xyz = self.transform.transform_xyz_ns2ps(ns_xyz)
-        ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz))
+        ns_xyz_flat = ns_xyz.reshape((-1, 3))
+        ps_xyz_flat = self.transform.transform_xyz_ns2ps(ns_xyz_flat)
+        ps_dist, ind = self.mesh._loader.kdtree.query(onp.array(ps_xyz_flat))
         color = jnp.take(self.mesh._loader.rgba, ind, axis=0)
 
         color = color.reshape(ret_shape)
