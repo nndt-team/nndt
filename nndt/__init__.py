@@ -1,4 +1,4 @@
-__version__ = "0.0.3b1"
+__version__ = "0.0.3b2"
 
 from nndt.datagen import DataGenForSegmentation, DataGenForShapeRegression
 from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
