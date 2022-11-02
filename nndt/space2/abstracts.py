@@ -55,6 +55,13 @@ DICT_NODETYPE_PRIORITY = {
 
 
 def node_method(helpstr=None):
+    """
+    This decorator mark method for attachments to the space model tree
+
+    :param helpstr: Short information about a performed transformation of data
+    :return: wrapper
+    """
+
     def decorator_wrapper(fn):
         classname = str(fn.__qualname__).split(".")[0]
         if classname not in NODE_METHOD_DICT:

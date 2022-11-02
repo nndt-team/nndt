@@ -1,17 +1,17 @@
 # Neural Network for Digital Twin (NNDT)
 
 [![GitHub issues by-label](https://img.shields.io/github/issues/nndt-team/nndt/good%20first%20issue)](https://github.com/nndt-team/nndt/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-[![docstr_coverage](https://github.com/nndt-team/nndt/blob/main/docstr-cov-badge.svg)](https://github.com/nndt-team/nndt)
+[![docstr_coverage](docstr-cov-badge.svg)](https://github.com/nndt-team/nndt)
 [![codecov](https://codecov.io/gh/nndt-team/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/nndt-team/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/nndt-team/nndt/badge)](https://www.codefactor.io/repository/github/nndt-team/nndt)
-[![ci-build workflow](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml/badge.svg)](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml)
+[![ci-build workflow](actions/workflows/ci-build.yml/badge.svg)](actions/workflows/ci-build.yml)
 [![License](https://img.shields.io/github/license/nndt-team/nndt)](https://github.com/nndt-team/nndt/blob/main/LICENSE)
-[![Python version](https://github.com/nndt-team/nndt/blob/main/python-badge.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Python version](python-badge.svg)](https://www.python.org/downloads/release/python-3110/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nndt-team/nndt)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
-[Wiki](https://github.com/nndt-team/nndt/wiki) | [Change logs](https://github.com/nndt-team/nndt/blob/main/CHANGELOG.md)
+[Wiki](wiki) | [Change logs](CHANGELOG.md)
 
 This is experimental library for unusual neural network applications. Description and docs will come soon!
 
@@ -19,15 +19,15 @@ This is experimental library for unusual neural network applications. Descriptio
  
 The last stable release:
 ```
-pip install git+https://github.com/nndt-team/nndt.git@v0.0.2
+pip install git+https://github.com/nndt-team/nndt.git
 ```
 
 The developer release:
 ```
-pip install git+https://github.com/nndt-team/nndt.git
+pip install git+https://github.com/nndt-team/nndt.git@dev
 ```
 
-[Installation for Windows with WSL](https://github.com/nndt-team/nndt/wiki/NNDT-WSL)
+[Installation for Windows with WSL](wiki/NNDT-WSL)
 
 ## Test
 
@@ -42,11 +42,11 @@ NOTE! This project is in an early stage. API and examples are changed every day.
 The following notebooks use `v0.0.1rc` branch.
 
 Tutorials
-1. [Space model and generators](https://drive.google.com/file/d/16VEUCfcCtRQOYGqe6N2MBsIsD8OILufL/view?usp=sharing)
-2. [Trainable tasks](https://drive.google.com/file/d/16ZnfqzL9VsGqnyWG4zV9uVcwFSvlHdYN/view?usp=sharing)
+1. [Basics for space models](tutorials/tutorial1_space_model.ipynb)
+2. [Data visualization](tutorials/tutorials/tutorial2_research_viz.ipynb)
 
-Examples
-1. [Shape interpolation](https://github.com/nndt-team/nndt/blob/main/demos_preliminary/sdf_multiple_files.py)
-2. [Mesh segmentation (supervised)](https://github.com/nndt-team/nndt/blob/main/demos_preliminary/mesh_segmentation.py)
-3. [Eikonal equation solution (geodesic distance in 3D)](https://github.com/nndt-team/nndt/blob/main/demos_preliminary/eikonal_on_primitives.py)
+Tests for manual evaluation
+1. [Shape interpolation](tests_manual/sdf_multiple_files.py)
+2. [Mesh segmentation (supervised)](tests_manual/mesh_segmentation.py)
+3. [Eikonal equation solution (geodesic distance in 3D)](tests_manual/eikonal_on_primitives.py)
 

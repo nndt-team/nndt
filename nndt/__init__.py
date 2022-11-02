@@ -1,7 +1,8 @@
-__version__ = "0.0.3b1"
+__version__ = "0.0.3b2"
 
-import nndt.space2.plot_tree
+from nndt.datagen import DataGenForSegmentation, DataGenForShapeRegression
 from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
+from nndt.haiku_modules import DescConv, LipLinear, LipMLP
 from nndt.math_core import (
     barycentric_grid,
     grid_in_cube,

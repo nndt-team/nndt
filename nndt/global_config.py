@@ -25,8 +25,18 @@ def init_colab(window_size: Tuple[int, int] = (600, 400)):
 
 
 def init_jupyter():
+    """
+    This method rewrites global parameters and allows NNDT works inside the jupyter notebook environment
+
+    :return: none
+    """
     pass
 
 
 def init_code():
+    """
+    This method rewrites global parameters and allows NNDT works inside the script environment
+
+    :return: none
+    """
     pass

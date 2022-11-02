@@ -21,6 +21,11 @@ class AbstractTrainableTask:
 
 
 class SimpleSDF(AbstractTrainableTask):
+    """
+    This is a trainable task for problem of shape interpolation for one 3d objects.
+    This class employs usual multi-layer perceptron.
+    """
+
     class FUNC(NamedTuple):
         sdf: Callable
         vec_sdf: Callable
@@ -101,6 +106,11 @@ class SimpleSDF(AbstractTrainableTask):
 
 
 class ApproximateSDF(AbstractTrainableTask):
+    """
+    This is a trainable task for problem of shape interpolation between several 3d objects.
+    This class employs usual multi-layer perceptron.
+    """
+
     FUNC = namedtuple(
         "ApproximateSDF_DATA",
         [
@@ -117,8 +127,6 @@ class ApproximateSDF(AbstractTrainableTask):
             "vec_main_loss",
         ],
     )
-
-    # DATA = namedtuple("ApproximateSDF_FUNC", ["X", "Y", "Z", "T", "P", "SDF"])
 
     class DATA(NamedTuple):
         X: jnp.ndarray  # [N]
@@ -207,6 +215,11 @@ class ApproximateSDF(AbstractTrainableTask):
 
 
 class ApproximateSDFLipMLP(AbstractTrainableTask):
+    """
+    This is a trainable task for problem of shape interpolation between several 3d objects.
+    This class employs multi-layer perceptron with Lipschitz regularization (LipMLP).
+    """
+
     FUNC = namedtuple(
         "ApproximateSDFLipMLP_DATA",
         [
@@ -319,8 +332,12 @@ class ApproximateSDFLipMLP(AbstractTrainableTask):
 
 
 class SurfaceSegmentation(AbstractTrainableTask):
-    FUNC = namedtuple("FUNC", ["nn", "main_loss", "metric_accuracy"])
+    """
+    This is a trainable task for problem of supervised surface segmentation.
+    This class employs the fully-convolutional neural network.
+    """
 
+    FUNC = namedtuple("FUNC", ["nn", "main_loss", "metric_accuracy"])
     DATA = namedtuple("DATA", ["SDF_CUBE", "CLASS"])
 
     def __init__(
@@ -413,6 +430,10 @@ class SurfaceSegmentation(AbstractTrainableTask):
 
 
 class Eikonal3D(AbstractTrainableTask):
+    """
+    This is a solver for Eikonal equation.
+    """
+
     class FUNC(NamedTuple):
         nn: Callable[[float, float, float], float]  # [N]
         nn_dx: Callable[[float, float, float], float]  # [N]
