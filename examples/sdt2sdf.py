@@ -1,3 +1,7 @@
+import os
+
+import jax.numpy as jnp
+
 from nndt import *
 from nndt.space2 import *
 
@@ -36,9 +40,7 @@ def main():
         grid_xyz = patient.sampling_grid(CONF["shape_viz"])
         grid_sdt = patient.surface_xyz2sdt(grid_xyz)
         save_sdt_as_obj(
-            path + f"original.obj",
-            jnp.squeeze(grid_sdt),
-            level=CONF["level_shift"],
+            jnp.squeeze(grid_sdt), path + f"original.obj", level=CONF["level_shift"]
         )
 
     space_ir = load_from_path(f"./{CONF['exp_name']}", template_mesh_obj=None)
@@ -48,9 +50,7 @@ def main():
         grid_xyz = patient.sampling_grid(CONF["shape_viz"])
         grid_sdt = patient.surface_xyz2sdt(grid_xyz)
         save_sdt_as_obj(
-            path + f"imp_repr.obj",
-            jnp.squeeze(grid_sdt),
-            level=CONF["level_shift"],
+            jnp.squeeze(grid_sdt), path + f"imp_repr.obj", level=CONF["level_shift"]
         )
 
 

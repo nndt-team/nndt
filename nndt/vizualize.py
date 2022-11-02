@@ -7,6 +7,7 @@ import jax.numpy as jnp
 import matplotlib.pylab as plt
 import numpy as np
 import numpy as onp
+from mpl_toolkits.axes_grid1 import AxesGrid
 
 from nndt.space2.utils import fix_file_extension
 
@@ -49,7 +50,7 @@ class IteratorWithTimeMeasurements:
 
 
 def save_sdt_as_obj(
-    path: str, array: Union[jnp.ndarray, onp.ndarray], level: float = 0.0
+    array: Union[jnp.ndarray, onp.ndarray], path: str, level: float = 0.0
 ):
     """
     Run marching cubes over SDT and save results to file
@@ -73,11 +74,13 @@ def save_sdt_as_obj(
 
 
 def save_3D_slices(
-    path: str,
     array: Union[onp.ndarray, jnp.ndarray],
+    path: str = None,
     slice_num: int = 5,
     include_boundary=True,
     figsize=None,
+    levels=(0.0,),
+    level_colors=("white",),
     **kwargs,
 ):
     """
@@ -88,17 +91,42 @@ def save_3D_slices(
     :param slice_num: number of slices over array axis
     :param include_boundary: If True, image will include boundaries of array with indexes 0 and len(array)-1
     :param figsize: size of image. If None, size will be calculated according to number of panels.
+    :param levels: Isoline values. This param is ignored if RGB/RGBA image is passed.
+    :param level_colors: Isoline colors. This param is ignored if RGB/RGBA image is passed.
     :param kwargs: set of parameter that is passed to the `.imshow()` method
     :return: none
     """
     panel_size = slice_num if include_boundary else slice_num - 2
     assert panel_size > 0
-    assert array.ndim == 3
+    assert slice_num > 0 and panel_size > 0
+    assert array.ndim == 3 or (array.ndim == 4 and (array.shape[-1] in (1, 3, 4)))
+
+    is_color = array.ndim == 4 and (array.shape[-1] in (3, 4))
 
     if figsize is None:
         figsize = (3 * panel_size, 3 * 3)
 
-    fig, axs = plt.subplots(3, panel_size, figsize=figsize)
+    fig = plt.figure(figsize=figsize)
+    if is_color:
+        grid = AxesGrid(
+            fig,
+            111,
+            nrows_ncols=(3, panel_size),
+            axes_pad=0.05,
+            label_mode="L",
+        )
+    else:
+        grid = AxesGrid(
+            fig,
+            111,
+            nrows_ncols=(3, panel_size),
+            axes_pad=0.05,
+            cbar_mode="single",
+            cbar_location="right",
+            cbar_pad=0.1,
+            label_mode="L",
+        )
+
     slices_x = np.linspace(0, array.shape[0] - 1, slice_num).astype(int)
     slices_y = np.linspace(0, array.shape[1] - 1, slice_num).astype(int)
     slices_z = np.linspace(0, array.shape[2] - 1, slice_num).astype(int)
@@ -108,21 +136,60 @@ def save_3D_slices(
         slices_y = slices_y[1:-1]
         slices_z = slices_z[1:-1]
 
-    for ind_panel, ind_x in enumerate(slices_x):
-        axs[0, ind_panel].imshow(array[ind_x, :, :], **kwargs)
-        axs[0, ind_panel].set(ylabel="x", xlabel=str(ind_x))
-    for ind_panel, ind_y in enumerate(slices_y):
-        axs[1, ind_panel].imshow(array[:, ind_y, :], **kwargs)
-        axs[1, ind_panel].set(ylabel="y", xlabel=str(ind_y))
-    for ind_panel, ind_z in enumerate(slices_z):
-        axs[2, ind_panel].imshow(array[:, :, ind_z], **kwargs)
-        axs[2, ind_panel].set(ylabel="z", xlabel=str(ind_z))
+    array_ = array[..., np.newaxis] if (array.ndim == 3) else array
+    for ind_ax, ax in zip(slices_x, grid[:panel_size]):
+        im = ax.imshow(
+            array_[ind_ax, :, :, 0:3].squeeze(),
+            vmin=float(jnp.nanmin(array_)),
+            vmax=float(jnp.nanmax(array_)),
+            **kwargs,
+        )
+        if not is_color:
+            _cs2 = ax.contour(
+                array_[ind_ax, :, :, 0:3].squeeze(),
+                levels=levels,
+                origin="lower",
+                colors=level_colors,
+            )
+    for ind_ax, ax in zip(slices_y, grid[panel_size : panel_size * 2]):
+        im = ax.imshow(
+            array_[:, ind_ax, :, 0:3].squeeze(),
+            vmin=float(jnp.nanmin(array_)),
+            vmax=float(jnp.nanmax(array_)),
+            **kwargs,
+        )
+        if not is_color:
+            _cs2 = ax.contour(
+                array_[:, ind_ax, :, 0:3].squeeze(),
+                levels=levels,
+                origin="lower",
+                colors=level_colors,
+            )
+    for ind_ax, ax in zip(slices_z, grid[2 * panel_size :]):
+        im = ax.imshow(
+            array_[:, :, ind_ax, 0:3].squeeze(),
+            vmin=float(jnp.nanmin(array_)),
+            vmax=float(jnp.nanmax(array_)),
+            **kwargs,
+        )
+        if not is_color:
+            _cs2 = ax.contour(
+                array_[:, :, ind_ax, 0:3].squeeze(),
+                levels=levels,
+                origin="lower",
+                colors=level_colors,
+            )
 
-    for ax in axs.flat:
-        ax.label_outer()
+    if not is_color:
+        cbar = ax.cax.colorbar(im)
+        cbar = grid.cbar_axes[0].colorbar(im)
+        if not is_color:
+            cbar.add_lines(_cs2)
 
-    fig.tight_layout()
-    fig.savefig(path)
+    if path is not None:
+        fig.savefig(path)
+    else:
+        plt.show()
 
 
 class BasicVizualization:
@@ -239,7 +306,7 @@ class BasicVizualization:
         level : float
             Isosurface level (defaults to 0.).
         """
-        save_sdt_as_obj(os.path.join(self.folder, f"{filename}.obj"), array, level)
+        save_sdt_as_obj(array, os.path.join(self.folder, f"{filename}.obj"), level)
 
     def save_mesh(self, name, save_method, dict_):
         """Save mesh to .vtp file with data
