@@ -4,7 +4,7 @@
 [![docstr_coverage](https://github.com/nndt-team/nndt/blob/main/docstr-cov-badge.svg)](https://github.com/nndt-team/nndt)
 [![codecov](https://codecov.io/gh/nndt-team/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/nndt-team/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/nndt-team/nndt/badge)](https://www.codefactor.io/repository/github/nndt-team/nndt)
-[![ci-test workflow](https://github.com/nndt-team/nndt/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/nndt-team/nndt/actions/workflows/ci-workflow.yml)
+[![ci-build workflow](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml/badge.svg)](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml)
 [![License](https://img.shields.io/github/license/nndt-team/nndt)](https://github.com/nndt-team/nndt/blob/main/LICENSE)
 [![Python version](https://github.com/nndt-team/nndt/blob/main/python-badge.svg)](https://www.python.org/downloads/release/python-3110/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nndt-team/nndt)
@@ -19,7 +19,7 @@ This is experimental library for unusual neural network applications. Descriptio
  
 The last stable release:
 ```
-pip install git+https://github.com/nndt-team/nndt/releases/tag/v0.0.2
+pip install git+https://github.com/nndt-team/nndt.git@v0.0.2
 ```
 
 The developer release:
