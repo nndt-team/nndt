@@ -43,7 +43,7 @@ The following notebooks use `v0.0.1rc` branch.
 
 Tutorials
 1. [Basics for space models](tutorials/tutorial1_space_model.ipynb)
-2. [Data visualization](tutorials/tutorials/tutorial2_research_viz.ipynb)
+2. [Data visualization](tutorials/tutorial2_research_viz.ipynb)
 
 Tests for manual evaluation
 1. [Shape interpolation](tests_manual/sdf_multiple_files.py)
