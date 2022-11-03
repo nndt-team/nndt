@@ -28,9 +28,9 @@ jobs:
         id: cache-modules
         with:
           path: ./.venv/
-          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}-${{ matrix.os }}
+          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}-release
           restore-keys: |
-            ${{ runner.os }}-pip-
+            pip-*-release
 
       - name: Install requirements
         if: steps.cache-modules.outputs.cache-hit != 'true'
