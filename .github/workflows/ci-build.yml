@@ -1,4 +1,4 @@
-name: ci-build
+name: ci-release
 
 on:
   schedule:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
-        py-version: ["3.10", "3.9", "3.8"]
+        python-version: ["3.10", "3.9", "3.8"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
@@ -21,14 +21,14 @@ jobs:
         id: setup_python
         uses: actions/setup-python@master
         with:
-          python-version: ${{ matrix.py-version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Cache python modules
         uses: actions/cache@master
         id: cache-modules
         with:
           path: ./.venv/
-          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}-${{ matrix.os }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -52,7 +52,7 @@ jobs:
           7z x tests/tree_for_test.7z
           7z x tests/acdc_for_test.7z
 
-      - name: Generate coverage report for python ${{ matrix.py-version }} on ${{ matrix.os }}
+      - name: Generate coverage report for python ${{ matrix.python-version }} on ${{ matrix.os }}
         run: |
           . ./.venv/bin/activate
           pytest --cov=./ --cov-report=xml

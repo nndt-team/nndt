@@ -20,9 +20,19 @@ class Dataset:
         self._dict = None
 
     def dataset_list(self):
+        """
+        Get available subsets of the models
+
+        :return: list of the available datesets for the download
+        """
         return [key for key in self._dict if "_test" not in key]
 
-    def load(self) -> None:
+    def load(self) -> str:
+        """
+        Load dataset and return path to its location.
+
+        :return: path to dataset location
+        """
 
         if self.to_path is None:
             self.to_path = f"./.datasets/{self.name}/"
@@ -57,3 +67,5 @@ class Dataset:
                 "Looks like you can't reach any mirror, "
                 f"please report this issue to: {datasets.source_url}"
             )
+
+        return self.to_path

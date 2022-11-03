@@ -75,8 +75,8 @@ class VizualizeTestCase(BaseTestCase):
         test_box = np.zeros((100, 100, 100))
         test_box[20:80, 20:80, 20:80] = 1
         os.makedirs(f"./{LOG_FOLDER}/")
-        save_3D_slices(f"./{LOG_FOLDER}/slices0.png", test_box)
-        save_3D_slices(f"./{LOG_FOLDER}/slices1.png", test_box, include_boundary=False)
+        save_3D_slices(test_box, f"./{LOG_FOLDER}/slices0.png")
+        save_3D_slices(test_box, f"./{LOG_FOLDER}/slices1.png", include_boundary=False)
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/slices0.png"))
         self.assertTrue(os.path.exists(f"./{LOG_FOLDER}/slices1.png"))
 
