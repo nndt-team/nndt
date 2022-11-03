@@ -20,15 +20,23 @@ def init_colab(window_size: Tuple[int, int] = (600, 400)):
 
     pn.extension("vtk")
 
-    PYVISTA_PRE_PARAMS = {
-        "notebook": True,
-        "window_size": window_size,
-    }
+    PYVISTA_PRE_PARAMS["notebook"] = True
+    PYVISTA_PRE_PARAMS["window_size"] = window_size
 
 
 def init_jupyter():
+    """
+    This method rewrites global parameters and allows NNDT works inside the jupyter notebook environment
+
+    :return: none
+    """
     pass
 
 
 def init_code():
+    """
+    This method rewrites global parameters and allows NNDT works inside the script environment
+
+    :return: none
+    """
     pass

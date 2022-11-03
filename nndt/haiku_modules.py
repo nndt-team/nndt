@@ -6,6 +6,10 @@ import jax.numpy as jnp
 
 
 class DescConv(hk.Module):
+    """
+    Fully convolutional network
+    """
+
     def __init__(
         self,
         n_layers=4,
@@ -47,6 +51,12 @@ class DescConv(hk.Module):
 
 
 class LipLinear(hk.Module):
+    """
+    Layer for implementation of the LipMLP from article:
+    Liu, Hsueh-Ti Derek, et al. "Learning Smooth Neural Functions via Lipschitz Regularization."
+    arXiv preprint arXiv:2202.08345 (2022).
+    """
+
     def __init__(
         self,
         output_size,
@@ -84,6 +94,12 @@ class LipLinear(hk.Module):
 
 
 class LipMLP(hk.Module):
+    """
+    This is implementation of the LipMLP from article:
+    Liu, Hsueh-Ti Derek, et al. "Learning Smooth Neural Functions via Lipschitz Regularization."
+    arXiv preprint arXiv:2202.08345 (2022).
+    """
+
     def __init__(self, output_sizes: Iterable[int], name: Optional[str] = None):
         super().__init__(name=name)
         self.output_sizes = output_sizes
