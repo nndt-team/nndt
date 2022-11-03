@@ -18,7 +18,7 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
         parent (_type_, optional): parent node. Defaults to None.
 
     Raises:
-        FileNotFoundError: file or directory is requested but doesn’t exist.
+        FileNotFoundError: file or directory is requested but doesn't exist.
     """
 
     def __init__(
