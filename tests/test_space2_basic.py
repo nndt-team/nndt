@@ -26,6 +26,9 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
+        text1 = space.print().__str__()
+        text2 = space.print().__repr__()
+        self.assertEqual(text1, text2)
         print(space.print())
 
     def test_no_double_init(self):

@@ -76,7 +76,7 @@ def _plot(
 
     # When .plot() is called from FileSource, it draws only one object without any transformation
     if isinstance(node, FileSource):
-        _plot_filesource(pl, node, default_transform)
+        _plot_filesource(pl, node, default_transform, cmap(cmap_index % cmap.N))
     # When .plot() is called from region or object, it iterates over all Object3D in tree
     elif isinstance(node, AbstractBBoxNode):
         for node_obj in PreOrderIter(node):
