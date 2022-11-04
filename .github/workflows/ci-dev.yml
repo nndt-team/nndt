@@ -1,6 +1,7 @@
 name: ci-dev
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - dev
@@ -21,9 +22,9 @@ jobs:
         id: cache-modules
         with:
           path: ./.venv/
-          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}-dev
           restore-keys: |
-            ${{ runner.os }}-pip-
+            pip-*-dev
 
       - name: Install requirements
         if: steps.cache-modules.outputs.cache-hit != 'true'
