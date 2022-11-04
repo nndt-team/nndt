@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from math import sqrt
 from typing import Callable
 
 import jax
@@ -183,5 +184,67 @@ class SphereSDF(AbstractSDF):
                 - radius**2
             )
             return sdf
+
+        return prim
+
+
+class BoxSDF(AbstractSDF):
+    """
+    This is a box geometrical primitive. Sides are parallel with XYZ axis.
+    """
+
+    def __init__(self, first_vertex=(0.0, 0.0, 0.0), opposite_vertex=(0.0, 0.0, 0.0)):
+        """
+        This is a box geometrical primitive. Sides are parallel with XYZ axis
+        :param first_vertex: vertex of a box
+        :param opposite_vertex: the opposite vertex for the first_vertex.
+        opposite_vertex is the only vertex of a box that is not on the same plane
+        with first_vertex
+        """
+        self.first_vertex = first_vertex
+        self.opposite_vertex = opposite_vertex
+        super(BoxSDF, self).__init__()
+
+    @property
+    def bbox(self) -> ((float, float, float), (float, float, float)):
+        return self.first_vertex, self.opposite_vertex
+
+    def _get_fun(self):
+        first_vertex = self.first_vertex
+        opposite_vertex = self.opposite_vertex
+        min_xyz = (
+            min(first_vertex[0], opposite_vertex[0]),
+            min(first_vertex[1], opposite_vertex[1]),
+            min(first_vertex[2], opposite_vertex[2]),
+        )
+        max_xyz = (
+            max(first_vertex[0], opposite_vertex[0]),
+            max(first_vertex[1], opposite_vertex[1]),
+            max(first_vertex[2], opposite_vertex[2]),
+        )
+
+        def prim(x: float, y: float, z: float):
+            xyz = (x, y, z)
+            xyz_on_box = [0.0, 0.0, 0.0]
+            dist_to_planes_xyz = [None, None, None]
+            for i in range(3):
+                if xyz[i] < min_xyz[i]:
+                    xyz_on_box[i] = min_xyz[i]
+                elif min_xyz[i] <= xyz[i] <= max_xyz[i]:
+                    xyz_on_box[i] = xyz[i]
+                    dist_to_planes_xyz[i] = min(
+                        abs(xyz[i] - min_xyz[i]), abs(xyz[i] - max_xyz[i])
+                    )
+                elif max_xyz[i] < xyz[i]:
+                    xyz_on_box[i] = max_xyz[i]
+
+            if None not in dist_to_planes_xyz:
+                return -1 * min(dist_to_planes_xyz)
+
+            return sqrt(
+                (xyz_on_box[0] - xyz[0]) ** 2
+                + (xyz_on_box[1] - xyz[1]) ** 2
+                + (xyz_on_box[2] - xyz[2]) ** 2
+            )
 
         return prim
