@@ -15,7 +15,7 @@ from nndt.math_core import (
     train_test_split,
     uniform_in_cube,
 )
-from nndt.primitive_sdf import SphereSDF
+from nndt.primitive_sdf import SphereSDF, fun2vec_and_grad
 from nndt.trainable_task import (
     ApproximateSDF,
     ApproximateSDFLipMLP,

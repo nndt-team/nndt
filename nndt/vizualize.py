@@ -84,16 +84,16 @@ def save_3D_slices(
     **kwargs,
 ):
     """
-    Generates panel of images with slices of 3D array. This is a helper function for studying 3D tensors.
+    Generates a panel of images with slices of the 3D array. This is a helper function for studying 3D tensors.
 
-    :param path: path to image for write
+    :param path: path to the image for write
     :param array: studied array
     :param slice_num: number of slices over array axis
-    :param include_boundary: If True, image will include boundaries of array with indexes 0 and len(array)-1
-    :param figsize: size of image. If None, size will be calculated according to number of panels.
+    :param include_boundary: If True, the image will include boundaries of the array with indexes 0 and len(array)-1
+    :param figsize: the size of the image. If None, the size will be calculated according to the number of panels.
     :param levels: Isoline values. This param is ignored if RGB/RGBA image is passed.
     :param level_colors: Isoline colors. This param is ignored if RGB/RGBA image is passed.
-    :param kwargs: set of parameter that is passed to the `.imshow()` method
+    :param kwargs: parameter set that is passed to the `.imshow()` method
     :return: none
     """
     panel_size = slice_num if include_boundary else slice_num - 2
@@ -202,6 +202,8 @@ class BasicVizualization:
         self, folder: str, experiment_name: Optional[str] = None, print_on_each_epoch=20
     ):
         """
+        Simple MLOps class for storing the train history and visualization of intermediate results
+
         :param folder: folder for store results
         :param experiment_name: name for an experiments
         :param print_on_each_epoch: this parameter helps to control intermediate result output
@@ -269,7 +271,7 @@ class BasicVizualization:
         plt.savefig(os.path.join(self.folder, f"{name}.jpg"))
 
     def save_state(self, name, state):
-        """Save neural network state into the file
+        """Save the neural network state into the file
 
         Parameters
         ----------
@@ -324,7 +326,7 @@ class BasicVizualization:
         save_method(os.path.join(self.folder, f"{name}.vtp"), dict_)
 
     def save_3D_array(self, name, array, section_img=True):
-        """Save 3D array to a file and section of this array as images
+        """Save the 3D array to a file and section of this array as images
 
         Parameters
         ----------
