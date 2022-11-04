@@ -52,7 +52,7 @@ class DescConv(hk.Module):
 
 class LipLinear(hk.Module):
     """
-    Layer for implementation of the LipMLP from article:
+    Layer for implementation of the LipMLP from the article:
     Liu, Hsueh-Ti Derek, et al. "Learning Smooth Neural Functions via Lipschitz Regularization."
     arXiv preprint arXiv:2202.08345 (2022).
     """
@@ -95,7 +95,7 @@ class LipLinear(hk.Module):
 
 class LipMLP(hk.Module):
     """
-    This is implementation of the LipMLP from article:
+    This is an implementation of the LipMLP from the article:
     Liu, Hsueh-Ti Derek, et al. "Learning Smooth Neural Functions via Lipschitz Regularization."
     arXiv preprint arXiv:2202.08345 (2022).
     """

@@ -26,35 +26,38 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
+        text1 = space.print().__str__()
+        text2 = space.print().__repr__()
+        self.assertEqual(text1, text2)
         print(space.print())
 
     def test_no_double_init(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
-        text1 = space.print()
+        text1 = space.print().__str__()
         print(text1)
         space.init()
-        text2 = space.print()
+        text2 = space.print().__str__()
         print(text2)
         self.assertEqual(text1, text2)
 
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
-        text1 = space.print()
+        text1 = space.print().__str__()
         print(text1)
         space.init()
-        text2 = space.print()
+        text2 = space.print().__str__()
         print(text2)
         self.assertEqual(text1, text2)
 
     def test_space_models_TEST_STRUCTURE(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
-        text1 = space.print("source")
+        text1 = space.print("source").__str__()
         print(text1)
-        text2 = space.print("default")
+        text2 = space.print("default").__str__()
         print(text2)
-        text3 = space.print("full")
+        text3 = space.print("full").__str__()
         print(text3)
         self.assertLessEqual(len(text1), len(text2))
         self.assertLessEqual(len(text2), len(text3))
@@ -62,11 +65,11 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def test_space_models_ACDC(self):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
-        text1 = space.print("source")
+        text1 = space.print("source").__str__()
         print(text1)
-        text2 = space.print("default")
+        text2 = space.print("default").__str__()
         print(text2)
-        text3 = space.print("full")
+        text3 = space.print("full").__str__()
         print(text3)
         self.assertLessEqual(len(text1), len(text2))
         self.assertLessEqual(len(text2), len(text3))
@@ -112,11 +115,11 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.init()
 
-        text1 = space.patient009.print()
+        text1 = space.patient009.print().__str__()
         print(text1)
-        text2 = space[0].print()
+        text2 = space[0].print().__str__()
         print(text2)
-        text3 = space["patient009"].print()
+        text3 = space["patient009"].print().__str__()
         print(text3)
 
         self.assertEqual(text1, text2)
@@ -125,12 +128,12 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def helper_save_space_and_load_space(self, pathname):
         space = load_from_path(pathname)
         space.init()
-        text1 = space.print()
+        text1 = space.print().__str__()
         print(text1)
         space.save_space_to_file(FILE_TMP)
         space2 = read_space_from_file(FILE_TMP)
         space2.init()
-        text2 = space2.print()
+        text2 = space2.print().__str__()
         print(text2)
         self.assertEqual(text1, text2)
         space2.save_space_to_file(FILE_TMP2)
@@ -145,15 +148,15 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
     def helper_to_json_and_from_json(self, pathname):
         space = load_from_path(pathname)
         space.init()
-        text1 = space.print()
+        text1 = space.print().__str__()
         print(text1)
         json1 = space.to_json()
         space2 = from_json(json1)
         space2.init()
-        text2 = space2.print()
+        text2 = space2.print().__str__()
         print(text2)
         self.assertEqual(text1, text2)
-        json2 = space2.to_json()
+        json2 = space2.to_json().__str__()
         self.assertEqual(json1, json2)
 
     def test_to_json_and_from_json(self):
@@ -176,7 +179,7 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         self.assertIn("patient069", [x.name for x in space.children])
         self.assertIn("patient089", [x.name for x in space.children])
 
-    def BROKEN_test_load_txt(self):
+    def test_load_txt(self):
         space = load_txt(
             PATH_TEST_STRUCTURE + "/group0/patient00/organ000/data0000.txt"
         )
@@ -201,13 +204,13 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
 
     def test_load_from_path_None_in_template(self):
         space = load_from_path(PATH_TEST_ACDC, template_sdt=None)
-        tree = space.print("full")
+        tree = space.print("full").__str__()
         print(tree)
         self.assertNotIn("sdf_npy", tree)
         self.assertIn("colored_obj", tree)
 
         space = load_from_path(PATH_TEST_ACDC, template_mesh_obj=None)
-        tree = space.print("full")
+        tree = space.print("full").__str__()
         print(tree)
         self.assertIn("sdf_npy", tree)
         self.assertNotIn("colored_obj", tree)
@@ -215,7 +218,7 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         space = load_from_path(
             PATH_TEST_ACDC, template_sdt=None, template_mesh_obj=None
         )
-        tree = space.print("full")
+        tree = space.print("full").__str__()
         print(tree)
         self.assertNotIn("sdf_npy", tree)
         self.assertNotIn("colored_obj", tree)
@@ -341,6 +344,19 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.preload()
         self.assertLess(300, len(space.print.__doc__))
+
+    def test_preload_with_and_without_verbose(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload(verbose=False)
+
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload(verbose=True)
+
+    def test_preload_check_condition(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        self.assertFalse(space._is_preload)
+        space.preload(verbose=False)
+        self.assertTrue(space._is_preload)
 
 
 if __name__ == "__main__":

@@ -85,7 +85,7 @@ class Space(AbstractBBoxNode, IterAccessMixin):
 
     @node_method("to_json()")
     def to_json(self):
-        """Converts Space to json format
+        """Converts Space to the JSON format
 
         Returns:
             json: space in json format
@@ -121,6 +121,7 @@ class Space(AbstractBBoxNode, IterAccessMixin):
         keep_in_memory=True,
         ps_padding=(0.0, 0.0, 0.0),
         ns_padding=(0.0, 0.0, 0.0),
+        verbose=True,
     ):
         """Makes preload for Space if it was not done. Otherwise does nothing
 
@@ -140,4 +141,5 @@ class Space(AbstractBBoxNode, IterAccessMixin):
                 ns_padding=ns_padding,
             )
 
-            self.preloader.preload(self)
+            self.preloader.preload(self, verbose=verbose)
+            self._is_preload = True

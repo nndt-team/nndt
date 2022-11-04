@@ -35,7 +35,7 @@ def init_jupyter():
 
 def init_code():
     """
-    This method rewrites global parameters and allows NNDT works inside the script environment
+    This method rewrites global parameters and allows NNDT works inside the Jupyter notebook environment
 
     :return: none
     """

@@ -22,8 +22,8 @@ class AbstractTrainableTask:
 
 class SimpleSDF(AbstractTrainableTask):
     """
-    This is a trainable task for problem of shape interpolation for one 3d objects.
-    This class employs usual multi-layer perceptron.
+    This is a trainable task for the problem of shape interpolation for one 3d object.
+    This class employs the usual multi-layer perceptron.
     """
 
     class FUNC(NamedTuple):
@@ -107,8 +107,8 @@ class SimpleSDF(AbstractTrainableTask):
 
 class ApproximateSDF(AbstractTrainableTask):
     """
-    This is a trainable task for problem of shape interpolation between several 3d objects.
-    This class employs usual multi-layer perceptron.
+    This is a trainable task for the problem of shape interpolation between several 3d objects.
+    This class employs the usual multi-layer perceptron.
     """
 
     FUNC = namedtuple(
@@ -216,8 +216,8 @@ class ApproximateSDF(AbstractTrainableTask):
 
 class ApproximateSDFLipMLP(AbstractTrainableTask):
     """
-    This is a trainable task for problem of shape interpolation between several 3d objects.
-    This class employs multi-layer perceptron with Lipschitz regularization (LipMLP).
+    This is a trainable task for the problem of shape interpolation between several 3d objects.
+    This class employs a multi-layer perceptron with Lipschitz regularization (LipMLP).
     """
 
     FUNC = namedtuple(
@@ -333,7 +333,7 @@ class ApproximateSDFLipMLP(AbstractTrainableTask):
 
 class SurfaceSegmentation(AbstractTrainableTask):
     """
-    This is a trainable task for problem of supervised surface segmentation.
+    This is a trainable task for the problem of supervised surface segmentation.
     This class employs the fully-convolutional neural network.
     """
 
@@ -431,7 +431,7 @@ class SurfaceSegmentation(AbstractTrainableTask):
 
 class Eikonal3D(AbstractTrainableTask):
     """
-    This is a solver for Eikonal equation.
+    This is a solver for the Eikonal equation.
     """
 
     class FUNC(NamedTuple):
