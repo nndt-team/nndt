@@ -142,3 +142,4 @@ class Space(AbstractBBoxNode, IterAccessMixin):
             )
 
             self.preloader.preload(self, verbose=verbose)
+            self._is_preload = True

@@ -349,6 +349,12 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.preload(verbose=True)
 
+    def test_preload_check_condition(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        self.assertFalse(space._is_preload)
+        space.preload(verbose=False)
+        self.assertTrue(space._is_preload)
+
 
 if __name__ == "__main__":
     unittest.main()
