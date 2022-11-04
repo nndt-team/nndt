@@ -22,6 +22,17 @@ def _construct_filter(child_classes, not_parent_classes):
     return filter_
 
 
+class PrintContainer:
+    def __init__(self, text):
+        self.text = text
+
+    def __repr__(self):
+        return self.text
+
+    def __str__(self):
+        return self.text
+
+
 def _pretty_print(node: AbstractTreeElement, mode: Optional[str] = "default"):
     if mode is None or (mode == "default"):
         ret = RenderTree(
@@ -39,4 +50,4 @@ def _pretty_print(node: AbstractTreeElement, mode: Optional[str] = "default"):
         ret = RenderTree(node).__str__()
     else:
         raise NotImplementedError(f"{mode} is not implemented for the explore method. ")
-    return ret
+    return PrintContainer(ret)

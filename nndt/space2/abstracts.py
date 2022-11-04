@@ -101,7 +101,8 @@ class AbstractTreeElement(NodeMixin):
         parent=None,
     ):
         """
-        Create abstract element of space model tree
+        Create an abstract element of space model tree
+
         :param name: name of the tree node
         :param _print_color: color of this node for print()
         :param _nodetype: type of the code in form of string literal
@@ -149,7 +150,7 @@ class AbstractTreeElement(NodeMixin):
 
 class AbstractBBoxNode(AbstractTreeElement):
     """
-    Element of the space model tree with boundary box
+    Element of the space model tree with a boundary box
     """
 
     def __init__(
@@ -161,7 +162,7 @@ class AbstractBBoxNode(AbstractTreeElement):
         parent=None,
     ):
         """
-        Create element of the space model tree with boundary box
+        Create an element of the space model tree with a boundary box
 
         :param name: name of the tree node
         :param bbox: boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max))
@@ -188,13 +189,13 @@ class AbstractBBoxNode(AbstractTreeElement):
     @node_method("print(default|source|full)")
     def print(self, mode: Optional[str] = "default"):
         """
-        Print tree view for this element and all children elements
+        Print tree view for this element and all children's elements
 
         Args:
             mode (Optional[str], optional):
                 "default" print 3D objects and methods;
-                "source" print only space, groups, and file-sources;
-                "full" print all nodes of the tree;
+                "source" prints only space, groups, and file sources;
+                "full" prints all nodes of the tree;
                 Defaults to "default".
 
         Returns:
@@ -209,14 +210,14 @@ class AbstractBBoxNode(AbstractTreeElement):
         self, mode: Optional[str] = "default", filepath: Optional[str] = None, **kwargs
     ):
         """
-        Iterate over all Object3D in tree and show plot if filepath is None.
-        Save plot in file if filepath is not None.
+        Iterate over all Object3D in the tree and show the plot if the filepath is None.
+        Save the plot in a file if the filepath is None.
 
         Args:
             mode (Optional[str], optional):
                 Only the "default" mode is supported yet. Defaults to "default".
             filepath (Optional[str], optional):
-                File name. If it exists save there otherwise show. Defaults to None.
+                File name. If it exists save there otherwise show it. Defaults to None.
         """
         from nndt.space2.plot_tree import _plot
 
@@ -237,16 +238,24 @@ class IterAccessMixin:
 
 class AbstractLoader:
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        """Return the boundary box size of a 3D object.
+
+        Returns:
+            (tuple), (tuple): boundary box: (Xmin, Xmax, Ymin), (Ymax, Zmin, Zmax)
+        """
         return (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)
 
     @abstractmethod
     def load_data(self):
+        """Load data to memory"""
         pass
 
     @abstractmethod
     def unload_data(self):
+        """Remove references to the uploaded data. This method NO NOT call the garbage collectors"""
         pass
 
     @abstractmethod
     def is_load(self) -> bool:
+        """Check if the data is already loaded"""
         pass

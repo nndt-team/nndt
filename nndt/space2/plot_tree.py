@@ -76,12 +76,12 @@ def _plot(
 
     # When .plot() is called from FileSource, it draws only one object without any transformation
     if isinstance(node, FileSource):
-        _plot_filesource(pl, node, default_transform)
-    # When .plot() is called from region or object, it iterates over all Object3D in tree
+        _plot_filesource(pl, node, default_transform, cmap(cmap_index % cmap.N))
+    # When .plot() is called from a region or object, it iterates over all Object3D in the tree
     elif isinstance(node, AbstractBBoxNode):
         for node_obj in PreOrderIter(node):
             if isinstance(node_obj, Object3D):
-                # Try to obtain ps2ns transformation
+                # Try to obtain transformation from physical space to normalized space
                 transform_list = [
                     child
                     for child in node_obj.children
@@ -92,7 +92,7 @@ def _plot(
                 else:
                     transform = default_transform
 
-                # Run over filesources
+                # Run over the filesources
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
                         _plot_filesource(

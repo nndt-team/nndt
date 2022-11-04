@@ -9,16 +9,29 @@ import urllib.request
 import gdown
 import py7zr
 import requests
+from tqdm import tqdm
 
 
 def _download_from_url(
     url: str, path_to: str, chunk_size: int = 32768, extension: str = "7z"
 ) -> str:
     path_to = path_to + "temp." + extension
-    r = requests.get(url, stream=True)
+    response = requests.get(url, stream=True)
+    total_length = response.headers.get("content-length")
+    total_length = int(total_length) if total_length.isdigit() else None
+
     with open(path_to, "wb") as fd:
-        for chunk in r.iter_content(chunk_size=chunk_size):
+        if total_length is not None:
+            tmp_iter = tqdm(
+                response.iter_content(chunk_size=chunk_size),
+                total=int(total_length / chunk_size) + 1,
+            )
+        else:
+            tmp_iter = tqdm(response.iter_content(chunk_size=chunk_size))
+
+        for chunk in tmp_iter:
             fd.write(chunk)
+        fd.flush()
 
     return path_to
 

@@ -3,7 +3,7 @@
 
 ## NNDT 0.0.3XX [IN DEVELOPMENT!]
 * Space model of the first version is purged
-* New tutorials
+* Updated tutorials
 * `nndt.datasets` for download of toy datasets
 * Short imports
 * More methods support tensors of any shape
@@ -16,11 +16,12 @@
 * Code quality
   * Pre-commit actions and the black codestyle
   * CI pipeline become faster for new PR
-  * stable `main` and `dev` branch for new features
-  * 80% of code coverage in CodeCov
+  * stable `main`, and `dev` branch for new features
+  * 79% of code coverage in CodeCov
   * 27% of docstring coverage
 * Known issues
   * Wiki page is outdated
+  * `.plot()` crush Google Colaboratory
   * Some bugs with SDT requests in some cases 
   * Some bugs with load of `.ir1` files 
   * Some test is disabled because of CI pipeline restrictions

@@ -42,14 +42,14 @@ def grid_in_cube(
     spacing=(2, 2, 2), scale=2.0, center_shift=(0.0, 0.0, 0.0)
 ) -> jnp.ndarray:
     """Draw samples from the uniform grid that is defined inside a bounding box
-    with center in the `center_shift` and size of `scale`
+    with the center in the `center_shift` and size of `scale`
 
     Parameters
     ----------
     spacing : tuple, optional
         Number of sections along X, Y, and Z axes (default is (2, 2, 2))
     scale : float, optional
-        The scaling factor which defines the size of bounding box (default is 2.)
+        The scaling factor defines the size of the bounding box (default is 2.)
     center_shift : tuple, optional
         A tuple of ints of coordinates by which to modify the center of the cube (default is (0., 0., 0.))
 
@@ -77,9 +77,9 @@ def grid_in_cube2(
     spacing : tuple, optional
         Number of sections along X, Y, and Z axes (default is (4, 4, 4))
     lower: tuple, optional
-        position of lower point for the bounding box  (default is (-2, -2, -2)
+        position of the lower point for the bounding box  (default is (-2, -2, -2)
     upper: tuple, optional
-        position of upper point for the bounding box (default is (2, 2, 2)
+        position of the upper point for the bounding box (default is (2, 2, 2)
 
     Returns
     -------
@@ -98,23 +98,21 @@ def grid_in_cube2(
 def uniform_in_cube(
     rng_key: KeyArray, count=100, lower=(-2, -2, -2), upper=(2, 2, 2)
 ) -> jnp.ndarray:
-    """Draw samples from uniform distribution inside a (lower, upper) bounding box
-
-    Parameters
+    """Parameters
     ----------
     rng_key: KeyArray
         Jax key for a random generator
     count: int, optional
         Size of sampling (default is 100)
     lower: tuple, optional
-        position of lower point for the bounding box  (default is (-2, -2, -2)
+        position of the lower point for the bounding box  (default is (-2, -2, -2)
     upper: tuple, optional
-        position of upper point for the bounding box (default is (2, 2, 2)
+        position of the upper point for the bounding box (default is (2, 2, 2)
 
     Returns
     -------
     ndarray
-        Array of random points (shape is (`count`, 3))
+    An array of random points (shape is (`count`, 3))
     """
     x = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[0], maxval=upper[0])
     y = jax.random.uniform(rng_key, shape=(count, 1), minval=lower[1], maxval=upper[1])
@@ -134,7 +132,7 @@ def help_barycentric_grid(order: Sequence[Union[int, Sequence[int]]] = (1, -1)):
     Returns
     -------
     str
-        Text representation of the polynomial
+    The text representation of the polynomial
     """
     order_adv = [((v,) if isinstance(v, int) else v) for v in order]
 
@@ -172,10 +170,10 @@ def barycentric_grid(
     filter_negative: bool = True,
 ):
     """Analog of nested `for` cycles in barycentric coordinates.
-    In 1D case without free variable this is linear interpolation.
-    In 2D case with free variable this is list of ternary plot points.
-    In ND case this works like a uniform grid inside N-simplex.
-    If this simplex is defined on the basis vectors of space.
+    In the 1D case without a free variable, this is linear interpolation.
+    In the 2D case with a free variable, this is the list of ternary plot points.
+    In the ND case, this works like a uniform grid inside N-simplex.
+    If this simplex is defined on the basis of vectors of space.
 
     Parameters
     ----------
@@ -183,8 +181,8 @@ def barycentric_grid(
         Order of iterator in the polynomial (defaults is (1, -1), as for the linear interpolation)
     spacing : (Sequence[int], optional)
         This is grid spacing for each iterated variable.
-        N-value in some position is equivalent to jnp.linspace(0,1,N).
-        Zero element must be zero, because this is a technical definition for free variable.
+        N-value in some positions is equivalent to jnp.linspace(0,1,N).
+        Zero elements must be zero because this is a technical definition for the free variable.
     filter_negative : (bool, optional)
         Filter values outside the simple (defaults is True)
 
