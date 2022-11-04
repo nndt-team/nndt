@@ -5,12 +5,12 @@ from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
 class Object3D(AbstractBBoxNode, IterAccessMixin):
     """
-    Object3D is a representation of object as a whole one. This node can contains data sources, method sets, transformations, and methods.
-    Object3D cannot include other objects. One object may be defiened by multiple files with various extensions and schemes of data storage.
+    Object3D is a representation of an object as a whole one. This node can contain data sources, method sets, transformations, and methods.
+    Object3D cannot include other objects. One object may be defined by multiple files with various extensions and schemes of data storage.
 
     Args:
-        name (str): Name of object.
-        bbox (tuple, optional):boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)).
+        name (str): Name of the object.
+        bbox (tuple, optional): boundary box in form ((X_min, Y_min, Z_min), (X_max, Y_max, Z_max)).
         parent (_type_, optional): parent node. Defaults to None.
     """
 

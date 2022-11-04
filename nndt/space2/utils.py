@@ -73,7 +73,7 @@ def pad_bbox(
     bbox1: ((float, float, float), (float, float, float)), pad: (float, float, float)
 ):
     """
-    Expand bbox of the tree node with padding
+    Expand the bbox of the tree node with padding
 
     Params
     ------

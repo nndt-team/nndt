@@ -85,7 +85,7 @@ class Space(AbstractBBoxNode, IterAccessMixin):
 
     @node_method("to_json()")
     def to_json(self):
-        """Converts Space to json format
+        """Converts Space to the JSON format
 
         Returns:
             json: space in json format

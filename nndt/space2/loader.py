@@ -62,25 +62,15 @@ class TXTLoader(AbstractLoader):
         return self._text
 
     def load_data(self):
-        """Load data from the file."""
-
         with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
     def unload_data(self):
-        """Clear data."""
-
         self._text = None
         self.is_load = False
 
     def is_load(self) -> bool:
-        """Return is file loaded.
-
-        Returns:
-            bool: File load status.
-        """
-
         return self.is_load
 
 
@@ -304,7 +294,7 @@ class SDTLoader(AbstractLoader):
 
     def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
         """
-        Calculate distance from points to the surface
+        Calculate the distance from points to the surface
 
         :param ps_xyz: points in the normalized space
         :return: distances in SDT form

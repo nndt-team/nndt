@@ -238,6 +238,11 @@ class IterAccessMixin:
 
 class AbstractLoader:
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
+        """Return the boundary box size of a 3D object.
+
+        Returns:
+            (tuple), (tuple): boundary box: (Xmin, Xmax, Ymin), (Ymax, Zmin, Zmax)
+        """
         return (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)
 
     @abstractmethod
