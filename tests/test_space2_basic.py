@@ -176,7 +176,7 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         self.assertIn("patient069", [x.name for x in space.children])
         self.assertIn("patient089", [x.name for x in space.children])
 
-    def BROKEN_test_load_txt(self):
+    def test_load_txt(self):
         space = load_txt(
             PATH_TEST_STRUCTURE + "/group0/patient00/organ000/data0000.txt"
         )
@@ -341,6 +341,13 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         space = load_from_path(PATH_TEST_ACDC)
         space.preload()
         self.assertLess(300, len(space.print.__doc__))
+
+    def test_preload_with_and_without_verbose(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload(verbose=False)
+
+        space = load_from_path(PATH_TEST_ACDC)
+        space.preload(verbose=True)
 
 
 if __name__ == "__main__":

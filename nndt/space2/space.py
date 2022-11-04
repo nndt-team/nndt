@@ -121,6 +121,7 @@ class Space(AbstractBBoxNode, IterAccessMixin):
         keep_in_memory=True,
         ps_padding=(0.0, 0.0, 0.0),
         ns_padding=(0.0, 0.0, 0.0),
+        verbose=True,
     ):
         """Makes preload for Space if it was not done. Otherwise does nothing
 
@@ -140,4 +141,4 @@ class Space(AbstractBBoxNode, IterAccessMixin):
                 ns_padding=ns_padding,
             )
 
-            self.preloader.preload(self)
+            self.preloader.preload(self, verbose=verbose)
