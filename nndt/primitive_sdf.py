@@ -189,7 +189,7 @@ class BoxSDF(AbstractSDF):
             xyz_on_box = ()
             dist_to_planes_xyz = ()
 
-            def get_dist_info(xyz, on_box, dist_to_planes, i):
+            def get_dist_info(xyz, i, on_box, dist_to_planes):
                 if xyz < min_xyz[i]:
                     on_box += min_xyz[i]
                 elif min_xyz[i] <= xyz <= max_xyz[i]:
@@ -198,9 +198,10 @@ class BoxSDF(AbstractSDF):
                 elif max_xyz[i] < xyz:
                     on_box += max_xyz[i]
 
-            get_dist_info(x, xyz_on_box, dist_to_planes_xyz, 0)
-            get_dist_info(y, xyz_on_box, dist_to_planes_xyz, 1)
-            get_dist_info(z, xyz_on_box, dist_to_planes_xyz, 2)
+            get_dist_info = jax.jit(get_dist_info, static_argnums=(1,))
+            get_dist_info(x, 0, xyz_on_box, dist_to_planes_xyz)
+            get_dist_info(y, 1, xyz_on_box, dist_to_planes_xyz)
+            get_dist_info(z, 2, xyz_on_box, dist_to_planes_xyz)
 
             if len(dist_to_planes_xyz) == 3:
                 return -1 * min(dist_to_planes_xyz)
