@@ -174,18 +174,18 @@ class BoxSDF(AbstractSDF):
     def _get_fun(self):
         first_vertex = self.first_vertex
         opposite_vertex = self.opposite_vertex
-        min_xyz = (
-            min(first_vertex[0], opposite_vertex[0]),
-            min(first_vertex[1], opposite_vertex[1]),
-            min(first_vertex[2], opposite_vertex[2]),
-        )
-        max_xyz = (
-            max(first_vertex[0], opposite_vertex[0]),
-            max(first_vertex[1], opposite_vertex[1]),
-            max(first_vertex[2], opposite_vertex[2]),
-        )
 
         def prim(x: float, y: float, z: float):
+            min_xyz = (
+                min(first_vertex[0], opposite_vertex[0]),
+                min(first_vertex[1], opposite_vertex[1]),
+                min(first_vertex[2], opposite_vertex[2]),
+            )
+            max_xyz = (
+                max(first_vertex[0], opposite_vertex[0]),
+                max(first_vertex[1], opposite_vertex[1]),
+                max(first_vertex[2], opposite_vertex[2]),
+            )
             xyz_on_box = ()
             dist_to_planes_xyz = ()
             # x
