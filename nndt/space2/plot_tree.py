@@ -7,6 +7,7 @@ import numpy as onp
 import pyvista as pv
 from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
+from space2.implicit_representation import ImpRepr
 
 from nndt.global_config import PYVISTA_PRE_PARAMS
 from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
@@ -30,7 +31,9 @@ def _plot_mesh(pl: Plotter, loader: MeshObjLoader, transform, color):
     _plot_pv_mesh(pl, verts, faces, transform, color)
 
 
-def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable, color):
+def _plot_sdt(
+    pl: Plotter, loader: Union[SDTLoader, ImpRepr], transform: Callable, color
+):
     sdt = loader.sdt
     from nndt.space2.utils import array_to_vert_and_faces
 
@@ -42,6 +45,13 @@ def _plot_filesource(pl, node: FileSource, transform: Callable, color):
     if isinstance(node._loader, MeshObjLoader):
         _plot_mesh(pl, node._loader, transform, color)
     elif isinstance(node._loader, SDTLoader):
+        _plot_sdt(pl, node._loader, transform, color)
+    else:
+        warnings.warn(f"node._loader is None or unknown. Something goes wrong.")
+
+
+def _plot_implicit_representation(pl, node: ImpRepr, transform: Callable, color):
+    if isinstance(node._loader, ImpRepr):
         _plot_sdt(pl, node._loader, transform, color)
     else:
         warnings.warn(f"node._loader is None or unknown. Something goes wrong.")
@@ -96,6 +106,14 @@ def _plot(
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
                         _plot_filesource(
+                            pl, node_src, transform, cmap(cmap_index % cmap.N)
+                        )
+                        cmap_index += 1
+
+                # Run over primitives
+                for node_src in PostOrderIter(node_obj):
+                    if isinstance(node_src, ImpRepr):
+                        _plot_implicit_representation(
                             pl, node_src, transform, cmap(cmap_index % cmap.N)
                         )
                         cmap_index += 1
