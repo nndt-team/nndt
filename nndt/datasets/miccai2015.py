@@ -6,7 +6,7 @@ class MICCAI2015(Dataset):
     MICCAI2015 includes 50 CT scans and ground truth segmentation of 13 abdominal organs.
 
     NNDT DOES NOT DOWNLOAD THE ORIGINAL DATA!
-    We preprocess some subsets of models to create the toy examples for testing NNDT capabilities.
+    We preprocess some subsets of models to create toy examples for testing NNDT capabilities.
 
     Available out-of-the-box model subsets:
      - `left_adrenal_gland_10` includes 10 models of the adrenal glands

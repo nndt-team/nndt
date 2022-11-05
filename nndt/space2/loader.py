@@ -51,7 +51,7 @@ class TXTLoader(AbstractLoader):
 
     @property
     def text(self):
-        """Return text from file.
+        """Return text from the file.
 
         Returns:
             str: File content.
@@ -62,25 +62,15 @@ class TXTLoader(AbstractLoader):
         return self._text
 
     def load_data(self):
-        """Load data from file."""
-
         with open(self.filepath, "r") as fl:
             self._text = fl.read()
         self.is_load = True
 
     def unload_data(self):
-        """Clear data."""
-
         self._text = None
         self.is_load = False
 
     def is_load(self) -> bool:
-        """Return is file loaded.
-
-        Returns:
-            bool: File load status.
-        """
-
         return self.is_load
 
 
@@ -153,7 +143,7 @@ class MeshObjLoader(AbstractLoader):
         self._rgba = None
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
-        """Return boundary box size of object.
+        """Return the boundary box size of a 3D object.
 
         Returns:
             (tuple), (tuple): boundary box: (Xmin, Xmax, Ymin), (Ymax, Zmin, Zmax)
@@ -164,7 +154,7 @@ class MeshObjLoader(AbstractLoader):
 
     @property
     def mesh(self) -> vtk.vtkPolyData:
-        """Return mesh of object.
+        """Return the mesh of a 3D object.
 
         Returns:
             vtk.vtkPolyData: Mesh.
@@ -176,10 +166,10 @@ class MeshObjLoader(AbstractLoader):
 
     @property
     def points(self) -> jnp.ndarray:
-        """Return points of object.
+        """Return points of a 3D object.
 
         Returns:
-            jnp.ndarray: Points of object.
+            jnp.ndarray: Points of the object.
         """
 
         if not self.is_load:
@@ -188,7 +178,7 @@ class MeshObjLoader(AbstractLoader):
 
     @property
     def kdtree(self) -> KDTree:
-        """Return KDTree of object.
+        """Return KDTree of a 3D object.
 
         Returns:
             KDTree: KDTree.
@@ -200,10 +190,10 @@ class MeshObjLoader(AbstractLoader):
 
     @property
     def rgba(self) -> Optional[jnp.ndarray]:
-        """Return rgba of object.
+        """Return colors of all mesh vertex
 
         Returns:
-            Optional[jnp.ndarray]: Rgba of object.
+            Optional[jnp.ndarray]: RGBA color
         """
 
         if not self.is_load:
@@ -211,7 +201,7 @@ class MeshObjLoader(AbstractLoader):
         return self._rgba
 
     def load_data(self):
-        """Load data from file."""
+        """Load data from the file"""
 
         reader = vtk.vtkOBJReader()
         reader.SetFileName(self.filepath)
@@ -230,7 +220,7 @@ class MeshObjLoader(AbstractLoader):
         self.is_load = True
 
     def unload_data(self):
-        """Clear data."""
+        """Clear data"""
 
         self._mesh = None
         self.is_load = False
@@ -261,7 +251,7 @@ class SDTLoader(AbstractLoader):
         self._sdt_threshold_level = 0.0
 
     def calc_bbox(self) -> ((float, float, float), (float, float, float)):
-        """Return boundary box size of object.
+        """Return the boundary box size of the object.
 
         Returns:
             (tuple), (tuple): boundary box: (Xmin, Xmax, Ymin), (Ymax, Zmin, Zmax)
@@ -286,10 +276,10 @@ class SDTLoader(AbstractLoader):
 
     @property
     def sdt(self):
-        """Return sdt data.
+        """Return full STD data.
 
         Returns:
-            jnp.ndarray: Points of object.
+            jnp.ndarray: STD
         """
 
         if not self.is_load:
@@ -297,12 +287,18 @@ class SDTLoader(AbstractLoader):
         return self._sdt
 
     def load_data(self):
-        """Load data from file."""
+        """Load data from the file"""
 
         self._sdt = jnp.load(self.filepath)
         self.is_load = True
 
     def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
+        """
+        Calculate the distance from points to the surface
+
+        :param ps_xyz: points in the normalized space
+        :return: distances in SDT form
+        """
 
         assert ps_xyz.ndim >= 1
         assert ps_xyz.shape[-1] == 3
@@ -328,8 +324,6 @@ class SDTLoader(AbstractLoader):
         return result
 
     def unload_data(self):
-        """Clear data."""
-
         self._sdt = None
         self.is_load = False
 

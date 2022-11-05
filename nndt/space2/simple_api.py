@@ -88,7 +88,7 @@ def load_implicit_ir1(fullpath):
     3D object includes FileSource for `.ir1` files.
 
     :param fullpath: path to files
-    :return: root of the space model tree
+    :return: the root of the space model tree
     """
     return load_only_one_file(fullpath, loader_type="implicit_ir1")
 
@@ -128,17 +128,17 @@ def load_from_path(
     """
     Load all data from the directory as a space model tree.
     Folders determine groups and 3D objects. Files become a FileSources.
-    Templates allow user to mask some files from consideration.
+    Templates allow a user to mask some files from consideration.
 
     NOTE, This version of NNDT only supports folder structures with equal depth.
-    FileSources must be located in terminate folders.
+    FileSources must be located in terminated folders.
 
     :param root_path: path to folder with dataset
-    :param template_txt: template for text files. None value forces to ignore all `.txt` files.
-    :param template_sdt: template for `.npy` files with SDT data. None value forces to ignore all `.npy` files.
-    :param template_mesh_obj: template for `.obj` files with surface mesh data. None value forces to ignore all `.obj` files.
-    :param template_implicit_ir1: template for `.ir1` files with surface mesh data. None value forces to ignore all `.ir1` files.
-    :return: root of the space model tree
+    :param template_txt: template for text files. None value forces the method to ignore all `.txt` files.
+    :param template_sdt: template for `.npy` files with SDT data. None value forces the method to ignore all `.npy` files.
+    :param template_mesh_obj: template for `.obj` files with surface mesh data. None value forces the method to ignore all `.obj` files.
+    :param template_implicit_ir1: template for `.ir1` files with surface mesh data. None value forces the method to ignore all `.ir1` files.
+    :return: the root of the space model tree
     """
     if not os.path.exists(root_path):
         raise FileNotFoundError(
@@ -209,18 +209,18 @@ def load_from_file_lists(
 ) -> Space:
     """
     Create the space model tree with a default structure from the lists of files.
-    If the test_size is None, the tree includes root and group with name `default`.
-    If the test_size is set, the tree includes root and groups with name `test` and `train`.
+    If the test_size is None, the tree includes root and group with the name `default`.
+    If the test_size is set, the tree includes root and groups with the name `test` and `train`.
 
-    Note, the current verion of NNDT can load only SDT or only IR.
-    Both type of files together are not yet supported.
+    Note, the current version of NNDT can load only SDT or only IR.
+    Both types of files together are not yet supported.
 
     :param name_list: list of the node names
     :param mesh_list: list of the meshes. Only the `.obj` is supported now.
-    :param sdt_list: list of the sdt array. Only the `.npy` is supported now.
+    :param sdt_list: list of the SDT array. Only the `.npy` is supported now.
     :param ir1_list: list of implicit representations. Only the `.ir1` is supported now.
-    :param test_size: size of test subset from the whole dataset.
-    :return: root of the space model tree
+    :param test_size: the size of the test subset from the whole dataset.
+    :return: the root of the space model tree
     """
     if mesh_list is not None:
         assert len(name_list) == len(mesh_list)
@@ -317,9 +317,9 @@ def load_from_file_lists(
 
 def read_space_from_file(filepath: str):
     """
-    Create the space model from `.space` file or any file with proper json inside.
+    Create the space model from the `.space` file or any file with proper JSON inside.
     :param filepath: path to file
-    :return: root of the space model tree
+    :return: the root of the space model tree
     """
     if not os.path.exists(filepath):
         raise FileNotFoundError()
@@ -350,9 +350,9 @@ def from_json(json: str):
 
 def save_space_to_file(space: Space, filepath: str):
     """
-    Store a space model tree to `.space` file using json format
+    Store a space model tree to a `.space` file using JSON format
 
-    :param space: root of a space model tree
+    :param space: the root of a space model tree
     :param filepath: path to file
     :return:
     """
@@ -363,10 +363,10 @@ def save_space_to_file(space: Space, filepath: str):
 
 def to_json(space: Space):
     """
-    Convert a space model tree to json format
+    Convert a space model tree to the JSON format
 
-    :param space: root of a space model tree
-    :return: json as a string
+    :param space: the root of a space model tree
+    :return: JSON as a string
     """
     dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
     json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
@@ -395,12 +395,12 @@ def split_node_test_train(
     rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3
 ):
     """
-    Split node to two nodes according to requested proportion. This method creates nodes with test and train names.
+    Split the node into two nodes according to the requested proportion. This method creates nodes with test and train names.
     New nodes are attached as new groups.
 
     :param rng_key: a key for JAX's random generators
     :param tree_path: node of the space model tree for the split
-    :param test_size: size of the test subset. value must range between 0 and 1.
+    :param test_size: the size of the test subset. the value must range between 0 and 1.
     :return: the root of the space model tree
     """
     child_ = tree_path._container_only_list()
@@ -422,7 +422,7 @@ def split_node_kfold(
     k_for_test: Union[Sequence[int], int] = 0,
 ):
     """
-    Split node to several nodes according to k-fold approach. This method creates nodes with test and train names.
+    Split the node into several nodes according to the k-fold approach. This method creates nodes with test and train names.
     New nodes are attached as new groups.
 
     :param tree_path: node of the space model tree for the split
@@ -471,7 +471,7 @@ def split_node_namelist(
     Split node to several nodes according to the dictionary. New nodes are attached as new groups.
 
     :param tree_path: node of the space model tree for the split
-    :param dict_nodename_namelist: key is a name for the new group. value is a list of children for the new group.
+    :param dict_nodename_namelist: the key is a name for the new group. value is a list of children for the new group.
     :return: the root of the space model tree
     """
     lst_nodenames = [child.name for child in tree_path]
@@ -511,7 +511,7 @@ def add_sphere(
     :param name: name of the primitive
     :param center: center of the sphere
     :param radius: radius of the sphere
-    :return: root of the tree
+    :return: the root of the tree
     """
     assert isinstance(tree_path, (Space, Group))
 

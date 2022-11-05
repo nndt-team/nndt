@@ -40,27 +40,31 @@ class LoadersTestCase(BaseTestCase):
     def test_preload_check_access_to_field_mesh(self):
         space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
 
-        self.assertNotIn("^", space.patient069.colored_obj.print())
+        self.assertNotIn("^", space.patient069.colored_obj.print().__str__())
         self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
-        self.assertIn("^", space.patient069.colored_obj.print())
+        self.assertIn("^", space.patient069.colored_obj.print().__str__())
 
     def test_preload_unload_from_memory(self):
         space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=True)
 
-        self.assertIn("^", space.patient069.print())
+        self.assertIn("^", space.patient069.print().__str__())
         space.patient069.unload_from_memory()
-        self.assertNotIn("^", space.patient069.print())
+        self.assertNotIn("^", space.patient069.print().__str__())
 
-        self.assertIn("^", space.print())
+        self.assertIn("^", space.print().__str__())
         space.unload_from_memory()
-        self.assertNotIn("^", space.print())
+        self.assertNotIn("^", space.print().__str__())
 
     def BROKEN_test_preload_check_access_to_field_text(self):
         space = self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 
-        self.assertNotIn("^", space.group1.patient11.organ110.data1100_txt.print())
+        self.assertNotIn(
+            "^", space.group1.patient11.organ110.data1100_txt.print().__str__()
+        )
         self.assertIsNotNone(space.group1.patient11.organ110.data1100_txt._loader.text)
-        self.assertIn("^", space.group1.patient11.organ110.data1100_txt.print())
+        self.assertIn(
+            "^", space.group1.patient11.organ110.data1100_txt.print().__str__()
+        )
 
     def test_preload_ps_bbox_in_mesh(self):
         space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
