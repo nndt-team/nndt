@@ -186,27 +186,29 @@ class BoxSDF(AbstractSDF):
         )
 
         def prim(x: float, y: float, z: float):
-            xyz = (x, y, z)
             xyz_on_box = ()
             dist_to_planes_xyz = ()
-            for i in range(3):
-                if xyz[i] < min_xyz[i]:
-                    xyz_on_box += min_xyz[i]
-                elif min_xyz[i] <= xyz[i] <= max_xyz[i]:
-                    xyz_on_box += xyz[i]
-                    dist_to_planes_xyz += min(
-                        abs(xyz[i] - min_xyz[i]), abs(xyz[i] - max_xyz[i])
-                    )
-                elif max_xyz[i] < xyz[i]:
-                    xyz_on_box += max_xyz[i]
+
+            def get_dist_info(xyz, on_box, dist_to_planes, i):
+                if xyz < min_xyz[i]:
+                    on_box += min_xyz[i]
+                elif min_xyz[i] <= xyz <= max_xyz[i]:
+                    on_box += xyz
+                    dist_to_planes += min(abs(xyz - min_xyz[i]), abs(xyz - max_xyz[i]))
+                elif max_xyz[i] < xyz:
+                    on_box += max_xyz[i]
+
+            get_dist_info(x, xyz_on_box, dist_to_planes_xyz, 0)
+            get_dist_info(y, xyz_on_box, dist_to_planes_xyz, 1)
+            get_dist_info(z, xyz_on_box, dist_to_planes_xyz, 2)
 
             if len(dist_to_planes_xyz) == 3:
                 return -1 * min(dist_to_planes_xyz)
 
             return sqrt(
-                (xyz_on_box[0] - xyz[0]) ** 2
-                + (xyz_on_box[1] - xyz[1]) ** 2
-                + (xyz_on_box[2] - xyz[2]) ** 2
+                (xyz_on_box[0] - x) ** 2
+                + (xyz_on_box[1] - y) ** 2
+                + (xyz_on_box[2] - z) ** 2
             )
 
         return prim
