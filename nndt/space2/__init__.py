@@ -17,3 +17,5 @@ from nndt.space2.simple_api import (
     to_json,
 )
 from nndt.space2.space import Space
+
+DEFAULT_SPACING_FOR_PLOT = (64, 64, 64)
