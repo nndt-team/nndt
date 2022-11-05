@@ -10,7 +10,7 @@ from anytree.importer import DictImporter, JsonImporter
 from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
-from nndt.primitive_sdf import SphereSDF, BoxSDF
+from nndt.primitive_sdf import BoxSDF, SphereSDF
 from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
 from nndt.space2.filesource import FileSource
 from nndt.space2.group import Group
@@ -532,7 +532,7 @@ def add_box(
     tree_path: AbstractBBoxNode,
     name,
     first_vertex: (float, float, float),
-    opposite_vertex: (float, float, float)
+    opposite_vertex: (float, float, float),
 ):
     """
     Add box primitive to the space model tree

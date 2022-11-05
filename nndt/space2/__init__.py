@@ -1,6 +1,6 @@
 from nndt.space2.simple_api import (
-    add_sphere,
     add_box,
+    add_sphere,
     from_json,
     load_from_file_lists,
     load_from_path,
