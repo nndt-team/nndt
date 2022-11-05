@@ -157,6 +157,7 @@ class BoxSDF(AbstractSDF):
     def __init__(self, first_vertex=(0.0, 0.0, 0.0), opposite_vertex=(0.0, 0.0, 0.0)):
         """
         This is a box geometrical primitive. Sides are parallel with XYZ axis
+
         :param first_vertex: vertex of a box
         :param opposite_vertex: the opposite vertex for the first_vertex.
         opposite_vertex is the only vertex of a box that is not on the same plane

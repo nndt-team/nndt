@@ -10,7 +10,7 @@ from anytree.importer import DictImporter, JsonImporter
 from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
-from nndt.primitive_sdf import SphereSDF
+from nndt.primitive_sdf import SphereSDF, BoxSDF
 from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
 from nndt.space2.filesource import FileSource
 from nndt.space2.group import Group
@@ -520,6 +520,38 @@ def add_sphere(
     obj = Object3D(name, bbox=sph.bbox, parent=tree_path)
     transform = IdentityTransform(ps_bbox=sph.bbox, parent=obj)
     ir = ImpRepr("sphere", sph, parent=obj)
+    ms = SDTMethodSetNode(obj, ir, transform, parent=obj)
+    smp = SamplingMethodSetNode(parent=obj)
+
+    update_bbox_with_float_over_tree(obj)
+    tree_path.root.init()
+    return tree_path.root
+
+
+def add_box(
+    tree_path: AbstractBBoxNode,
+    name,
+    first_vertex: (float, float, float),
+    opposite_vertex: (float, float, float)
+):
+    """
+    Add box primitive to the space model tree
+
+    :param tree_path: node in the space model tree
+    :param name: name of the primitive
+    :param first_vertex: vertex of a box
+    :param opposite_vertex: the opposite vertex for the first_vertex.
+        opposite_vertex is the only vertex of a box that is not on the same plane
+        with first_vertex
+    :return: the root of the tree
+    """
+    assert isinstance(tree_path, (Space, Group))
+
+    box = BoxSDF(first_vertex=first_vertex, opposite_vertex=opposite_vertex)
+
+    obj = Object3D(name, bbox=box.bbox, parent=tree_path)
+    transform = IdentityTransform(ps_bbox=box.bbox, parent=obj)
+    ir = ImpRepr("box", box, parent=obj)
     ms = SDTMethodSetNode(obj, ir, transform, parent=obj)
     smp = SamplingMethodSetNode(parent=obj)
 
