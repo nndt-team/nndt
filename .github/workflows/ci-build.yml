@@ -45,15 +45,20 @@ jobs:
         id: cache-modules
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py', '**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py', '**/requirements-dev.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-cov
+          pip install -r requirements-dev.txt
+          pip install pytest-cov
+
+      - name: pytest-cov version
+        run: |
+          echo "pytest-cov version:"
+          pip freeze | grep pytest-cov
 
       - name: Unpack testing data
         run: |
