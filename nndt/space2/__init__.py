@@ -1,3 +1,4 @@
+from nndt.space2.group import Group
 from nndt.space2.simple_api import (
     add_box,
     add_sphere,
@@ -16,3 +17,6 @@ from nndt.space2.simple_api import (
     split_node_test_train,
     to_json,
 )
+from nndt.space2.space import Space
+
+DEFAULT_SPACING_FOR_PLOT = (64, 64, 64)
