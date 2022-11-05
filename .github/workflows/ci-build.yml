@@ -52,9 +52,8 @@ jobs:
       - name: Install dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: |
-          python setup.py install
+          pip install -r requirements.txt
           pip install pytest pytest-cov
-          pip install black black[jupyter]
 
       - name: Unpack testing data
         run: |
