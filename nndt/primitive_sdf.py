@@ -188,20 +188,32 @@ class BoxSDF(AbstractSDF):
         def prim(x: float, y: float, z: float):
             xyz_on_box = ()
             dist_to_planes_xyz = ()
+            # x
+            if x < min_xyz[0]:
+                xyz_on_box += min_xyz[0]
+            elif min_xyz[0] <= x <= max_xyz[0]:
+                xyz_on_box += x
+                dist_to_planes_xyz += min(abs(x - min_xyz[0]), abs(x - max_xyz[0]))
+            elif max_xyz[0] < x:
+                xyz_on_box += max_xyz[0]
 
-            def get_dist_info(xyz, i, on_box, dist_to_planes):
-                if xyz < min_xyz[i]:
-                    on_box += min_xyz[i]
-                elif min_xyz[i] <= xyz <= max_xyz[i]:
-                    on_box += xyz
-                    dist_to_planes += min(abs(xyz - min_xyz[i]), abs(xyz - max_xyz[i]))
-                elif max_xyz[i] < xyz:
-                    on_box += max_xyz[i]
+            # y
+            if y < min_xyz[1]:
+                xyz_on_box += min_xyz[1]
+            elif min_xyz[1] <= y <= max_xyz[1]:
+                xyz_on_box += y
+                dist_to_planes_xyz += min(abs(y - min_xyz[1]), abs(y - max_xyz[1]))
+            elif max_xyz[1] < y:
+                xyz_on_box += max_xyz[1]
 
-            get_dist_info = jax.jit(get_dist_info, static_argnums=(1,))
-            get_dist_info(x, 0, xyz_on_box, dist_to_planes_xyz)
-            get_dist_info(y, 1, xyz_on_box, dist_to_planes_xyz)
-            get_dist_info(z, 2, xyz_on_box, dist_to_planes_xyz)
+            # z
+            if z < min_xyz[2]:
+                xyz_on_box += min_xyz[2]
+            elif min_xyz[2] <= z <= max_xyz[2]:
+                xyz_on_box += z
+                dist_to_planes_xyz += min(abs(z - min_xyz[2]), abs(z - max_xyz[2]))
+            elif max_xyz[2] < z:
+                xyz_on_box += max_xyz[2]
 
             if len(dist_to_planes_xyz) == 3:
                 return -1 * min(dist_to_planes_xyz)
