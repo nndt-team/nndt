@@ -24,10 +24,10 @@ jobs:
           access_token: ${{ github.token }}
         if: ${{github.ref != 'refs/head/main'}}
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@mv3
       - name: Set up Python ${{ matrix.python-version }}
         id: setup_python
-        uses: actions/setup-python@master
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -40,9 +40,9 @@ jobs:
           python -m pip install --upgrade pip wheel
           echo "::set-output name=dir::$(pip cache dir)"
 
-      - name: Cache python modules
-        uses: actions/cache@master
+      - name: Get pip cache
         id: cache-modules
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py', '**/requirements-dev.txt') }}
@@ -61,6 +61,7 @@ jobs:
 
       - name: Generate coverage report for python ${{ matrix.python-version }} on ${{ matrix.os }}
         run: |
+          pip install pytest pytest-cov
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
