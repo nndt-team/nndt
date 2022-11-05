@@ -187,20 +187,20 @@ class BoxSDF(AbstractSDF):
 
         def prim(x: float, y: float, z: float):
             xyz = (x, y, z)
-            xyz_on_box = [0.0, 0.0, 0.0]
-            dist_to_planes_xyz = [None, None, None]
+            xyz_on_box = ()
+            dist_to_planes_xyz = ()
             for i in range(3):
                 if xyz[i] < min_xyz[i]:
-                    xyz_on_box[i] = min_xyz[i]
+                    xyz_on_box += min_xyz[i]
                 elif min_xyz[i] <= xyz[i] <= max_xyz[i]:
-                    xyz_on_box[i] = xyz[i]
-                    dist_to_planes_xyz[i] = min(
+                    xyz_on_box += xyz[i]
+                    dist_to_planes_xyz += min(
                         abs(xyz[i] - min_xyz[i]), abs(xyz[i] - max_xyz[i])
                     )
                 elif max_xyz[i] < xyz[i]:
-                    xyz_on_box[i] = max_xyz[i]
+                    xyz_on_box += max_xyz[i]
 
-            if None not in dist_to_planes_xyz:
+            if len(dist_to_planes_xyz) == 3:
                 return -1 * min(dist_to_planes_xyz)
 
             return sqrt(
