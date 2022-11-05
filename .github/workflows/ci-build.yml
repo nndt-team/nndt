@@ -64,7 +64,7 @@ jobs:
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
-        if:  ${{ runner.os == 'Linux' && env.py == 3.8 }}
+        if:  ${{ runner.os == 'Linux' && setup_python.python-version == 3.8 }}
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
