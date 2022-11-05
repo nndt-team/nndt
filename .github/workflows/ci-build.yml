@@ -24,7 +24,7 @@ jobs:
           access_token: ${{ github.token }}
         if: ${{github.ref != 'refs/head/main'}}
 
-      - uses: actions/checkout@mv3
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         id: setup_python
         uses: actions/setup-python@v3
