@@ -7,11 +7,11 @@ import numpy as onp
 import pyvista as pv
 from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
-from space2.implicit_representation import ImpRepr
 
 from nndt.global_config import PYVISTA_PRE_PARAMS
 from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
 from nndt.space2.filesource import FileSource
+from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.loader import MeshObjLoader, SDTLoader
 from nndt.space2.object3D import Object3D
 from nndt.space2.transformation import AbstractTransformation
