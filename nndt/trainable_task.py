@@ -261,10 +261,12 @@ class ApproximateSDFLipMLP(AbstractTrainableTask):
         batch_size=262144,
         model_number=2,
         lip_alpha=0.000001,
+        negative_beta=0.0,
     ):
         self.mlp_layers = mlp_layers
         self.batch_size = batch_size
         self.model_number = model_number
+        self.negative_beta = negative_beta
 
         self._init_data = ApproximateSDFLipMLP.DATA(
             X=jnp.zeros(self.batch_size),
@@ -292,8 +294,11 @@ class ApproximateSDFLipMLP(AbstractTrainableTask):
             vec_f_sdf = hk.vmap(f_sdf, in_axes=(0, 0, 0, 0, 0), split_rng=False)
 
             def vec_main_loss(X, Y, Z, T, P, SDF):
+                predict = vec_f_sdf(X, Y, Z, T, P)
                 return (
-                    jnp.mean((vec_f_sdf(X, Y, Z, T, P) - SDF) ** 2)
+                    jnp.mean((predict - SDF) ** 2)
+                    + self.negative_beta
+                    * jnp.mean((jax.nn.softplus(-predict) - jax.nn.softplus(-SDF)) ** 2)
                     + self.lip_alpha * net.get_lipschitz_loss()
                 )
 
