@@ -309,12 +309,20 @@ class SDTLoader(AbstractLoader):
             p_array_ = ps_xyz
 
         p_array_ = p_array_.reshape((-1, 3))
+        req_x = p_array_[:, 0]
+        req_y = p_array_[:, 1]
+        req_z = p_array_[:, 2]
 
-        x = jnp.clip(p_array_[:, 0], 0, self.sdt.shape[0] - 1).astype(int)
-        y = jnp.clip(p_array_[:, 1], 0, self.sdt.shape[1] - 1).astype(int)
-        z = jnp.clip(p_array_[:, 2], 0, self.sdt.shape[2] - 1).astype(int)
+        x = jnp.rint(jnp.clip(req_x, 0, self.sdt.shape[0] - 1)).astype(int)
+        y = jnp.rint(jnp.clip(req_y, 0, self.sdt.shape[1] - 1)).astype(int)
+        z = jnp.rint(jnp.clip(req_z, 0, self.sdt.shape[2] - 1)).astype(int)
+
+        adv_x = req_x - x
+        adv_y = req_y - y
+        adv_z = req_z - z
 
         result = self.sdt[x, y, z]
+        result = result + jnp.sqrt(adv_x**2 + adv_y**2 + adv_z**2)
 
         ret_shape = list(ps_xyz.shape)
         ret_shape[-1] = 1
