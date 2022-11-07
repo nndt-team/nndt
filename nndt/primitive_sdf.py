@@ -191,7 +191,7 @@ class BoxSDF(AbstractSDF):
             for i in range(3):
                 on_box = (
                     jnp.where(x < min_xyz[i], min_xyz[i], jnp.array(())),
-                    jnp.where(min_xyz[i] <= x <= max_xyz[i], x, jnp.array(())),
+                    jnp.where((min_xyz[i] <= x) & (x <= max_xyz[i]), x, jnp.array(())),
                     jnp.where(max_xyz[i] < x, max_xyz[i], jnp.array(())),
                 )
                 for j in range(3):
