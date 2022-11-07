@@ -198,7 +198,7 @@ class BoxSDF(AbstractSDF):
                     if type(on_box[j]) == float:
                         xyz_on_box += on_box[j]
                 dist_to_planes_xyz += jnp.where(
-                    min_xyz[i] <= x <= max_xyz[i],
+                    (min_xyz[i] <= x) & (x <= max_xyz[i]),
                     min(abs(x - min_xyz[i]), abs(x - max_xyz[i])),
                     None,
                 )
