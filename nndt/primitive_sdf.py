@@ -138,7 +138,6 @@ class SphereSDF(AbstractSDF):
         radius = self.radius
 
         def prim(x: float, y: float, z: float):
-            print(type(x))
             sdf = (
                 (x - center[0]) ** 2
                 + (y - center[1]) ** 2
@@ -189,6 +188,7 @@ class BoxSDF(AbstractSDF):
             )
             xyz_on_box = ()
             dist_to_planes_xyz = ()
+            print(type(x - 5))
             for i in range(3):
                 if x < min_xyz[i]:
                     xyz_on_box += min_xyz[i]
