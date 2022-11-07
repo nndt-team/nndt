@@ -1,4 +1,4 @@
-__version__ = "0.0.3rc5"
+__version__ = "0.0.3rc6"
 
 from nndt.datagen import DataGenForSegmentation, DataGenForShapeRegression
 from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
@@ -19,6 +19,7 @@ from nndt.primitive_sdf import SphereSDF, fun2vec_and_grad
 from nndt.trainable_task import (
     ApproximateSDF,
     ApproximateSDFLipMLP,
+    ApproximateSDFLipMLP2,
     Eikonal3D,
     SimpleSDF,
     SurfaceSegmentation,
