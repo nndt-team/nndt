@@ -200,10 +200,14 @@ class BoxSDF(AbstractSDF):
                 dist_to_planes_xyz += jnp.where(
                     (min_xyz[i] <= x) & (x <= max_xyz[i]),
                     min(jnp.abs(x - min_xyz[i]), jnp.abs(x - max_xyz[i])),
-                    None,
+                    jnp.array(()),
                 )
 
-            if None not in dist_to_planes_xyz:
+            if (
+                len(dist_to_planes_xyz[0]) != 0
+                and len(dist_to_planes_xyz[1]) != 0
+                and len(dist_to_planes_xyz[2]) != 0
+            ):
                 return -1 * min(dist_to_planes_xyz)
 
             return sqrt(
