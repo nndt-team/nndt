@@ -190,7 +190,6 @@ class BoxSDF(AbstractSDF):
             dist_to_planes_xyz = ()
             for i in range(3):
                 print(type(x))
-                print(type(min_xyz[i]))
                 if x < min_xyz[i]:
                     xyz_on_box += min_xyz[i]
                 elif min_xyz[i] <= x <= max_xyz[i]:
