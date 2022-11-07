@@ -190,12 +190,12 @@ class BoxSDF(AbstractSDF):
             dist_to_planes_xyz = ()
             for i in range(3):
                 on_box = (
-                    jnp.where(x < min_xyz[i], min_xyz[i], None),
-                    jnp.where(min_xyz[i] <= x <= max_xyz[i], x, None),
-                    jnp.where(max_xyz[i] < x, max_xyz[i], None),
+                    jnp.where(x < min_xyz[i], min_xyz[i], jnp.array(())),
+                    jnp.where(min_xyz[i] <= x <= max_xyz[i], x, jnp.array(())),
+                    jnp.where(max_xyz[i] < x, max_xyz[i], jnp.array(())),
                 )
                 for j in range(3):
-                    if on_box[j] is not None:
+                    if type(on_box[j]) == float:
                         xyz_on_box += on_box[j]
                 dist_to_planes_xyz += jnp.where(
                     min_xyz[i] <= x <= max_xyz[i],
