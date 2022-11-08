@@ -199,7 +199,7 @@ class BoxSDF(AbstractSDF):
                         xyz_on_box += on_box[j]
                 dist_to_planes_xyz += jnp.where(
                     (min_xyz[i] <= x) & (x <= max_xyz[i]),
-                    min(jnp.abs(x - min_xyz[i]), jnp.abs(x - max_xyz[i])),
+                    jnp.min(jnp.abs(x - min_xyz[i]), jnp.abs(x - max_xyz[i])),
                     jnp.array(()),
                 )
 
