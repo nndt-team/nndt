@@ -174,42 +174,30 @@ class BoxSDF(AbstractSDF):
     def _get_fun(self):
         first_vertex = self.first_vertex
         opposite_vertex = self.opposite_vertex
+        min_xyz = (
+            min(first_vertex[0], opposite_vertex[0]),
+            min(first_vertex[1], opposite_vertex[1]),
+            min(first_vertex[2], opposite_vertex[2]),
+        )
+        max_xyz = (
+            max(first_vertex[0], opposite_vertex[0]),
+            max(first_vertex[1], opposite_vertex[1]),
+            max(first_vertex[2], opposite_vertex[2]),
+        )
 
         def prim(x: float, y: float, z: float):
-            min_xyz = (
-                min(first_vertex[0], opposite_vertex[0]),
-                min(first_vertex[1], opposite_vertex[1]),
-                min(first_vertex[2], opposite_vertex[2]),
-            )
-            max_xyz = (
-                max(first_vertex[0], opposite_vertex[0]),
-                max(first_vertex[1], opposite_vertex[1]),
-                max(first_vertex[2], opposite_vertex[2]),
-            )
             xyz_on_box = ()
             dist_to_planes_xyz = ()
             for i in range(3):
-                on_box = (
-                    jnp.where(x < min_xyz[i], min_xyz[i], jnp.array(())),
-                    jnp.where((min_xyz[i] <= x) & (x <= max_xyz[i]), x, jnp.array(())),
-                    jnp.where(max_xyz[i] < x, max_xyz[i], jnp.array(())),
-                )
-                for j in range(3):
-                    if type(on_box[j]) == float:
-                        xyz_on_box += on_box[j]
-                min_sub = jnp.abs(x - min_xyz[i])
-                max_sub = jnp.abs(x - max_xyz[i])
-                dist_to_planes_xyz += jnp.where(
-                    (min_xyz[i] <= x) & (x <= max_xyz[i]),
-                    jnp.where(min_sub < max_sub, min_sub, max_sub),
-                    jnp.array(()),
-                )
+                if x < min_xyz[i]:
+                    xyz_on_box += min_xyz[i]
+                elif min_xyz[i] <= x <= max_xyz[i]:
+                    xyz_on_box += x
+                    dist_to_planes_xyz += min(abs(x - min_xyz[i]), abs(x - max_xyz[i]))
+                else:
+                    xyz_on_box += max_xyz[i]
 
-            if (
-                len(dist_to_planes_xyz[0]) != 0
-                and len(dist_to_planes_xyz[1]) != 0
-                and len(dist_to_planes_xyz[2]) != 0
-            ):
+            if len(dist_to_planes_xyz) == 3:
                 return -1 * min(dist_to_planes_xyz)
 
             return sqrt(
@@ -218,4 +206,4 @@ class BoxSDF(AbstractSDF):
                 + (xyz_on_box[2] - z) ** 2
             )
 
-        return prim
+        return jax.jit(prim, static_argnums=(0, 1, 2))
