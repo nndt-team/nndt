@@ -80,6 +80,8 @@ def _plot(
     filepath: Optional[str] = None,
     cpos=None,
     cmap: str = "Set3",
+    return_plotter=False,
+    return_cpos=False,
     **kwargs,
 ):
     if not node.root._is_preload:
@@ -141,3 +143,8 @@ def _plot(
         pl.show(screenshot=filepath, cpos=cpos)
 
     set_last_cpos(pl.camera_position)
+
+    if return_plotter:
+        return pl
+    if return_cpos:
+        return pl.camera_position
