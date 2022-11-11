@@ -136,7 +136,7 @@ def _plot(
                         cmap_index += 1
 
     if filepath is None:
-        last_cpos = pl.show(cpos=cpos, return_cpos=True)
+        viewer = pl.show(cpos=cpos, return_viewer=True)
     else:
-        last_cpos = pl.show(screenshot=filepath, cpos=cpos, return_cpos=True)
-    set_last_cpos(last_cpos)
+        viewer = pl.show(screenshot=filepath, cpos=cpos, return_viewer=True)
+    set_last_cpos(viewer.camera.position)
