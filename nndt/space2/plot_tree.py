@@ -8,7 +8,7 @@ import pyvista as pv
 from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
-from nndt.global_config import PYVISTA_PRE_PARAMS, set_last_plotter
+from nndt.global_config import PYVISTA_PRE_PARAMS, set_last_cpos
 from nndt.math_core import grid_in_cube2
 from nndt.primitive_sdf import AbstractSDF
 from nndt.space2 import DEFAULT_SPACING_FOR_PLOT
@@ -140,4 +140,4 @@ def _plot(
     else:
         pl.show(screenshot=filepath, cpos=cpos)
 
-    set_last_plotter(pl)
+    set_last_cpos(pl.camera_position)

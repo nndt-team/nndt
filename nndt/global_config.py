@@ -1,17 +1,17 @@
-from typing import Tuple
+from typing import List, Optional, Tuple
 
 PYVISTA_PRE_PARAMS = dict()
 
-_plot_last_plotter = None
+_last_cpos: Optional[List[Tuple[float, float, float]]] = None
 
 
-def get_last_cpos():
-    return _plot_last_plotter
+def last_cpos():
+    return _last_cpos
 
 
-def set_last_plotter(pl):
-    global _plot_last_plotter
-    _plot_last_plotter = pl
+def set_last_cpos(cpos):
+    global _last_cpos
+    _last_cpos = cpos
 
 
 def init_colab(window_size: Tuple[int, int] = (600, 400)):
