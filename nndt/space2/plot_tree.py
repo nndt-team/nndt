@@ -8,8 +8,7 @@ import pyvista as pv
 from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
-import nndt.global_config as global_config
-from nndt.global_config import PYVISTA_PRE_PARAMS
+from nndt.global_config import PYVISTA_PRE_PARAMS, set_last_cpos
 from nndt.math_core import grid_in_cube2
 from nndt.primitive_sdf import AbstractSDF
 from nndt.space2 import DEFAULT_SPACING_FOR_PLOT
@@ -137,8 +136,7 @@ def _plot(
                         cmap_index += 1
 
     if filepath is None:
-        global_config.plot_last_cpos = pl.show(cpos=cpos, return_cpos=True)
+        last_cpos = pl.show(cpos=cpos, return_cpos=True)
     else:
-        global_config.plot_last_cpos = pl.show(
-            screenshot=filepath, cpos=cpos, return_cpos=True
-        )
+        last_cpos = pl.show(screenshot=filepath, cpos=cpos, return_cpos=True)
+    set_last_cpos(last_cpos)
