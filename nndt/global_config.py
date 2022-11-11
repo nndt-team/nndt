@@ -6,6 +6,7 @@ _plot_last_cpos = None
 
 
 def get_last_cpos():
+    global _plot_last_cpos
     return _plot_last_cpos
 
 
