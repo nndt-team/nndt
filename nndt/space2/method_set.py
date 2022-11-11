@@ -61,13 +61,13 @@ class SamplingMethodSetNode(MethodSetNode):
     @node_method("sampling_grid(spacing=(D,H,W)) -> ns_xyz[D,H,W,3]")
     def sampling_grid(self, spacing: (int, int, int) = (2, 2, 2)) -> jnp.ndarray:
         """
-        Sample points from a bounding box (bbox) according to vertex of uniform mesh.
+        Sample points from a bounding box (bbox) according to the vertex of the uniform mesh.
         This method work for the normalized space.
 
         Data transformation
         sampling_grid(spacing=(D,H,W)) -> ns_xyz[D,H,W,3]
 
-        :param spacing: Number of slices for each coordinates of the bbox.
+        :param spacing: Number of slices for each coordinate of the bbox.
         :return: 4-dimensional tensor, the last axis is (x,y,z) point position.
         """
         lower, upper = self.parent.bbox
@@ -81,15 +81,15 @@ class SamplingMethodSetNode(MethodSetNode):
         self, rng_key: KeyArray, spacing: (int, int, int) = (2, 2, 2), sigma=0.1
     ) -> jnp.ndarray:
         """
-        Sample points from a bounding box (bbox) according to vertex of uniform mesh.
-        Then, method add Gaussian noise N(0, sigma) to the point positions.
+        Sample points from a bounding box (bbox) according to the vertex of the uniform mesh.
+        Then, the method adds Gaussian noise N(0, sigma) to the point positions.
         This method work for the normalized space.
 
         Data transformation
         sampling_grid_with_noise(key, spacing=(D,H,W), sigma) -> ns_xyz[N,3]
 
         :param rng_key: a key for JAX's random generators
-        :param spacing: Number of slices for each coordinates of the bbox
+        :param spacing: Number of slices for each coordinate of the bbox
         :param sigma: Standard deviation of the Gaussian spatial noise
         :return: 4-dimensional tensor, the last axis is (x,y,z) point position
         """
@@ -106,7 +106,7 @@ class SamplingMethodSetNode(MethodSetNode):
     @node_method("sampling_uniform(key, N) -> ns_xyz[N,3]")
     def sampling_uniform(self, rng_key: KeyArray, count: int = 100) -> jnp.ndarray:
         """
-        Sample points from a bounding box (bbox) according to multidimensional uniform distribution.
+        Sample points from a bounding box (bbox) according to the multidimensional uniform distribution.
 
         Data transformation
         sampling_uniform(key, N) -> ns_xyz[N,3]
@@ -114,6 +114,7 @@ class SamplingMethodSetNode(MethodSetNode):
         :param rng_key: a key for JAX's random generators
         :param count: number of points for generation
         :return: 2-dimensional tensor, the last axis is (x,y,z) point position
+
         """
         lower, upper = self.parent.bbox
         basic_cube = uniform_in_cube(rng_key, count=count, lower=lower, upper=upper)
@@ -137,7 +138,7 @@ class MeshObjMethodSetNode(MethodSetNode):
     @node_method("surface_xyz() -> xyz[N,3]")
     def surface_xyz(self) -> jnp.ndarray:
         """
-        Return position of the surface mesh vertexes.
+        Return the position of the surface mesh vertexes.
 
         Data transformation
         surface_xyz() -> xyz[N,3]
@@ -152,7 +153,8 @@ class MeshObjMethodSetNode(MethodSetNode):
     def surface_ind2xyz(self, ind: jnp.ndarray) -> jnp.ndarray:
         """
         Convert indexes of the surface mesh vertexes to their coordinates.
-        This transformation keeps shape of the tensor.
+
+        This transformation keeps the shape of the tensor.
         Transformation is performed along the last axis.
 
         Data transformation
@@ -176,7 +178,7 @@ class MeshObjMethodSetNode(MethodSetNode):
         """
         Convert coordinates of the surface mesh vertexes to their indexes.
         If coordinates not corresponding to a mesh vertex, then the nearest vertex is detected.
-        This transformation keeps shape of the tensor. Transformation is performed along the last axis.
+        This transformation keeps the shape of the tensor. Transformation is performed along the last axis.
         Note, this method work wraps low-level KDTree implementation.
 
         Data transformation
@@ -184,6 +186,7 @@ class MeshObjMethodSetNode(MethodSetNode):
 
         :param ns_xyz: points in the normalized space
         :return: distances and indexes of the surface mesh points
+
         """
         assert ns_xyz.shape[-1] == 3
         ret_shape = calc_ret_shape(ns_xyz, 1)
@@ -201,7 +204,7 @@ class MeshObjMethodSetNode(MethodSetNode):
     def save_mesh(self, filepath: str, name_value: dict):
         """
         Save a surface mesh to .vtp file.
-        Dictionary may include data for storage. The dict key is an array name, the dict value is an array for the storage.
+        Dictionary may include data for storage. The dictionary key is an array name, the dictionary value is an array for storage.
 
         Data transformation
         save_mesh(filepath, {name, array})
@@ -244,16 +247,17 @@ class MeshObjMethodSetNode(MethodSetNode):
         self, count=1, step=1, shift=0
     ) -> (jnp.ndarray, jnp.ndarray):
         """
-        Sample points from the mesh. This is deterministic sampler, that return each `step` point from the mesh vertex sequence.
-        If an iteration pointer overcome array length, then it bring to the beginning.
+        Sample points from the mesh. This is a deterministic sampler, that returns each `step` point from the mesh vertex sequence.
+        If an iteration pointer overcomes the array length, then it brings it to the beginning.
 
         Data transformation
         sampling_eachN_from_mesh(count=N, step=M, shift=K) -> (ns_ind[N], ns_xyz[N])
 
         :param count: Number of the requested points
         :param step: Step of the iterator
-        :param shift: Shift of the first iteration from the zero index.
-        :return: array of indexes, and array of values
+        :param shift: Shift of the first iteration from the zero indexes.
+        :return: array of indexes and array of values
+
         """
         index_set, array = take_each_n(
             self.mesh._loader.points, count=count, step=step, shift=shift
@@ -281,8 +285,8 @@ class SDTMethodSetNode(MethodSetNode):
     def surface_xyz2sdt(self, ns_xyz: jnp.ndarray) -> jnp.ndarray:
         """
         Converts coordinates of points to signed distance from the points to an object surface.
-        Result of method is a tensor with values of signed distance function (SDT).
-        This transformation keeps shape of the tensor.
+        The result of the method is a tensor with values of the signed distance function (SDT).
+        This transformation keeps the shape of the tensor.
         Transformation is performed along the last axis.
 
         Data transformation
@@ -303,10 +307,10 @@ class SDTMethodSetNode(MethodSetNode):
         self, ns_xyz: jnp.ndarray, spacing=(2, 2, 2), scale=1.0
     ) -> (jnp.ndarray, jnp.ndarray):
         """
-        This method is an encoding of geometrical features for points surroundings.
+        This method is an encoding of geometrical features for the point's surroundings.
         The method creates boxes around the requested points.
-        Then, it defines uniform grid (UG) with the requested `spacing` inside the bbox.
-        Each vertex of the uniform grid (UG) are converted to value of the signed distance function.
+        Then, it defines a uniform grid (UG) with the requested `spacing` inside the bbox.
+        Each vertex of the uniform grid (UG) is converted to the value of the signed distance function.
         Thus, the method convert points to signed distance tensors (SDF) of their surroundings.
 
         Data transformation:
@@ -347,7 +351,7 @@ class ColorMethodSetNode(MethodSetNode):
     @node_method("surface_rgba() -> xyz[N,4]")
     def surface_rgba(self) -> jnp.ndarray:
         """
-        Get colors of the all surface vertexes
+        Get colors of all surface vertexes
 
         Data transformation
         surface_rgba() -> xyz[N,4]

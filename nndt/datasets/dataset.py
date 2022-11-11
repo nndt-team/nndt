@@ -23,13 +23,13 @@ class Dataset:
         """
         Get available subsets of the models
 
-        :return: list of the available datesets for the download
+        :return: list of the available datasets for the download
         """
         return [key for key in self._dict if "_test" not in key]
 
     def load(self) -> str:
         """
-        Load dataset and return path to its location.
+        Load the dataset and return the path to its location.
 
         :return: path to dataset location
         """

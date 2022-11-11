@@ -28,7 +28,7 @@ class ImpRepr(AbstractBBoxNode, IterAccessMixin):
 
         self.abstract_sdf = abstract_sdf
 
-        # This is a place for improvement
+        # TODO This is a place for improvement
         # I name this variable _loader, for compatibility with SDTMethodSetNode
         self._loader = abstract_sdf
 

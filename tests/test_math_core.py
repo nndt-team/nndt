@@ -1,7 +1,6 @@
 import unittest
 
 from nndt.math_core import *
-from nndt.primitive_sdf import sdf_primitive_sphere
 from tests.base import BaseTestCase
 
 
@@ -36,82 +35,6 @@ class MathCoreTestCase(BaseTestCase):
         self.assertEqual((4,), index_set.shape)
         self.assertEqual([1, 5, 9, 3], list(array))
         self.assertEqual([1, 5, 9, 3], list(index_set))
-
-    def test_sdf_primitive_sphere(self):
-        vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere()
-        xyz = jnp.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, 2.0]])
-
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-1.0, 0.0, 3.0]),
-                    vec_prim(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 0.0, 0.0]),
-                    vec_prim_x(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 0.0, 0.0]),
-                    vec_prim_y(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 2.0, 4.0]),
-                    vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-
-    def test_sdf_primitive_sphere2(self):
-        vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere(
-            center=(1.0, 1.0, 1.0), radius=float(jnp.sqrt(1**2 + 1**2 + 1**2))
-        )
-        xyz = jnp.array([[0.0, 0.0, 0.0]])
-
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 0.0, 0.0]),
-                    vec_prim(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-2.0, -2.0, -2.0]),
-                    vec_prim_x(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-2.0, -2.0, -2.0]),
-                    vec_prim_y(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-2.0, -2.0, -2.0]),
-                    vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
 
     def test_train_test_split(self):
         array = jnp.array([i * i for i in range(10)])

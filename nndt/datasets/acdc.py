@@ -7,7 +7,7 @@ class ACDC(Dataset):
     There are healthy patients and four types of pathologies.
 
     NNDT DOES NOT DOWNLOAD THE ORIGINAL DATA!
-    We preprocess some subsets of models to create the toy examples for testing NNDT capabilities.
+    We preprocess some subsets of models to create toy examples for testing NNDT capabilities.
 
     Available out-of-the-box model subsets:
      - `ACDC_5` includes five models from ACDC. One healthy example and four pathologies.
