@@ -2,16 +2,16 @@ from typing import Tuple
 
 PYVISTA_PRE_PARAMS = dict()
 
-_plot_last_viewer = None
+_plot_last_plotter = None
 
 
 def get_last_cpos():
-    return _plot_last_viewer
+    return _plot_last_plotter
 
 
-def set_last_viewer(cpos):
-    global _plot_last_viewer
-    _plot_last_viewer = cpos
+def set_last_plotter(pl):
+    global _plot_last_plotter
+    _plot_last_plotter = pl
 
 
 def init_colab(window_size: Tuple[int, int] = (600, 400)):
