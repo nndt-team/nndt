@@ -1,4 +1,5 @@
 from anytree import PostOrderIter, PreOrderIter
+from tqdm import tqdm
 
 from nndt.space2.abstracts import DICT_NODETYPE_PRIORITY, AbstractBBoxNode
 from nndt.space2.filesource import FileSource
@@ -42,12 +43,18 @@ class DefaultPreloader:
     def preload(self, space: Space):
 
         # Stage 1. Initialization of FileSources
-        for node in PostOrderIter(space):
+        count = len([x for x in PostOrderIter(space)])
+        for node in tqdm(
+            PostOrderIter(space), total=count, desc="Initialization of FileSources"
+        ):
             if isinstance(node, FileSource):
                 self._init_FileSource(node)
 
         # Stage 2. Initialization of Object3D
-        for node in PostOrderIter(space):
+        count = len([x for x in PostOrderIter(space)])
+        for node in tqdm(
+            PostOrderIter(space), total=count, desc="Initialization of Object3D"
+        ):
             if isinstance(node, Object3D):
                 self._init_Object3D(node)
 
@@ -58,7 +65,10 @@ class DefaultPreloader:
                             node2._loader.unload_data()
 
         # Stage 3. Initialization of Group
-        for node in PostOrderIter(space):
+        count = len([x for x in PostOrderIter(space)])
+        for node in tqdm(
+            PostOrderIter(space), total=count, desc="Initialization of Group"
+        ):
             if isinstance(node, Group):
                 self._init_Group(node)
 
