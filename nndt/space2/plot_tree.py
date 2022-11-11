@@ -139,4 +139,5 @@ def _plot(
         last_cpos = pl.show(cpos=cpos, return_cpos=True)
     else:
         last_cpos = pl.show(screenshot=filepath, cpos=cpos, return_cpos=True)
+    print(last_cpos)
     set_last_cpos(last_cpos)
