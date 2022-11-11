@@ -1,7 +1,13 @@
 __version__ = "0.0.3rc6"
 
 from nndt.datagen import DataGenForSegmentation, DataGenForShapeRegression
-from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
+from nndt.global_config import (
+    PYVISTA_PRE_PARAMS,
+    get_last_cpos,
+    init_code,
+    init_colab,
+    init_jupyter,
+)
 from nndt.haiku_modules import DescConv, LipLinear, LipMLP
 from nndt.math_core import (
     barycentric_grid,
