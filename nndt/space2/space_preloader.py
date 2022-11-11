@@ -40,21 +40,25 @@ class DefaultPreloader:
         self.ps_padding = ps_padding
         self.ns_padding = ns_padding
 
-    def preload(self, space: Space):
+    def preload(self, space: Space, verbose=True):
 
         # Stage 1. Initialization of FileSources
-        count = len([x for x in PostOrderIter(space)])
-        for node in tqdm(
-            PostOrderIter(space), total=count, desc="Initialization of FileSources"
-        ):
+        iter_tmp = PostOrderIter(space)
+        if verbose:
+            count = len([x for x in PostOrderIter(space)])
+            iter_tmp = tqdm(iter_tmp, total=count, desc="Initialization of FileSources")
+
+        for node in iter_tmp:
             if isinstance(node, FileSource):
                 self._init_FileSource(node)
 
         # Stage 2. Initialization of Object3D
-        count = len([x for x in PostOrderIter(space)])
-        for node in tqdm(
-            PostOrderIter(space), total=count, desc="Initialization of Object3D"
-        ):
+        iter_tmp = PostOrderIter(space)
+        if verbose:
+            count = len([x for x in PostOrderIter(space)])
+            iter_tmp = tqdm(iter_tmp, total=count, desc="Initialization of Object3D")
+
+        for node in iter_tmp:
             if isinstance(node, Object3D):
                 self._init_Object3D(node)
 
@@ -65,10 +69,12 @@ class DefaultPreloader:
                             node2._loader.unload_data()
 
         # Stage 3. Initialization of Group
-        count = len([x for x in PostOrderIter(space)])
-        for node in tqdm(
-            PostOrderIter(space), total=count, desc="Initialization of Group"
-        ):
+        iter_tmp = PostOrderIter(space)
+        if verbose:
+            count = len([x for x in PostOrderIter(space)])
+            iter_tmp = tqdm(iter_tmp, total=count, desc="Initialization of Group")
+
+        for node in iter_tmp:
             if isinstance(node, Group):
                 self._init_Group(node)
 
