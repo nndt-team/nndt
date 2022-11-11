@@ -136,6 +136,5 @@ def _plot(
                         cmap_index += 1
 
     if filepath is None:
-        pl.show(cpos=cpos)
-    else:
-        pl.show(screenshot=filepath, cpos=cpos)
+        return pl.show(cpos=cpos, return_viewer=True)
+    return pl.show(screenshot=filepath, cpos=cpos, return_viewer=True)
