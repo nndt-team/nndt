@@ -221,7 +221,7 @@ class AbstractBBoxNode(AbstractTreeElement):
         """
         from nndt.space2.plot_tree import _plot
 
-        return _plot(self, mode, filepath, **kwargs)
+        _plot(self, mode, filepath, **kwargs)
 
     @node_method("unload_from_memory()")
     def unload_from_memory(self):
