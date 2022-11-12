@@ -14,7 +14,7 @@ P = {
     "shape_viz": (128, 128, 128),  # shape of sampling grid for visualization
     "ns_padding": (0.1, 0.1, 0.1),  # padding in normalized space from object boundaries
     "dataset_path": "../tests/acdc_for_test",  # path to dataset
-    "exp_name": "sdt2sdf",  # name of experiment folder
+    "exp_name": "sdt2sdf_for_one_object",  # name of experiment folder
     "level_shift": 0.03,  # shift of the SDF for visualization purposes
 }
 

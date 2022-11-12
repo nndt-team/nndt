@@ -385,12 +385,10 @@ class ApproximateSDFLipMLP2(AbstractTrainableTask):
         batch_size=262144,
         model_number=2,
         lip_alpha=0.000001,
-        negative_beta=0.0,
     ):
         self.mlp_layers = mlp_layers
         self.batch_size = batch_size
         self.model_number = model_number
-        self.negative_beta = negative_beta
 
         self._init_data = ApproximateSDFLipMLP2.DATA(
             X=jnp.zeros(self.batch_size),
