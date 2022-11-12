@@ -1,3 +1,5 @@
+import warnings
+
 from anytree import PostOrderIter, PreOrderIter
 from colorama import Fore
 
@@ -143,3 +145,5 @@ class Space(AbstractBBoxNode, IterAccessMixin):
 
             self.preloader.preload(self, verbose=verbose)
             self._is_preload = True
+        else:
+            warnings.warn("Preloading was already performed. Second call is ignored.")
