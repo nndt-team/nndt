@@ -17,7 +17,7 @@
   * Pre-commit actions and the black codestyle
   * CI pipeline become faster for new PR
   * stable `main`, and `dev` branch for new features
-  * 79% of code coverage in CodeCov
+  * 77% of code coverage in CodeCov
   * 27% of docstring coverage
 * Known issues
   * Wiki page is outdated
