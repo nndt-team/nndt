@@ -10,18 +10,18 @@ P = {
     "epoch": 10001,  # number of training iterations
     "width": 64,  # number of the perceptron in the deep layers
     "depth": 8,  # number of deep layers
-    "shape": (64, 64, 64),  # shape of sampling grid
-    "shape_viz": (128, 128, 128),  # shape of sampling grid for visualization
+    "shape": (64, 64, 64),  # the shape of the sampling grid
+    "shape_viz": (128, 128, 128),  # the shape of the sampling grid for visualization
     "ns_padding": (0.1, 0.1, 0.1),  # padding in normalized space from object boundaries
     "dataset_path": "../tests/acdc_for_test",  # path to dataset
     "exp_name": "sdt2sdf_for_one_object",  # name of experiment folder
-    "level_shift": 0.03,  # shift of the SDF for visualization purposes
+    "level_shift": 0.03,  # the shift of the SDF for visualization purposes
 }
 
 
 def main():
     """
-    This example train usual MLP for representation of the models.
+    This example trains the usual MLP for the representation of the models.
     """
     space = load_from_path(P["dataset_path"])
     space.preload("shift_and_scale", ns_padding=P["ns_padding"])
@@ -44,7 +44,7 @@ def main():
             jnp.squeeze(grid_sdt), path + f"original.obj", level=P["level_shift"]
         )
 
-    # Load MLP and check results
+    # Load MLP and check the results
     space_ir = load_from_path(f"./{P['exp_name']}", template_mesh_obj=None)
     space_ir.preload("identity")
     for patient in space_ir:

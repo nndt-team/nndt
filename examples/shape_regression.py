@@ -9,23 +9,28 @@ from nndt import *
 from nndt.space2 import *
 
 P = {
-    "name_list": ["patient009", "patient089"],  # name of model for shape interpolation
+    "name_list": [
+        "patient009",
+        "patient089",
+    ],  # name of the model for shape interpolation
     "lr": 0.01,  # learning rate
     "epoch": 100001,  # number of training iterations
-    "shape": (32, 32, 32),  # shape of sampling grid
-    "flat_shape": 32 * 32 * 32,  # shape of sampling grid after the flatten
-    "shape_viz": (128, 128, 128),  # shape of sampling grid for visualization
+    "shape": (32, 32, 32),  # the shape of the sampling grid
+    "flat_shape": 32
+    * 32
+    * 32,  # the shape of the sampling grid after the flatten operation
+    "shape_viz": (128, 128, 128),  # the shape of the sampling grid for visualization
     "dataset_path": "../tests/acdc_for_test",  #
     "exp_name": "shape_regression",
     "log_folder": f"./shape_regression/",
     "ns_padding": (0.1, 0.1, 0.1),  # padding in normalized space from object boundaries
-    "level_shift": 0.06,  # shift of the SDF for visualization purposes
-    "pixel_surroundings_number": 8,  # criterion for the thin surfaces
+    "level_shift": 0.05,  # the shift of the SDF for visualization purposes
+    "pixel_surroundings_number": 8,  # the criterion for the thin surfaces
     "lip_alpha": 0.0000001,  # Lipschitz regularization constant
-    "sigma": 0.01,  # standart deviation for random shift of the grid sampling
+    "sigma": 0.01,  # the standard deviation for the random shift of the grid sampling
 }
 
-# Kernel that counts number of the surrounding pixels
+# The kernel that counts the number of the surrounding pixels
 KERNEL = jnp.array(
     [
         [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]],
@@ -35,7 +40,7 @@ KERNEL = jnp.array(
     dtype=jnp.float32,
 )[:, :, :, jnp.newaxis, jnp.newaxis]
 
-# Data generator
+# Data Generator
 class DataGen:
     def __init__(self, space, name_list, spacing):
         self.space = space
@@ -54,7 +59,7 @@ class DataGen:
         SDF_list = []
         WEIGHT_list = []
 
-        # Sampling of data from shapes that defined as a signed distance tensors (SDT)
+        # A sampling of data from shapes that are defined as signed distance tensors (SDT)
         xyz = self.space.sampling_grid_with_noise(
             key, spacing=self.spacing, sigma=P["sigma"]
         )
@@ -181,7 +186,7 @@ def main():
         rng, subkey = jax.random.split(rng)
         D1 = gen.load_batch(subkey)
 
-        if (epoch % 5000) == 0 or (epoch > 0.95 * P["epoch"]):
+        if (epoch % 5000) == 0 or (epoch > 0.98 * P["epoch"]):
             if loss < max_loss:
                 viz.save_state("sdf_model", params)
                 max_loss = loss
@@ -198,9 +203,10 @@ def main():
                         jnp.zeros(xyz.shape[0]),
                         PP,
                     ).reshape(P["shape_viz"])
-
                     viz.sdt_to_obj(
-                        f"pred_6_{c[0]}.obj", predict_sdf, level=P["level_shift"]
+                        f"pred_{P['level_shift']}_{c[0]}.obj",
+                        predict_sdf,
+                        level=P["level_shift"],
                     )
                     save_3D_slices(predict_sdf, P["log_folder"] + f"pred_{c[0]}.png")
 

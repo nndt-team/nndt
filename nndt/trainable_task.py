@@ -406,7 +406,7 @@ class ApproximateSDFLipMLP2(AbstractTrainableTask):
 
     def init_and_functions(self, rng_key: KeyArray) -> (namedtuple, namedtuple):
         def constructor():
-            net = LipMLP(output_sizes=self.mlp_layers, activation=jnp.sin)
+            net = LipMLP(output_sizes=self.mlp_layers, activation=jnp.tanh)
 
             def f_sdf(x, y, z, t, p):
                 vec = jnp.hstack([x, y, z, t, p])
