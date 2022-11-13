@@ -42,6 +42,10 @@ Tutorials
 1. [Basics for space models](tutorials/tutorial1_space_model.ipynb)
 2. [Data visualization](tutorials/tutorial2_research_viz.ipynb)
 
+Examples for conference papers:
+1. [SDT2SDF conversion for the one object](examples/sdt2sdf_for_one_object.py)
+2. [Shape regression for two objects](examples/shape_regression.py)
+
 Tests for manual evaluation
 1. [Shape interpolation](tests_manual/sdf_multiple_files.py)
 2. [Mesh segmentation (supervised)](tests_manual/mesh_segmentation.py)
