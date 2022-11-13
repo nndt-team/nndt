@@ -43,15 +43,18 @@ class DefaultPreloader:
     def preload(self, space: Space, verbose=True):
 
         # Stage 1. Initialization of FileSources
-        for node in PostOrderIter(space):
+        iter_tmp = [node for node in PostOrderIter(space)]
+        if verbose:
+            iter_tmp = tqdm(iter_tmp, desc="Initialization of FileSources")
+
+        for node in iter_tmp:
             if isinstance(node, FileSource):
                 self._init_FileSource(node)
 
         # Stage 2. Initialization of Object3D
+        iter_tmp = [node for node in PostOrderIter(space)]
         if verbose:
-            iter_tmp = tqdm(PostOrderIter(space))
-        else:
-            iter_tmp = PostOrderIter(space)
+            iter_tmp = tqdm(iter_tmp, desc="Initialization of Object3D")
 
         for node in iter_tmp:
             if isinstance(node, Object3D):
@@ -64,7 +67,11 @@ class DefaultPreloader:
                             node2._loader.unload_data()
 
         # Stage 3. Initialization of Group
-        for node in PostOrderIter(space):
+        iter_tmp = [node for node in PostOrderIter(space)]
+        if verbose:
+            iter_tmp = tqdm(iter_tmp, desc="Initialization of Group")
+
+        for node in iter_tmp:
             if isinstance(node, Group):
                 self._init_Group(node)
 
