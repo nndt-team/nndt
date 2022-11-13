@@ -1,9 +1,9 @@
 # Change log
 
 
-## NNDT 0.0.3XX [IN DEVELOPMENT!]
+## NNDT 0.0.3 (13 Nov 2022)
 * Space model of the first version is purged
-* Updated tutorials
+* Updated tutorials and two major examples
 * `nndt.datasets` for download of toy datasets
 * Short imports
 * More methods support tensors of any shape
@@ -17,15 +17,14 @@
   * Pre-commit actions and the black codestyle
   * CI pipeline become faster for new PR
   * stable `main`, and `dev` branch for new features
-  * 77% of code coverage in CodeCov
+  * 78% of code coverage in CodeCov
   * 27% of docstring coverage
 * Known issues
   * Wiki page is outdated
   * `.plot()` crush Google Colaboratory
-  * Some bugs with SDT requests in some cases 
   * Some bugs with load of `.ir1` files 
   * Some test is disabled because of CI pipeline restrictions
-  * `A-` grade, 10 issues in CodeFactor
+  * `A-` grade, 33 issues in CodeFactor
 
 ## NNDT 0.0.2 (16 Oct 2022)
 * **The partial becomes complete; the crooked, straight; the empty, full; the worn out, new.**
