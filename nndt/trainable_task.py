@@ -385,12 +385,10 @@ class ApproximateSDFLipMLP2(AbstractTrainableTask):
         batch_size=262144,
         model_number=2,
         lip_alpha=0.000001,
-        negative_beta=0.0,
     ):
         self.mlp_layers = mlp_layers
         self.batch_size = batch_size
         self.model_number = model_number
-        self.negative_beta = negative_beta
 
         self._init_data = ApproximateSDFLipMLP2.DATA(
             X=jnp.zeros(self.batch_size),
@@ -408,7 +406,7 @@ class ApproximateSDFLipMLP2(AbstractTrainableTask):
 
     def init_and_functions(self, rng_key: KeyArray) -> (namedtuple, namedtuple):
         def constructor():
-            net = LipMLP(output_sizes=self.mlp_layers, activation=jnp.sin)
+            net = LipMLP(output_sizes=self.mlp_layers, activation=jnp.tanh)
 
             def f_sdf(x, y, z, t, p):
                 vec = jnp.hstack([x, y, z, t, p])
