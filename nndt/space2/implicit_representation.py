@@ -7,6 +7,16 @@ from nndt.trainable_task import SimpleSDF
 
 
 class ImpRepr(AbstractBBoxNode, IterAccessMixin):
+    """
+    Specifies an implicit representation.
+
+
+    Args:
+        name (str): Name.
+        abstract_sdf (AbstractSDF): Abstract signed distance function.
+        parent (_type_, optional): Parent node. Defaults to None.
+    """
+
     def __init__(self, name: str, abstract_sdf: AbstractSDF, parent=None):
         super(ImpRepr, self).__init__(
             name,
@@ -24,22 +34,27 @@ class ImpRepr(AbstractBBoxNode, IterAccessMixin):
 
     @node_method("purefun_sdf()")
     def purefun_sdf(self):
+        """Return signed distance function."""
         return self.abstract_sdf.fun
 
     @node_method("purefun_vec_sdf()")
     def purefun_vec_sdf(self):
+        """Return signed distance function in vector view"""
         return self.abstract_sdf.vec_fun
 
     @node_method("purefun_vec_sdf_dx()")
     def purefun_vec_sdf_dx(self):
+        """Return signed distance function in vector view along the X-axis"""
         return self.abstract_sdf.vec_fun_dx
 
     @node_method("purefun_vec_sdf_dy()")
     def purefun_vec_sdf_dy(self):
+        """Return signed distance function in vector view along the Y-axis"""
         return self.abstract_sdf.vec_fun_dy
 
     @node_method("purefun_vec_sdf_dz()")
     def purefun_vec_sdf_dz(self):
+        """Return signed distance function in vector view along the Z-axis"""
         return self.abstract_sdf.vec_fun_dz
 
 
