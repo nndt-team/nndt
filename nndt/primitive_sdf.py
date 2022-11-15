@@ -177,10 +177,7 @@ class CylinderSDF(AbstractSDF):
         def prim(x: float, y: float, z: float):
             min_, max_ = self.bbox
 
-            xz_dist = jnp.sqrt(
-                (x - center[0]) ** 2
-                + (z - center[2]) ** 2
-            )
+            xz_dist = jnp.sqrt((x - center[0]) ** 2 + (z - center[2]) ** 2)
             y_dist = jnp.abs(y - center[1])
 
             if min_[1] <= y <= max_[1]:
@@ -192,10 +189,7 @@ class CylinderSDF(AbstractSDF):
                 if xz_dist <= radius:
                     sdf = y_dist - height / 2
                 else:
-                    sdf = jnp.sqrt(
-                        (xz_dist - radius) ** 2
-                        + (y_dist - height/2) ** 2
-                    )
+                    sdf = jnp.sqrt((xz_dist - radius) ** 2 + (y_dist - height/2) ** 2)
 
             return sdf
 
