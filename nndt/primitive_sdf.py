@@ -184,10 +184,10 @@ class CylinderSDF(AbstractSDF):
                 if xz_dist > radius:
                     sdf = xz_dist - radius
                 else:
-                    sdf = jnp.max(xz_dist - radius, y_dist - height / 2)
+                    sdf = jnp.max(xz_dist - radius, y_dist - height/2)
             else:
                 if xz_dist <= radius:
-                    sdf = y_dist - height / 2
+                    sdf = y_dist - height/2
                 else:
                     sdf = jnp.sqrt((xz_dist - radius) ** 2 + (y_dist - height/2) ** 2)
 
