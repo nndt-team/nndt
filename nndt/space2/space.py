@@ -2,6 +2,7 @@ import warnings
 
 from anytree import PostOrderIter, PreOrderIter
 from colorama import Fore
+from nndt.vizualize import ANSIConverter
 
 import nndt
 from nndt.space2.abstracts import (
@@ -72,6 +73,18 @@ class Space(AbstractBBoxNode, IterAccessMixin):
             + Fore.LIGHTBLACK_EX
             + f" {self.version}"
             + Fore.RESET
+        )
+
+    def _repr_html_(self):
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self._nodetype}:{self.name}'
+            + '</span>'
+            + f'<span style=\"color:{ANSIConverter(Fore.LIGHTBLACK_EX, type="Fore").to_rgb()}\">'
+            + f' {self.version}'
+            + '</span>'
+            + '</p>'
         )
 
     @node_method("save_space_to_file(filepath)")

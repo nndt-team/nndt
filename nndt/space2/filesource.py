@@ -1,6 +1,7 @@
 import os
 
 from colorama import Fore
+from nndt.vizualize import ANSIConverter
 
 from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
@@ -48,4 +49,18 @@ class FileSource(AbstractBBoxNode, IterAccessMixin):
             + Fore.WHITE
             + f" {self.loader_type}{star} {self.filepath}"
             + Fore.RESET
+        )
+
+    def _repr_html_(self):
+        star_bool = self._loader.is_load if self._loader is not None else False
+        star = "^" if star_bool else ""
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self._nodetype}:{self.name}'
+            + '</span>'
+            + f'<span style=\"color:{ANSIConverter(Fore.WHITE, type="Fore").to_rgb()}\">'
+            + f' {self.loader_type}{star} {self.filepath}'
+            + '</span>'
+            + '</p>'
         )

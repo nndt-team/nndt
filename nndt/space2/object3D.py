@@ -1,4 +1,5 @@
 from colorama import Fore
+from nndt.vizualize import ANSIConverter
 
 from nndt.space2.abstracts import AbstractBBoxNode, IterAccessMixin
 
@@ -27,3 +28,16 @@ class Object3D(AbstractBBoxNode, IterAccessMixin):
             + f" {self._print_bbox()}"
             + Fore.RESET
         )
+
+    def _repr_html_(self):
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self._nodetype}:{self.name}'
+            + '</span>'
+            + f'<span style=\"color:{ANSIConverter(Fore.WHITE, type="Fore").to_rgb()}\">'
+            + f' {self._print_bbox()}'
+            + '</span>'
+            + '</p>'
+        )
+

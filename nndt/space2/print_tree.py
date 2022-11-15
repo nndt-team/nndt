@@ -29,6 +29,9 @@ class PrintContainer:
     def __repr__(self):
         return self.text
 
+    def _repr_html_(self):
+        return f'<p>{self.text}</p>'
+
     def __str__(self):
         return self.text
 

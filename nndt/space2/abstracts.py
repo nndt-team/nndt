@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 from anytree import NodeMixin, PostOrderIter, Resolver
 from colorama import Fore
+from nndt.vizualize import ANSIConverter
 
 FORBIDDEN_NAME = [
     "separator",
@@ -137,6 +138,15 @@ class AbstractTreeElement(NodeMixin):
     def __repr__(self):
         return self._print_color + f"{self._nodetype}:{self.name}" + Fore.RESET
 
+    def _repr_html_(self):
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self._nodetype}:{self.name}'
+            + '</span>'
+            + '</p>'
+        )
+
     def _post_attach(self, parent):
         if isinstance(self, AbstractBBoxNode):
             if parent is not None:
@@ -180,6 +190,18 @@ class AbstractBBoxNode(AbstractTreeElement):
             + Fore.WHITE
             + f" {self._print_bbox()}"
             + Fore.RESET
+        )
+
+    def _repr_html_(self):
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self._nodetype}:{self.name}'
+            + '</span>'
+            + f'<span style=\"color:{ANSIConverter(Fore.WHITE, type="Fore").to_rgb()}\">'
+            + f' {self._print_bbox()}'
+            + '</span>'
+            + '</p>'
         )
 
     def _print_bbox(self):
