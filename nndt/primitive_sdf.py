@@ -146,3 +146,51 @@ class SphereSDF(AbstractSDF):
             return sdf
 
         return prim
+
+class CylinderSDF(AbstractSDF):
+    def __init__(self, center=(0.0, 0.0, 0.0), radius=1.0, height=1.0):
+        assert radius > 0.0 and height > 0.0
+        self.center = center
+        self.radius = radius
+        self.height = height
+        super(CylinderSDF, self).__init__()
+
+    @property
+    def bbox(self) -> ((float, float, float), (float, float, float)):
+        min_ = (
+            (self.center[0] - self.radius),
+            (self.center[1] - self.height / 2),
+            (self.center[2] - self.radius),
+        )
+        max_ = (
+            (self.center[0] + self.radius),
+            (self.center[1] + self.height / 2),
+            (self.center[2] + self.radius),
+        )
+        return min_, max_
+
+    def _get_fun(self):
+        center = self.center
+        radius = self.radius
+        height = self.height
+
+        def prim(x: float, y: float, z: float):
+            min_, max_ = self.bbox
+
+            xz_dist = jnp.sqrt((x - center[0]) ** 2 + (z - center[2]) ** 2)
+            y_dist = jnp.abs(y - center[1])
+
+            if min_[1] <= y <= max_[1]:
+                if xz_dist > radius:
+                    sdf = xz_dist - radius
+                else:
+                    sdf = jnp.max(xz_dist - radius, y_dist - height/2)
+            else:
+                if xz_dist <= radius:
+                    sdf = y_dist - height/2
+                else:
+                    sdf = jnp.sqrt((xz_dist - radius) ** 2 + (y_dist - height/2) ** 2)
+
+            return sdf
+
+        return prim
