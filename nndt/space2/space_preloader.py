@@ -128,7 +128,7 @@ class DefaultPreloader:
             ps_bbox = sdt_array_list[0].bbox
             if self.mode == "identity":
                 transform = IdentityTransform(ps_bbox=ps_bbox, parent=node)
-            elif self.mode == "shift_and_scale":
+            elif self.mode == "shift_and_scale" or self.mode == "shift and scale":
                 ps_center = (
                     (ps_bbox[0][0] + ps_bbox[1][0]) / 2.0,
                     (ps_bbox[0][1] + ps_bbox[1][1]) / 2.0,
