@@ -14,13 +14,6 @@ class MathCoreTestCase(BaseTestCase):
         self.assertEqual(0.0, float(jnp.min(cube)))
         self.assertEqual(4.0, float(jnp.max(cube)))
 
-    def test_uniform_in_cube(self):
-        rng_key = jax.random.PRNGKey(42)
-        cube = uniform_in_cube(rng_key, count=100, lower=(-2, -2, -2), upper=(2, 2, 2))
-        self.assertEqual((100, 3), cube.shape)
-        self.assertLessEqual(-2, float(jnp.min(cube)))
-        self.assertGreaterEqual(2, float(jnp.max(cube)))
-
     def test_grid_in_cube_spacing(self):
         scale = 4.0
         center_shift = (2.0, 2.0, 2.0)
@@ -30,6 +23,13 @@ class MathCoreTestCase(BaseTestCase):
         grid_in_cube(spacing=(4, -2, 1), scale=scale, center_shift=center_shift)
         grid_in_cube(spacing=(44, 44, 41), scale=scale, center_shift=center_shift)
         grid_in_cube(spacing=(-41, -44, 41), scale=scale, center_shift=center_shift)
+
+    def test_uniform_in_cube(self):
+        rng_key = jax.random.PRNGKey(42)
+        cube = uniform_in_cube(rng_key, count=100, lower=(-2, -2, -2), upper=(2, 2, 2))
+        self.assertEqual((100, 3), cube.shape)
+        self.assertLessEqual(-2, float(jnp.min(cube)))
+        self.assertGreaterEqual(2, float(jnp.max(cube)))
 
     def test_grid_in_cube2(self):
         cube = grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2))
