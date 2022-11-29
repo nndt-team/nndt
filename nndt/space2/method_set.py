@@ -213,7 +213,7 @@ class MeshObjMethodSetNode(MethodSetNode):
         :param name_value: Dictionary with name of vtk-arrays and data for the storage.
         :return:
         """
-        if filepath == "":
+        if filepath == "" or filepath is None:
             raise ValueError("filepath is empty")
 
         surface = self.mesh._loader.mesh
