@@ -141,7 +141,7 @@ class DefaultPreloader:
                     scale_ps2ns=self.scale,
                     parent=node,
                 )
-            elif self.mode == "to_cube":
+            elif self.mode == "to_cube" or self.mode == "to cube":
                 transform = ToNormalCubeTransform(ps_bbox=ps_bbox, parent=node)
             else:
                 raise NotImplementedError(
