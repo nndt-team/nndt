@@ -23,6 +23,12 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
         if os.path.exists(FILE_TMP2):
             os.remove(FILE_TMP2)
 
+    def test_space_preload_correct_modes(self):
+        modes = ["identity", "shift_and_scale", "to_cube"]
+        for mode in modes:
+            space = load_from_path(PATH_TEST_STRUCTURE)
+            space.preload(mode)
+
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
         space.init()
