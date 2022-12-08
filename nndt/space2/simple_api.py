@@ -1,7 +1,7 @@
 import fnmatch
 import os
 import warnings
-from typing import Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union
 
 import jax
 import jax.numpy as jnp
@@ -11,10 +11,10 @@ from jax.random import KeyArray
 
 from nndt.math_core import train_test_split
 from nndt.primitive_sdf import SphereSDF
-from nndt.space2 import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.filesource import FileSource
 from nndt.space2.group import Group
 from nndt.space2.implicit_representation import ImpRepr
-from nndt.space2.loader import FileSource
 from nndt.space2.method_set import SamplingMethodSetNode, SDTMethodSetNode
 from nndt.space2.object3D import Object3D
 from nndt.space2.space import Space
@@ -47,19 +47,66 @@ def _nodecls_function(parent=None, **attrs):
 
 
 def load_txt(fullpath):
+    """Load text to the default space model
+
+    Args:
+        fullpath (str): Path to the txt file.
+
+    Returns:
+        Space: space with default nodes.
+    """
     return load_only_one_file(fullpath, loader_type="txt")
 
 
 def load_sdt(fullpath):
+    """Load signed distance tensor (SDT) to the default space model
+
+    Args:
+        fullpath (str): Path to the SDT file.
+
+    Returns:
+        Space: initialized space.
+    """
     return load_only_one_file(fullpath, loader_type="sdt")
 
 
 def load_mesh_obj(fullpath):
+    """Load `.obj` mesh to the default space model
+
+    Args:
+        fullpath (str): Path to the .obj file.
+
+    Returns:
+        Space: initialized space.
+    """
     return load_only_one_file(fullpath, loader_type="mesh_obj")
 
 
+def load_implicit_ir1(fullpath):
+    """
+    Create a space model tree with group `default` and one 3D object.
+    3D object includes FileSource for `.ir1` files.
+
+    :param fullpath: path to files
+    :return: the root of the space model tree
+    """
+    return load_only_one_file(fullpath, loader_type="implicit_ir1")
+
+
 def load_only_one_file(fullpath, loader_type="txt"):
-    if loader_type not in ["txt", "sdt", "mesh_obj"]:
+    """Load one file to the default space model. Allowed types of file: txt, sdt, mesh_obj.
+
+    Args:
+        fullpath (str): Path to file.
+        loader_type (str, optional): Loader type. Allowed: txt, sdt, mes_obj. Defaults to "txt".
+
+    Raises:
+        ValueError: loader_type is unknown.
+
+    Returns:
+        Space: initialized space.
+    """
+    if loader_type not in ["txt", "sdt", "mesh_obj", "implicit_ir1"]:
         raise ValueError("loader_type is unknown")
 
     space = Space("space")
@@ -76,12 +123,29 @@ def load_from_path(
     template_txt="*.txt",
     template_sdt="*sd[ft]*.npy",
     template_mesh_obj="*.obj",
+    template_implicit_ir1="*.ir1",
 ):
+    """
+    Load all data from the directory as a space model tree.
+    Folders determine groups and 3D objects. Files become a FileSources.
+    Templates allow a user to mask some files from consideration.
+
+    NOTE, This version of NNDT only supports folder structures with equal depth.
+    FileSources must be located in terminated folders.
+
+    :param root_path: path to folder with dataset
+    :param template_txt: template for text files. None value forces the method to ignore all `.txt` files.
+    :param template_sdt: template for `.npy` files with SDT data. None value forces the method to ignore all `.npy` files.
+    :param template_mesh_obj: template for `.obj` files with surface mesh data. None value forces the method to ignore all `.obj` files.
+    :param template_implicit_ir1: template for `.ir1` files with surface mesh data. None value forces the method to ignore all `.ir1` files.
+    :return: the root of the space model tree
+    """
     if not os.path.exists(root_path):
         raise FileNotFoundError(
             f"Path {root_path} is not exist. Check relative path or folder presence."
         )
 
+    loader_type_array = []
     space = Space("space")
 
     def filename_to_loader_type(filename):
@@ -93,6 +157,10 @@ def load_from_path(
             filename, template_mesh_obj
         ):
             ret = "mesh_obj"
+        elif (template_implicit_ir1 is not None) and fnmatch.fnmatch(
+            filename, template_implicit_ir1
+        ):
+            ret = "implicit_ir1"
         else:
             warnings.warn("Some file in path is ignored")
             ret = None
@@ -113,6 +181,7 @@ def load_from_path(
                     elif ind == (len(lst) - 1):
                         loader_type = filename_to_loader_type(filename)
                         if loader_type is not None:
+                            loader_type_array.append(loader_type)
                             current_node_ = FileSource(
                                 name_, fullpath, loader_type, parent=current_node_
                             )
@@ -124,6 +193,9 @@ def load_from_path(
             lst = line2.split("/")
             add_values(lst, os.path.join(root, fl), fl)
 
+    if ("sdt" in loader_type_array) and ("implicit_ir1" in loader_type_array):
+        raise NotImplementedError("SDT and SDF simultaneously are not supported yet!")
+
     space.init()
     return space
 
@@ -132,12 +204,33 @@ def load_from_file_lists(
     name_list,
     mesh_list: Optional[Sequence[str]] = None,
     sdt_list: Optional[Sequence[str]] = None,
+    ir1_list: Optional[Sequence[str]] = None,
     test_size: Optional[float] = None,
 ) -> Space:
+    """
+    Create the space model tree with a default structure from the lists of files.
+    If the test_size is None, the tree includes root and group with the name `default`.
+    If the test_size is set, the tree includes root and groups with the name `test` and `train`.
+
+    Note, the current version of NNDT can load only SDT or only IR.
+    Both types of files together are not yet supported.
+
+    :param name_list: list of the node names
+    :param mesh_list: list of the meshes. Only the `.obj` is supported now.
+    :param sdt_list: list of the SDT array. Only the `.npy` is supported now.
+    :param ir1_list: list of implicit representations. Only the `.ir1` is supported now.
+    :param test_size: the size of the test subset from the whole dataset.
+    :return: the root of the space model tree
+    """
     if mesh_list is not None:
         assert len(name_list) == len(mesh_list)
     if sdt_list is not None:
         assert len(name_list) == len(sdt_list)
+    if ir1_list is not None:
+        assert len(name_list) == len(ir1_list)
+
+    if (sdt_list is not None) and (ir1_list is not None):
+        raise NotImplementedError("SDT and SDF simultaneously are not supported yet!")
 
     if test_size is None:
         space = Space("main")
@@ -184,6 +277,13 @@ def load_from_file_lists(
                     "sdt",
                     parent=object_,
                 )
+            if ir1_list is not None:
+                ir1_source = FileSource(
+                    os.path.basename(ir1_list[ind]),
+                    ir1_list[ind],
+                    "implicit_ir1",
+                    parent=object_,
+                )
 
         group_test = Group("test", parent=space)
         for ind in index_test:
@@ -203,12 +303,24 @@ def load_from_file_lists(
                     "sdt",
                     parent=object_,
                 )
+            if ir1_list is not None:
+                ir1_source = FileSource(
+                    os.path.basename(ir1_list[ind]),
+                    ir1_list[ind],
+                    "implicit_ir1",
+                    parent=object_,
+                )
 
     space.init()
     return space
 
 
 def read_space_from_file(filepath: str):
+    """
+    Create the space model from the `.space` file or any file with proper JSON inside.
+    :param filepath: path to file
+    :return: the root of the space model tree
+    """
     if not os.path.exists(filepath):
         raise FileNotFoundError()
 
@@ -222,6 +334,12 @@ def read_space_from_file(filepath: str):
 
 
 def from_json(json: str):
+    """
+    Create the space model tree from the json string.
+
+    :param json: json string
+    :return: the space model
+    """
     dict_imp = DictImporter(nodecls=_nodecls_function)
     json_imp = JsonImporter(dictimporter=dict_imp)
     space = json_imp.import_(json)
@@ -231,29 +349,44 @@ def from_json(json: str):
 
 
 def save_space_to_file(space: Space, filepath: str):
+    """
+    Store a space model tree to a `.space` file using JSON format
+
+    :param space: the root of a space model tree
+    :param filepath: path to file
+    :return:
+    """
     filepath_with_ext = filepath if filepath.endswith(".space") else filepath + ".space"
     with open(filepath_with_ext, "w", encoding="utf-8") as fl:
         fl.write(space.to_json())
 
 
 def to_json(space: Space):
+    """
+    Convert a space model tree to the JSON format
+
+    :param space: the root of a space model tree
+    :return: JSON as a string
+    """
     dict_exp = DictExporter(attriter=_attribute_filter, childiter=_children_filter)
     json_exp = JsonExporter(dictexporter=dict_exp, indent=2)
     return json_exp.export(space)
 
 
-def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
+def __reconstruct_tree_one_node(
+    tree_path: AbstractBBoxNode, nodelist: list, nodename: str
+):
     from nndt.space2.space_preloader import _update_bbox_bottom_to_up
 
-    train_node = Group("train", parent=tree_path)
-    for node in train:
+    train_node = Group(nodename, parent=tree_path)
+    for node in nodelist:
         node.parent = train_node
     _update_bbox_bottom_to_up(train_node)
-    test_node = Group("test", parent=tree_path)
-    for node in test:
-        node.parent = test_node
-    _update_bbox_bottom_to_up(test_node)
 
+
+def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
+    __reconstruct_tree_one_node(tree_path, train, "train")
+    __reconstruct_tree_one_node(tree_path, test, "test")
     tree_path.root.init()
     return tree_path.root
 
@@ -261,6 +394,15 @@ def __reconstruct_tree(tree_path: AbstractBBoxNode, train: list, test: list):
 def split_node_test_train(
     rng_key: KeyArray, tree_path: AbstractBBoxNode, test_size: float = 0.3
 ):
+    """
+    Split the node into two nodes according to the requested proportion. This method creates nodes with test and train names.
+    New nodes are attached as new groups.
+
+    :param rng_key: a key for JAX's random generators
+    :param tree_path: node of the space model tree for the split
+    :param test_size: the size of the test subset. the value must range between 0 and 1.
+    :return: the root of the space model tree
+    """
     child_ = tree_path._container_only_list()
     indices = jnp.arange(len(child_))
 
@@ -279,13 +421,35 @@ def split_node_kfold(
     n_fold: int = 5,
     k_for_test: Union[Sequence[int], int] = 0,
 ):
+    """
+    Split the node into several nodes according to the k-fold approach. This method creates nodes with test and train names.
+    New nodes are attached as new groups.
+
+    :param tree_path: node of the space model tree for the split
+    :param n_fold: number of folds
+    :param k_for_test: index or list of indexes that were attached as the test group
+    :return: the root of the space model tree
+    """
     child_ = tree_path._container_only_list()
-    assert len(child_) >= n_fold
+    if len(child_) < n_fold:
+        raise ValueError(
+            "Number of node children is less than requested k-fold number."
+        )
+
     folds = jnp.array_split(jnp.arange(len(child_), dtype=int), n_fold)
     k_lst = [k_for_test] if isinstance(k_for_test, int) else list(k_for_test)
+
+    if len(k_lst) > len(set(k_lst)):
+        raise ValueError("All indexes in k_for_test must be unique.")
+
+    for k_val in k_lst:
+        if not (0 <= k_val <= len(child_)):
+            raise ValueError(
+                f"Index {k_val} in k_for_test is out of {n_fold}-fold range."
+            )
+
     train_ind = []
     test_ind = []
-
     for fold_i, fold_tpl in enumerate(folds):
         for i in fold_tpl:
             if fold_i in k_lst:
@@ -300,9 +464,55 @@ def split_node_kfold(
     return root
 
 
+def split_node_namelist(
+    tree_path: AbstractBBoxNode, dict_nodename_namelist: Dict[str, Sequence[str]]
+):
+    """
+    Split node to several nodes according to the dictionary. New nodes are attached as new groups.
+
+    :param tree_path: node of the space model tree for the split
+    :param dict_nodename_namelist: the key is a name for the new group. value is a list of children for the new group.
+    :return: the root of the space model tree
+    """
+    lst_nodenames = [child.name for child in tree_path]
+    lst_temp = [child.name for child in tree_path]
+    for nodename, namelist in dict_nodename_namelist.items():
+        for name in namelist:
+            if name not in lst_nodenames:
+                raise ValueError(
+                    f"Name {name} is not a valid child of {tree_path.name}"
+                )
+            if name not in lst_temp:
+                raise ValueError(f"Name {name} is duplicated in dict_nodename_namelist")
+            else:
+                lst_temp.remove(name)
+
+    if len(lst_temp):
+        raise ValueError(
+            f"The following names are not mentioned in dict_nodename_namelist: {lst_temp}"
+        )
+
+    for nodename, namelist in dict_nodename_namelist.items():
+        __reconstruct_tree_one_node(
+            tree_path, [tree_path[name] for name in namelist], nodename
+        )
+
+    tree_path.root.init()
+    return tree_path.root
+
+
 def add_sphere(
     tree_path: AbstractBBoxNode, name, center: (float, float, float), radius: float
 ):
+    """
+    Add sphere primitive to the space model tree
+
+    :param tree_path: node in the space model tree
+    :param name: name of the primitive
+    :param center: center of the sphere
+    :param radius: radius of the sphere
+    :return: the root of the tree
+    """
     assert isinstance(tree_path, (Space, Group))
 
     sph = SphereSDF(center=center, radius=radius)

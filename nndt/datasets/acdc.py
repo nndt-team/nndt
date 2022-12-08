@@ -2,6 +2,19 @@ from nndt.datasets.dataset import Dataset
 
 
 class ACDC(Dataset):
+    """
+    ACDC dataset includes 100 models of the left and right ventricles of the human heart.
+    There are healthy patients and four types of pathologies.
+
+    NNDT DOES NOT DOWNLOAD THE ORIGINAL DATA!
+    We preprocess some subsets of models to create toy examples for testing NNDT capabilities.
+
+    Available out-of-the-box model subsets:
+     - `ACDC_5` includes five models from ACDC. One healthy example and four pathologies.
+
+    Source: https://www.creatis.insa-lyon.fr/Challenge/acdc/
+    """
+
     def __init__(self, name="ACDC_5", to_path=None):
         super().__init__(name=name, to_path=to_path)
 

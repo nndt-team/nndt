@@ -1,55 +1,50 @@
-name: ci-workflow
+name: ci-dev
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
-      - main
+      - dev
+
+permissions:
+  actions: write
 
 jobs:
-  ci:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-    runs-on: ${{ matrix.os }}
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
       - name: Set up Python
-        id: setup_python
         uses: actions/setup-python@master
         with:
           python-version: 3.8
+
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          python -m pip install --upgrade pip wheel
+          echo "::set-output name=dir::$(pip cache dir)"
 
       - name: Cache python modules
         uses: actions/cache@master
         id: cache-modules
         with:
-          path: ./.venv/
-          key: pip-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py', '**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install requirements
-        if: steps.cache-modules.outputs.cache-hit != 'true'
         run: |
-          python -m venv ./.venv
-          . ./.venv/bin/activate
-          python setup.py install
-
-      - name: Check code style
-        run: |
-          . ./.venv/bin/activate
-          pip install black black[jupyter]
-          black --check .
+          pip install -r requirements-dev.txt
 
       - name: Unpack testing data
         run: |
-          . ./.venv/bin/activate
+          7z x tests/tree_for_test.7z
           7z x tests/acdc_for_test.7z
 
       - name: Generate coverage report
         run: |
-          . ./.venv/bin/activate
-          pip install pytest pytest-cov
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
@@ -57,4 +52,5 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
-          flags: unittests
+          flags: pytest
+          fail_ci_if_error: true

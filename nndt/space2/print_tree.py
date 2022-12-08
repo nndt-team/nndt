@@ -2,14 +2,11 @@ from typing import Optional
 
 from anytree import RenderTree
 
-from nndt.space2 import (
-    AbstractBBoxNode,
-    AbstractTransformation,
-    AbstractTreeElement,
-    FileSource,
-    ImpRepr,
-    MethodSetNode,
-)
+from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
+from nndt.space2.filesource import FileSource
+from nndt.space2.implicit_representation import ImpRepr
+from nndt.space2.method_set import MethodSetNode
+from nndt.space2.transformation import AbstractTransformation
 
 
 def _construct_filter(child_classes, not_parent_classes):
@@ -23,6 +20,17 @@ def _construct_filter(child_classes, not_parent_classes):
         return ret
 
     return filter_
+
+
+class PrintContainer:
+    def __init__(self, text):
+        self.text = text
+
+    def __repr__(self):
+        return self.text
+
+    def __str__(self):
+        return self.text
 
 
 def _pretty_print(node: AbstractTreeElement, mode: Optional[str] = "default"):
@@ -42,4 +50,4 @@ def _pretty_print(node: AbstractTreeElement, mode: Optional[str] = "default"):
         ret = RenderTree(node).__str__()
     else:
         raise NotImplementedError(f"{mode} is not implemented for the explore method. ")
-    return ret
+    return PrintContainer(ret)

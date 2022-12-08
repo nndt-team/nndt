@@ -1,17 +1,30 @@
 # Change log
 
 
-## NNDT 0.0.3XX [IN DEVELOPMENT!]
+## NNDT 0.0.3 (13 Nov 2022)
+* Space model of the first version is purged
+* Updated tutorials and two major examples
 * `nndt.datasets` for download of toy datasets
+* Short imports
 * More methods support tensors of any shape
-* Imports are shorter for users
+* New data generators for out-of-the-box solvers: `DataGenForShapeRegression`, `DataGenForSegmentation`
+* Added new color iterations for `.plot()`, and new color scheme for `.print()`
 * New methods
   * Surface data (+2):  `.surface_xyz()`, `.surface_rgba()`
-  * Space model modification (1): `split_node_kfold`
+  * Space model modification (+2): `split_node_kfold`, `split_node_namelist`
+  * Visualization (+2): `save_sdt_as_obj`, `save_3D_slices`
 * Code quality
+  * Pre-commit actions and the black codestyle
   * CI pipeline become faster for new PR
-  * 75% of code coverage in CodeCov
-  * `A` grade, 10 issues in CodeFactor
+  * stable `main`, and `dev` branch for new features
+  * 78% of code coverage in CodeCov
+  * 27% of docstring coverage
+* Known issues
+  * Wiki page is outdated
+  * `.plot()` crush Google Colaboratory
+  * Some bugs with load of `.ir1` files 
+  * Some test is disabled because of CI pipeline restrictions
+  * `A-` grade, 33 issues in CodeFactor
 
 ## NNDT 0.0.2 (16 Oct 2022)
 * **The partial becomes complete; the crooked, straight; the empty, full; the worn out, new.**

@@ -5,10 +5,11 @@ from typing import *
 
 import jax.numpy as jnp
 import matplotlib.pylab as plt
+import numpy as np
 import numpy as onp
+from mpl_toolkits.axes_grid1 import AxesGrid
 
-from nndt.space2 import array_to_vert_and_faces, save_verts_and_faces_to_obj
-from nndt.space.repr_mesh import SaveMesh
+from nndt.space2.utils import fix_file_extension
 
 
 class IteratorWithTimeMeasurements:
@@ -48,6 +49,150 @@ class IteratorWithTimeMeasurements:
         return self.epochs
 
 
+def save_sdt_as_obj(
+    array: Union[jnp.ndarray, onp.ndarray], path: str, level: float = 0.0
+):
+    """
+    Run marching cubes over SDT and save results to file
+
+    Parameters
+    ----------
+    filename : string
+        File name
+    array : ndarray
+        Signed distance tensor (SDT)
+    level : float
+        Isosurface level (defaults to 0.).
+    """
+    assert array.ndim == 3
+    array_ = onp.array(array)
+
+    from nndt.space2.utils import array_to_vert_and_faces, save_verts_and_faces_to_obj
+
+    verts, faces = array_to_vert_and_faces(array_, level=level)
+    save_verts_and_faces_to_obj(fix_file_extension(path, ".obj"), verts, faces)
+
+
+def save_3D_slices(
+    array: Union[onp.ndarray, jnp.ndarray],
+    path: str = None,
+    slice_num: int = 5,
+    include_boundary=True,
+    figsize=None,
+    levels=(0.0,),
+    level_colors=("white",),
+    **kwargs,
+):
+    """
+    Generates a panel of images with slices of the 3D array. This is a helper function for studying 3D tensors.
+
+    :param path: path to the image for write
+    :param array: studied array
+    :param slice_num: number of slices over array axis
+    :param include_boundary: If True, the image will include boundaries of the array with indexes 0 and len(array)-1
+    :param figsize: the size of the image. If None, the size will be calculated according to the number of panels.
+    :param levels: Isoline values. This param is ignored if RGB/RGBA image is passed.
+    :param level_colors: Isoline colors. This param is ignored if RGB/RGBA image is passed.
+    :param kwargs: parameter set that is passed to the `.imshow()` method
+    :return: none
+    """
+    panel_size = slice_num if include_boundary else slice_num - 2
+    assert panel_size > 0
+    assert slice_num > 0 and panel_size > 0
+    assert array.ndim == 3 or (array.ndim == 4 and (array.shape[-1] in (1, 3, 4)))
+    assert len(levels) == len(level_colors)
+
+    is_color = array.ndim == 4 and (array.shape[-1] in (3, 4))
+
+    if figsize is None:
+        figsize = (3 * panel_size, 3 * 3)
+
+    fig = plt.figure(figsize=figsize)
+    if is_color:
+        grid = AxesGrid(
+            fig,
+            111,
+            nrows_ncols=(3, panel_size),
+            axes_pad=0.05,
+            label_mode="L",
+        )
+    else:
+        grid = AxesGrid(
+            fig,
+            111,
+            nrows_ncols=(3, panel_size),
+            axes_pad=0.05,
+            cbar_mode="single",
+            cbar_location="right",
+            cbar_pad=0.1,
+            label_mode="L",
+        )
+
+    slices_x = np.linspace(0, array.shape[0] - 1, slice_num).astype(int)
+    slices_y = np.linspace(0, array.shape[1] - 1, slice_num).astype(int)
+    slices_z = np.linspace(0, array.shape[2] - 1, slice_num).astype(int)
+
+    if not include_boundary:
+        slices_x = slices_x[1:-1]
+        slices_y = slices_y[1:-1]
+        slices_z = slices_z[1:-1]
+
+    array_ = array[..., np.newaxis] if (array.ndim == 3) else array
+    for ind_ax, ax in zip(slices_x, grid[:panel_size]):
+        im = ax.imshow(
+            array_[ind_ax, :, :, 0:3].squeeze(),
+            vmin=float(jnp.nanmin(array_)),
+            vmax=float(jnp.nanmax(array_)),
+            **kwargs,
+        )
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
+            _cs2 = ax.contour(
+                array_[ind_ax, :, :, 0:3].squeeze(),
+                levels=levels,
+                origin="lower",
+                colors=level_colors,
+            )
+    for ind_ax, ax in zip(slices_y, grid[panel_size : panel_size * 2]):
+        im = ax.imshow(
+            array_[:, ind_ax, :, 0:3].squeeze(),
+            vmin=float(jnp.nanmin(array_)),
+            vmax=float(jnp.nanmax(array_)),
+            **kwargs,
+        )
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
+            _cs2 = ax.contour(
+                array_[:, ind_ax, :, 0:3].squeeze(),
+                levels=levels,
+                origin="lower",
+                colors=level_colors,
+            )
+    for ind_ax, ax in zip(slices_z, grid[2 * panel_size :]):
+        im = ax.imshow(
+            array_[:, :, ind_ax, 0:3].squeeze(),
+            vmin=float(jnp.nanmin(array_)),
+            vmax=float(jnp.nanmax(array_)),
+            **kwargs,
+        )
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
+            _cs2 = ax.contour(
+                array_[:, :, ind_ax, 0:3].squeeze(),
+                levels=levels,
+                origin="lower",
+                colors=level_colors,
+            )
+
+    if not is_color:
+        cbar = ax.cax.colorbar(im)
+        cbar = grid.cbar_axes[0].colorbar(im)
+        if not is_color and len(levels) > 0 and len(level_colors) > 0:
+            cbar.add_lines(_cs2)
+
+    if path is not None:
+        fig.savefig(path)
+    else:
+        plt.show()
+
+
 class BasicVizualization:
     """
     Simple MLOps class for storing the train history and visualization of intermediate results
@@ -57,6 +202,8 @@ class BasicVizualization:
         self, folder: str, experiment_name: Optional[str] = None, print_on_each_epoch=20
     ):
         """
+        Simple MLOps class for storing the train history and visualization of intermediate results
+
         :param folder: folder for store results
         :param experiment_name: name for an experiments
         :param print_on_each_epoch: this parameter helps to control intermediate result output
@@ -124,7 +271,7 @@ class BasicVizualization:
         plt.savefig(os.path.join(self.folder, f"{name}.jpg"))
 
     def save_state(self, name, state):
-        """Save neural network state into the file
+        """Save the neural network state into the file
 
         Parameters
         ----------
@@ -162,15 +309,9 @@ class BasicVizualization:
         level : float
             Isosurface level (defaults to 0.).
         """
-        assert array.ndim == 3
-        array_ = onp.array(array)
+        save_sdt_as_obj(array, os.path.join(self.folder, f"{filename}.obj"), level)
 
-        verts, faces = array_to_vert_and_faces(array_, level=level)
-        save_verts_and_faces_to_obj(
-            os.path.join(self.folder, f"{filename}.obj"), verts, faces
-        )
-
-    def save_mesh(self, name, save_method: SaveMesh, dict_):
+    def save_mesh(self, name, save_method, dict_):
         """Save mesh to .vtp file with data
 
         Parameters
@@ -185,7 +326,7 @@ class BasicVizualization:
         save_method(os.path.join(self.folder, f"{name}.vtp"), dict_)
 
     def save_3D_array(self, name, array, section_img=True):
-        """Save 3D array to a file and section of this array as images
+        """Save the 3D array to a file and section of this array as images
 
         Parameters
         ----------
@@ -203,20 +344,20 @@ class BasicVizualization:
             plt.close(1)
             plt.figure(1)
             plt.title(f"{self.experiment_name}_{name}_0")
-            plt.imshow(array[array.shape[0] // 2, :, :], cmap="turbo")
+            plt.imshow(array[array.shape[0] // 2, :, :])
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_0.jpg"))
 
             plt.close(1)
             plt.figure(1)
             plt.title(f"{self.experiment_name}_{name}_1")
-            plt.imshow(array[:, array.shape[1] // 2, :], cmap="turbo")
+            plt.imshow(array[:, array.shape[1] // 2, :])
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_1.jpg"))
 
             plt.close(1)
             plt.figure(1)
             plt.title(f"{self.experiment_name}_{name}_2")
-            plt.imshow(array[:, :, array.shape[2] // 2], cmap="turbo")
+            plt.imshow(array[:, :, array.shape[2] // 2])
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_2.jpg"))

@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import numpy as onp
 from colorama import Fore
 
-from nndt.space2 import AbstractBBoxNode, node_method
+from nndt.space2.abstracts import AbstractBBoxNode, node_method
 
 
 class AbstractTransformation(AbstractBBoxNode):
@@ -156,10 +156,10 @@ class IdentityTransform(AbstractTransformation):
 
 class ShiftAndScaleTransform(AbstractTransformation):
     """
-    Transfer objects from a physical space to normalized space using shift and scale transformation.
+    Transfer objects from a physical space to a normalized space using shift and scale transformation.
 
     Args:
-        ps_bbox (float, float, float): boundary box in form.
+        ps_bbox (float, float, float): boundary box in a form.
         ps_center (float, float, float): Physical space center.
         ns_center (float, float, float): Normalized space center.
         scale_ps2ns (float): Scale.
@@ -250,12 +250,12 @@ class ShiftAndScaleTransform(AbstractTransformation):
 
 class ToNormalCubeTransform(AbstractTransformation):
     """
-    Transfer objects from a physical space to normalized space.
-    All objects are scales to cube with coordinates from -1 to 1.
+    Transfer objects from a physical space to a normalized space.
+    All objects are scaled to cubes with coordinates from -1 to 1.
     This approach is similar to NormalScaler in scikit-learn.
 
     Args:
-        ps_bbox (float, float, float):  boundary box in form.
+        ps_bbox (float, float, float):  boundary box in the form.
         parent (_type_, optional):  parent node. Defaults to None.
     """
 

@@ -1,18 +1,31 @@
+import os.path
 import unittest
 
 import jax.numpy as jnp
+import numpy as np
 
+from nndt.math_core import grid_in_cube2
 from nndt.space2 import load_from_path
+from nndt.space2.loader import SDTLoader
 from tests.base import PATH_TEST_ACDC, PATH_TEST_STRUCTURE, BaseTestCase
 
 FILE_TMP = "./test_file.space"
 FILE_TMP2 = "./test_file2.space"
+FILE_TMP3 = "./data_for_sdt_test.npy"
 
 
 class LoadersTestCase(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+
+    def tearDown(self) -> None:
+        if os.path.exists(FILE_TMP):
+            os.remove(FILE_TMP)
+        if os.path.exists(FILE_TMP2):
+            os.remove(FILE_TMP2)
+        if os.path.exists(FILE_TMP3):
+            os.remove(FILE_TMP3)
 
     def cmp_array(self, arr0, arr1, atol=0.1):
         arr0_ = jnp.array(arr0)
@@ -40,27 +53,31 @@ class LoadersTestCase(BaseTestCase):
     def test_preload_check_access_to_field_mesh(self):
         space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
 
-        self.assertNotIn("^", space.patient069.colored_obj.print())
+        self.assertNotIn("^", space.patient069.colored_obj.print().__str__())
         self.assertIsNotNone(space.patient069.colored_obj._loader.mesh)
-        self.assertIn("^", space.patient069.colored_obj.print())
+        self.assertIn("^", space.patient069.colored_obj.print().__str__())
 
     def test_preload_unload_from_memory(self):
         space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=True)
 
-        self.assertIn("^", space.patient069.print())
+        self.assertIn("^", space.patient069.print().__str__())
         space.patient069.unload_from_memory()
-        self.assertNotIn("^", space.patient069.print())
+        self.assertNotIn("^", space.patient069.print().__str__())
 
-        self.assertIn("^", space.print())
+        self.assertIn("^", space.print().__str__())
         space.unload_from_memory()
-        self.assertNotIn("^", space.print())
+        self.assertNotIn("^", space.print().__str__())
 
-    def BROKEN_test_preload_check_access_to_field_text(self):
+    def test_preload_check_access_to_field_text(self):
         space = self.helper_preload_call(PATH_TEST_STRUCTURE, keep_in_memory=False)
 
-        self.assertNotIn("^", space.group1.patient11.organ110.data1100_txt.print())
+        self.assertNotIn(
+            "^", space.group1.patient11.organ110.data1100_txt.print().__str__()
+        )
         self.assertIsNotNone(space.group1.patient11.organ110.data1100_txt._loader.text)
-        self.assertIn("^", space.group1.patient11.organ110.data1100_txt.print())
+        self.assertIn(
+            "^", space.group1.patient11.organ110.data1100_txt.print().__str__()
+        )
 
     def test_preload_ps_bbox_in_mesh(self):
         space = self.helper_preload_call(PATH_TEST_ACDC, keep_in_memory=False)
@@ -294,6 +311,56 @@ class LoadersTestCase(BaseTestCase):
         with self.assertRaises(FileNotFoundError):
             space = load_from_path("../../../../../acdc_for_test")
             space.preload()
+
+    def test_extrapolation_outside_the_sdf(self):
+        data = jnp.array(
+            [
+                [
+                    [np.sqrt(3.0), np.sqrt(2.0), np.sqrt(3.0)],
+                    [np.sqrt(2.0), np.sqrt(1.0), np.sqrt(2.0)],
+                    [np.sqrt(3.0), np.sqrt(2.0), np.sqrt(3.0)],
+                ],
+                [
+                    [np.sqrt(2.0), np.sqrt(1.0), np.sqrt(2.0)],
+                    [np.sqrt(1.0), np.sqrt(0.0), np.sqrt(1.0)],
+                    [np.sqrt(2.0), np.sqrt(1.0), np.sqrt(2.0)],
+                ],
+                [
+                    [np.sqrt(3.0), np.sqrt(2.0), np.sqrt(3.0)],
+                    [np.sqrt(2.0), np.sqrt(1.0), np.sqrt(2.0)],
+                    [np.sqrt(3.0), np.sqrt(2.0), np.sqrt(3.0)],
+                ],
+            ]
+        )
+
+        jnp.save(FILE_TMP3, data)
+        loader = SDTLoader(FILE_TMP3)
+        xyz_request = grid_in_cube2((7, 7, 7), lower=(-2, -2, -2), upper=(4, 4, 4))
+
+        sdt_request = loader.request(xyz_request)
+
+        self.assertEqual((7, 7, 7, 1), sdt_request.shape)
+        self.assertAlmostEqual(
+            float(jnp.sqrt(1 * 3)), float(sdt_request[2, 2, 2]), places=4
+        )
+        self.assertAlmostEqual(float(0.0), float(sdt_request[3, 3, 3]), places=4)
+        self.assertAlmostEqual(
+            float(jnp.sqrt(1 * 2)), float(sdt_request[3, 4, 4]), places=4
+        )
+        self.assertAlmostEqual(
+            float(3 * jnp.sqrt(3)), float(sdt_request[0, 0, 0]), places=4
+        )
+        self.assertAlmostEqual(
+            float(3 * jnp.sqrt(3)), float(sdt_request[6, 6, 6]), places=4
+        )
+        self.assertAlmostEqual(
+            float(3 * jnp.sqrt(2)), float(sdt_request[0, 0, 3]), places=4
+        )
+        self.assertAlmostEqual(
+            float(3 * jnp.sqrt(2)), float(sdt_request[6, 6, 3]), places=4
+        )
+        self.assertAlmostEqual(float(3), float(sdt_request[0, 3, 3]), places=4)
+        self.assertAlmostEqual(float(3), float(sdt_request[6, 3, 3]), places=4)
 
 
 if __name__ == "__main__":

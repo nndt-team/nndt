@@ -2,6 +2,9 @@ coverage:
   range: 70..90
   round: down
   precision: 2
+  status:
+    project: off
+    patch: off
 
 fixes:
   - "/home/runner/work/nndt/nndt/::"

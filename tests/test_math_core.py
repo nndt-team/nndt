@@ -1,7 +1,6 @@
 import unittest
 
 from nndt.math_core import *
-from nndt.primitive_sdf import sdf_primitive_sphere
 from tests.base import BaseTestCase
 
 
@@ -15,11 +14,15 @@ class MathCoreTestCase(BaseTestCase):
         self.assertEqual(0.0, float(jnp.min(cube)))
         self.assertEqual(4.0, float(jnp.max(cube)))
 
-    def test_grid_in_cube2(self):
-        cube = grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2))
-        self.assertEqual((4, 4, 4, 3), cube.shape)
-        self.assertEqual(-2, float(jnp.min(cube)))
-        self.assertEqual(2, float(jnp.max(cube)))
+    def test_grid_in_cube_spacing(self):
+        scale = 4.0
+        center_shift = (2.0, 2.0, 2.0)
+        grid_in_cube(spacing=(4, 4, 4), scale=scale, center_shift=center_shift)
+        grid_in_cube(spacing=(15, 2, 4), scale=scale, center_shift=center_shift)
+        grid_in_cube(spacing=(4, 0, 4), scale=scale, center_shift=center_shift)
+        grid_in_cube(spacing=(4, -2, 1), scale=scale, center_shift=center_shift)
+        grid_in_cube(spacing=(44, 44, 41), scale=scale, center_shift=center_shift)
+        grid_in_cube(spacing=(-41, -44, 41), scale=scale, center_shift=center_shift)
 
     def test_uniform_in_cube(self):
         rng_key = jax.random.PRNGKey(42)
@@ -27,6 +30,22 @@ class MathCoreTestCase(BaseTestCase):
         self.assertEqual((100, 3), cube.shape)
         self.assertLessEqual(-2, float(jnp.min(cube)))
         self.assertGreaterEqual(2, float(jnp.max(cube)))
+
+    def test_grid_in_cube2(self):
+        cube = grid_in_cube2(spacing=(4, 4, 4), lower=(-2, -2, -2), upper=(2, 2, 2))
+        self.assertEqual((4, 4, 4, 3), cube.shape)
+        self.assertEqual(-2, float(jnp.min(cube)))
+        self.assertEqual(2, float(jnp.max(cube)))
+
+    def test_grid_in_cube2_spacing(self):
+        lower = (-2, -2, -2)
+        upper = (2, 2, 2)
+        grid_in_cube2(spacing=(4, 4, 4), lower=lower, upper=upper)
+        grid_in_cube2(spacing=(40, 4, 4), lower=lower, upper=upper)
+        grid_in_cube2(spacing=(4, 0, 4), lower=lower, upper=upper)
+        grid_in_cube2(spacing=(4, -4, 1), lower=lower, upper=upper)
+        grid_in_cube2(spacing=(47, 55, 12), lower=lower, upper=upper)
+        grid_in_cube2(spacing=(54, -43, -41), lower=lower, upper=upper)
 
     def test_take_each_n(self):
         index_set, array = take_each_n(
@@ -36,82 +55,6 @@ class MathCoreTestCase(BaseTestCase):
         self.assertEqual((4,), index_set.shape)
         self.assertEqual([1, 5, 9, 3], list(array))
         self.assertEqual([1, 5, 9, 3], list(index_set))
-
-    def test_sdf_primitive_sphere(self):
-        vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere()
-        xyz = jnp.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, 2.0]])
-
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-1.0, 0.0, 3.0]),
-                    vec_prim(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 0.0, 0.0]),
-                    vec_prim_x(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 0.0, 0.0]),
-                    vec_prim_y(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 2.0, 4.0]),
-                    vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-
-    def test_sdf_primitive_sphere2(self):
-        vec_prim, vec_prim_x, vec_prim_y, vec_prim_z = sdf_primitive_sphere(
-            center=(1.0, 1.0, 1.0), radius=float(jnp.sqrt(1**2 + 1**2 + 1**2))
-        )
-        xyz = jnp.array([[0.0, 0.0, 0.0]])
-
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([0.0, 0.0, 0.0]),
-                    vec_prim(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-2.0, -2.0, -2.0]),
-                    vec_prim_x(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-2.0, -2.0, -2.0]),
-                    vec_prim_y(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
-        self.assertTrue(
-            bool(
-                jnp.allclose(
-                    jnp.array([-2.0, -2.0, -2.0]),
-                    vec_prim_z(xyz[:, 0], xyz[:, 1], xyz[:, 2]),
-                )
-            )
-        )
 
     def test_train_test_split(self):
         array = jnp.array([i * i for i in range(10)])
@@ -279,9 +222,9 @@ class BarycentricGridTestCase(unittest.TestCase):
         self.assertTrue(abs(float(jnp.dot(M[0], M[1]))) < 0.0000001)
         self.assertTrue(abs(float(jnp.dot(M[1], M[2]))) < 0.0000001)
         self.assertTrue(abs(float(jnp.dot(M[0], M[2]))) < 0.0000001)
-        self.assertTrue(abs(float(jnp.linalg.norm(M[0])) - 1.0) < 0.0000001)
-        self.assertTrue(abs(float(jnp.linalg.norm(M[1])) - 1.0) < 0.0000001)
-        self.assertTrue(abs(float(jnp.linalg.norm(M[2])) - 1.0) < 0.0000001)
+        self.assertTrue(abs(float(jnp.linalg.norm(M[0])) - 1.0) < 0.000001)
+        self.assertTrue(abs(float(jnp.linalg.norm(M[1])) - 1.0) < 0.000001)
+        self.assertTrue(abs(float(jnp.linalg.norm(M[2])) - 1.0) < 0.000001)
 
     def test_scale_xyz(self):
         xyz = jnp.array([1.0, 2.0, 3.0])
@@ -292,6 +235,30 @@ class BarycentricGridTestCase(unittest.TestCase):
         assert jnp.allclose(
             jnp.array([0.0, 0.0, 0.0]), scale_xyz(xyz, scale=(3.0, -4.0, 5.0))
         )
+
+    def test_scale_xyz_scale(self):
+        xyz = jnp.array([1.0, 2.0, 3.0])
+        scale_xyz(xyz, scale=(3.0, -4.0, 5.0))
+        scale_xyz(xyz, scale=(23e5, -22e5, 65e5))
+        scale_xyz(xyz, scale=(23e5, -22e5, 0.0))
+        scale_xyz(xyz, scale=(-32e5, -25e5, -11e5))
+        scale_xyz(xyz, scale=(0.0, -25e5, -11e5))
+        scale_xyz(xyz, scale=(32e5, 25e5, 11e5))
+
+    def test_shift_xyz(self):
+        xyz = jnp.array([1.0, 2.0, 3.0])
+        assert jnp.allclose(
+            jnp.array([4.0, -2.0, 8.0]), shift_xyz(xyz, shift=(3.0, -4.0, 5.0))
+        )
+
+    def test_shift_xyz_shift(self):
+        xyz = jnp.array([1.0, 2.0, 3.0])
+        shift_xyz(xyz, shift=(3.0, -4.0, 5.0))
+        shift_xyz(xyz, shift=(23e5, -22e5, 65e5))
+        shift_xyz(xyz, shift=(23e5, -22e5, 0.0))
+        shift_xyz(xyz, shift=(-32e5, -25e5, -11e5))
+        shift_xyz(xyz, shift=(0.0, -25e5, -11e5))
+        shift_xyz(xyz, shift=(32e5, 25e5, 11e5))
 
 
 if __name__ == "__main__":

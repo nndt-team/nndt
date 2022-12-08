@@ -1,30 +1,27 @@
-__version__ = "0.0.3a2"
+__version__ = "0.0.3rc6"
 
-import nndt.space2.plot_tree
-from nndt.math_core import *
-from nndt.primitive_sdf import SphereSDF
+from nndt.datagen import DataGenForSegmentation, DataGenForShapeRegression
+from nndt.global_config import PYVISTA_PRE_PARAMS, init_code, init_colab, init_jupyter
+from nndt.haiku_modules import DescConv, LipLinear, LipMLP
+from nndt.math_core import (
+    barycentric_grid,
+    grid_in_cube,
+    grid_in_cube2,
+    help_barycentric_grid,
+    rotation_matrix,
+    scale_xyz,
+    shift_xyz,
+    take_each_n,
+    train_test_split,
+    uniform_in_cube,
+)
+from nndt.primitive_sdf import SphereSDF, fun2vec_and_grad
 from nndt.trainable_task import (
     ApproximateSDF,
     ApproximateSDFLipMLP,
+    ApproximateSDFLipMLP2,
     Eikonal3D,
     SimpleSDF,
     SurfaceSegmentation,
 )
-from nndt.vizualize import BasicVizualization
-
-
-def init_colab(window_size: Tuple[int, int] = (600, 400)):
-    import os
-
-    os.system("/usr/bin/Xvfb :99 -screen 0 1024x768x24 &")
-    os.environ["DISPLAY"] = ":99"
-
-    import panel as pn
-    import pyvista as pv
-
-    pn.extension("vtk")
-
-    nndt.space2.plot_tree.pyvista_pre_params = {
-        "notebook": True,
-        "window_size": window_size,
-    }
+from nndt.vizualize import BasicVizualization, save_3D_slices, save_sdt_as_obj

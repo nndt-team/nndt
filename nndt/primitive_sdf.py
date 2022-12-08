@@ -5,44 +5,6 @@ import jax
 import jax.numpy as jnp
 
 
-def sdf_primitive_sphere(center=(0.0, 0.0, 0.0), radius=1.0):
-    """
-
-    Parameters
-    ----------
-    center : tuple, optional
-        Coordinates of center x, y, z (defaults is (0., 0., 0.))
-    radius : float, optional
-        Radius of sphere (defaults is 1.)
-
-    Returns
-    -------
-    Set of jax.vmap
-        description smth, x, y, z
-    """
-
-    def prim(x: float, y: float, z: float):
-        sdf = (
-            (x - center[0]) ** 2
-            + (y - center[1]) ** 2
-            + (z - center[2]) ** 2
-            - radius**2
-        )
-        return sdf
-
-    vec_prim = jax.vmap(prim)
-
-    prim_x = jax.grad(prim, argnums=0)
-    prim_y = jax.grad(prim, argnums=1)
-    prim_z = jax.grad(prim, argnums=2)
-
-    vec_prim_x = jax.vmap(prim_x)
-    vec_prim_y = jax.vmap(prim_y)
-    vec_prim_z = jax.vmap(prim_z)
-
-    return vec_prim, vec_prim_x, vec_prim_y, vec_prim_z
-
-
 def fun2vec_and_grad(prim):
     vec_prim = jax.vmap(prim)
 
@@ -73,29 +35,57 @@ class AbstractSDF:
     @property
     @abstractmethod
     def bbox(self) -> ((float, float, float), (float, float, float)):
+        """
+        Return the minimal bounding box around the implicitly defined object.
+        :return: (X_min, Y_min, Z_min) , (X_max, Y_max, Z_max)
+        """
         return (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)
 
     @property
     def fun(self) -> Callable:
+        """
+        Get the SDF function in scalar form
+        :return: `f(x,y,z) = distance`
+        """
         return self._fun
 
     @property
     def vec_fun(self) -> Callable:
+        """
+        Get the SDF function in vector form. Vectorization is performed along the zero axis.
+        :return: `f(vec_x, vec_y, vec_z) = vec_distance`
+        """
         return self._vec_fun
 
     @property
     def vec_fun_dx(self) -> Callable:
+        """
+        Get the gradient of the SDF function over the X-axis. Vectorization is performed along the zero axis.
+        :return: `df/dx(vec_x, vec_y, vec_z)`
+        """
         return self._vec_fun_x
 
     @property
     def vec_fun_dy(self) -> Callable:
+        """
+        Get the gradient of the SDF function over the Y-axis. Vectorization is performed along the zero axis.
+        :return: `df/dy(vec_x, vec_y, vec_z)`
+        """
         return self._vec_fun_y
 
     @property
     def vec_fun_dz(self) -> Callable:
+        """
+        Get the gradient of the SDF function over the Z-axis. Vectorization is performed along the zero axis.
+        :return: `df/dz(vec_x, vec_y, vec_z)`
+        """
         return self._vec_fun_z
 
     def request(self, ps_xyz: jnp.ndarray) -> jnp.ndarray:
+        """
+        Get SDF values for the requested location on the physical space.
+        :return: distance values
+        """
         assert ps_xyz.shape[-1] == 3
 
         ret_shape = list(ps_xyz.shape)
@@ -112,7 +102,17 @@ class AbstractSDF:
 
 
 class SphereSDF(AbstractSDF):
+    """
+    This is a sphere geometrical primitive.
+    """
+
     def __init__(self, center=(0.0, 0.0, 0.0), radius=1.0):
+        """
+        This is a sphere geometrical primitive.
+
+        :param center: center of the sphere
+        :param radius: radius of the sphere
+        """
         assert radius > 0.0
         self.center = center
         self.radius = radius

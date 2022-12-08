@@ -2,6 +2,20 @@ from nndt.datasets.dataset import Dataset
 
 
 class MICCAI2015(Dataset):
+    """
+    MICCAI2015 includes 50 CT scans and ground truth segmentation of 13 abdominal organs.
+
+    NNDT DOES NOT DOWNLOAD THE ORIGINAL DATA!
+    We preprocess some subsets of models to create toy examples for testing NNDT capabilities.
+
+    Available out-of-the-box model subsets:
+     - `left_adrenal_gland_10` includes 10 models of the adrenal glands
+     - `stomach_10` includes 10 models of the stomach.
+
+    Source: https://www.synapse.org/#!Synapse:syn3193805/wiki/217789
+    DOI: https://doi.org/10.7303/syn3193805
+    """
+
     def __init__(self, name="left_adrenal_gland_10", to_path=None):
         super().__init__(name=name, to_path=to_path)
 
