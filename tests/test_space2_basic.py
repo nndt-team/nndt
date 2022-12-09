@@ -24,10 +24,34 @@ class SpaceModelBeforeInitializationTestCase(BaseTestCase):
             os.remove(FILE_TMP2)
 
     def test_space_preload_correct_modes(self):
-        modes = ["identity", "shift_and_scale", "to_cube"]
+        modes = ["identity", "shift_and_scale", "to_cube", "shift and scale", "to cube"]
         for mode in modes:
-            space = load_from_path(PATH_TEST_STRUCTURE)
+            space = load_from_path(PATH_TEST_ACDC)
             space.preload(mode)
+
+    def test_space_preload_incorrect_modes(self):
+        modes = ["idencxt", "cxscaldde", "tufzbe"]
+        for mode in modes:
+            space = load_from_path(PATH_TEST_ACDC)
+            self.assertRaises(NotImplementedError, space.preload, mode)
+
+    def test_save_mesh_empty_name(self):
+        space = load_from_path(PATH_TEST_ACDC)
+        space.init()
+        space.preload("shift_and_scale", ns_padding=(0.1, 0.1, 0.1))
+        vertex = space.patient009.surface_xyz()
+        vertex_rgba = space.patient009.surface_rgba()
+        arg_dict = {
+            "red": vertex_rgba[:, 0],
+            "green": vertex_rgba[:, 1],
+            "blue": vertex_rgba[:, 2],
+            "alpha": vertex_rgba[:, 2],
+            "x": vertex[:, 0],
+            "y": vertex[:, 1],
+            "z": vertex[:, 2],
+            "target_class": jax.numpy.argmax(vertex_rgba[:, :3], axis=1),
+        }
+        self.assertRaises(ValueError, space.patient009.save_mesh, "", arg_dict)
 
     def test_load_from_path(self):
         space = load_from_path(PATH_TEST_STRUCTURE)
