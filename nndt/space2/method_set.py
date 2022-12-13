@@ -14,6 +14,7 @@ from nndt.space2.filesource import FileSource
 from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.transformation import AbstractTransformation
 from nndt.space2.utils import calc_ret_shape
+from nndt.vizualize import ANSIConverter
 
 
 def _get_class_hierarchy(obj):
@@ -32,6 +33,15 @@ class MethodNode(AbstractTreeElement):
 
     def __repr__(self):
         return self._print_color + f"{self.docstring}" + Fore.RESET
+
+    def _repr_html_(self):
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self.docstring}'
+            + '</span>'
+            + '</p>'
+        )
 
 
 class MethodSetNode(AbstractTreeElement):

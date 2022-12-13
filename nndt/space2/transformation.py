@@ -4,6 +4,7 @@ from typing import *
 import jax.numpy as jnp
 import numpy as onp
 from colorama import Fore
+from nndt.vizualize import ANSIConverter
 
 from nndt.space2.abstracts import AbstractBBoxNode, node_method
 
@@ -38,6 +39,18 @@ class AbstractTransformation(AbstractBBoxNode):
             + Fore.WHITE
             + f" {self._transform_type}"
             + Fore.RESET
+        )
+
+    def _repr_html_(self):
+        return (
+            '<p>'
+            + f'<span style=\"color:{ANSIConverter(self._print_color, type="Fore").to_rgb()}\">'
+            + f'{self._nodetype}:{self.name}'
+            + '</span>'
+            + f'<span style=\"color:{ANSIConverter(Fore.WHITE, type="Fore").to_rgb()}\">'
+            + f' {self._transform_type}'
+            + '</span>'
+            + '</p>'
         )
 
     def _print_bbox(self):

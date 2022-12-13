@@ -361,3 +361,64 @@ class BasicVizualization:
             plt.imshow(array[:, :, array.shape[2] // 2])
             plt.colorbar()
             plt.savefig(os.path.join(self.folder, f"{name}_2.jpg"))
+
+
+class ANSIConverter:
+    """
+    Create a converter from ANSI to RGB color
+    :param value: value that is recieved using Fore.VALUE or Back.VALUE from colorama
+    :param type: type of ANSI code (use 'Fore' or 'Back' value)
+    """
+
+    def __init__(self, value: str, type: str):
+        self.ANSIcode = value
+        self.type = type,
+
+        self.__RGB_color = {
+            '30': 'rgb(1,1,1)',
+            '31': 'rgb(222,56,43)',
+            '32': 'rgb(57,181,74)',
+            '33': 'rgb(255,199,6)',
+            '34': 'rgb(0,111,184)',
+            '35': 'rgb(118,38,113)',
+            '36': 'rgb(44,181,233)',
+            '37': 'rgb(204,204,204)',
+
+            '90': 'rgb(128,128,128)',
+            '91': 'rgb(255,0,0)',
+            '92': 'rgb(0,255,0)',
+            '93': 'rgb(255,255,0)',
+            '94': 'rgb(0,0,255)',
+            '95': 'rgb(255,0,255)',
+            '96': 'rgb(0,255,255)',
+            '97': 'rgb(255,255,255)',
+        }
+
+    def get_str_code(self):
+        from re import search
+
+        return search("\d{2,}", self.ANSIcode)[0]
+
+    def is_types_equals(self, str_code: str):
+        is_equals = False
+        code = int(str_code)
+
+        match self.type[0]:
+            case 'Fore':
+                is_equals = code in range(30, 38) or code in range(90, 98)
+            case 'Back':
+                is_equals = code in range(30, 48) or code in range(100, 108)
+
+        return is_equals
+
+    def to_rgb(self):
+        str_code = self.get_str_code()
+
+        assert self.is_types_equals(str_code)
+
+        match self.type[0]:
+            case 'Fore':
+                return self.__RGB_color[str_code]
+            case 'Back':
+                return self.__RGB_color[str(int(str_code) - 10)]
+
