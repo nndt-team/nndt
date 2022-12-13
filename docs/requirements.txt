@@ -1,1 +1,3 @@
 rst-to-myst[sphinx]
+myst-parser
+nbsphinx
