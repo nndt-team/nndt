@@ -1,3 +1,5 @@
 rst-to-myst[sphinx]
 myst-parser
 nbsphinx
+myst-nb
+git+https://github.com/nndt-team/nndt.git
