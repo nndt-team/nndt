@@ -1,9 +1,3 @@
-sphinx-book-theme
+rst-to-myst[sphinx]
 myst-parser
-myst-nb
-linkify-it-py
-jinja2
-sphinx-tabs
-sphinx-copybutton
-sphinxcontrib.bibtex
-sphinxext-opengraph
+nbsphinx
