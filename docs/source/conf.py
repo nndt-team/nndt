@@ -29,6 +29,9 @@ author = "Konstantin Ushenin"
 # ones.
 extensions = ["myst_parser", "nbsphinx", "sphinx.ext.autodoc", "sphinx.ext.napoleon"]
 
+# The main toctree document.
+main_doc = "index"
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
