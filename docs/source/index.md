@@ -6,8 +6,8 @@
 # Welcome to nndt's documentation!
 ## Notebooks
 
-```{automodule} nndt.haiku_modules
-    :members:
+```{automodule} nndt
+:members:
 ```
 
 ```{toctree}
