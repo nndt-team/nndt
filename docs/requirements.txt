@@ -3,3 +3,4 @@ myst-parser
 nbsphinx
 myst-nb
 git+https://github.com/nndt-team/nndt.git
+sphinx_book_theme
