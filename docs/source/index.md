@@ -11,16 +11,11 @@
 ```
 
 ```{toctree}
-:caption: 'Contents:'
+:caption: 'Notebooks:'
 :maxdepth: 2
 
 notebooks/tutorial1_space_model
 notebooks/tutorial2_research_viz
 notebooks/tutorial3_primitives__NOT_COMPLETE
-
-```
-
-something
-```{eval-rst}
 
 ```
