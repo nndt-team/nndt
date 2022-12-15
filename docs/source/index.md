@@ -4,10 +4,12 @@
 % contain the root `toctree` directive.
 
 # Welcome to nndt's documentation!
-## Notebooks
 
-```{automodule} nndt
-:members:
+```{toctree}
+:caption: 'Modules'
+:maxdepth: 2
+
+modules
 ```
 
 ```{toctree}
