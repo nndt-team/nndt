@@ -6,6 +6,13 @@
 # Welcome to nndt's documentation!
 
 ```{toctree}
+:caption: 'Modules'
+:maxdepth: 2
+
+modules
+```
+
+```{toctree}
 :caption: 'Notebooks:'
 :maxdepth: 2
 
