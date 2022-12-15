@@ -5,6 +5,11 @@
 
 # Welcome to nndt's documentation!
 ## Notebooks
+
+```{automodule} nndt.haiku_modules
+    :members:
+```
+
 ```{toctree}
 :caption: 'Contents:'
 :maxdepth: 2
@@ -12,5 +17,10 @@
 notebooks/tutorial1_space_model
 notebooks/tutorial2_research_viz
 notebooks/tutorial3_primitives__NOT_COMPLETE
+
+```
+
+something
+```{eval-rst}
 
 ```
