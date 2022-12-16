@@ -30,9 +30,9 @@ class TrainTaskSetNode(MethodSetNode):
         self.transform = transform
 
     def load_batch(self, spacing):
-        # TODO! This place is a dangerous. Sampling initializes after this class.
-        # This call does not specialize specific sampling node or sdt!
-        # I hope I will find a proper way to write this in future.
+        # TODO! This place is dangerous. Sampling initializes after this class.
+        # This call does not specialize in a specific sampling node or SDT!
+        # I hope I will find a proper way to write this in the future.
         xyz = self.parent.sampling.sampling_grid(spacing=spacing)
         xyz_flat = xyz.reshape((-1, 3))
         sdf_flat = jnp.squeeze(self.parent.sdt.surface_xyz2sdt(xyz_flat))

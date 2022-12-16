@@ -52,7 +52,7 @@ class DescConv(hk.Module):
 
 class LipLinear(hk.Module):
     """
-    Layer for implementation of the LipMLP from article:
+    Layer for implementation of the LipMLP from the article:
     Liu, Hsueh-Ti Derek, et al. "Learning Smooth Neural Functions via Lipschitz Regularization."
     arXiv preprint arXiv:2202.08345 (2022).
     """
@@ -95,12 +95,18 @@ class LipLinear(hk.Module):
 
 class LipMLP(hk.Module):
     """
-    This is implementation of the LipMLP from article:
+    This is an implementation of the LipMLP from the article:
     Liu, Hsueh-Ti Derek, et al. "Learning Smooth Neural Functions via Lipschitz Regularization."
     arXiv preprint arXiv:2202.08345 (2022).
     """
 
-    def __init__(self, output_sizes: Iterable[int], name: Optional[str] = None):
+    def __init__(
+        self,
+        output_sizes: Iterable[int],
+        name: Optional[str] = None,
+        activation=jax.nn.tanh,
+        activation_output=lambda x: x,
+    ):
         super().__init__(name=name)
         self.output_sizes = output_sizes
 
@@ -111,7 +117,7 @@ class LipMLP(hk.Module):
                 LipLinear(
                     output_size=output_size,
                     name="lip_mlp_%d" % index,
-                    activation=jax.nn.tanh,
+                    activation=activation,
                 )
             )
         index, output_size = len(output_sizes) - 1, output_sizes[-1]
@@ -119,7 +125,7 @@ class LipMLP(hk.Module):
             LipLinear(
                 output_size=output_size,
                 name="lip_mlp_%d" % index,
-                activation=lambda x: x,
+                activation=activation_output,
             )
         )
 

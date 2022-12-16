@@ -9,8 +9,12 @@ from anytree import PostOrderIter, PreOrderIter
 from pyvista import Plotter
 
 from nndt.global_config import PYVISTA_PRE_PARAMS
+from nndt.math_core import grid_in_cube2
+from nndt.primitive_sdf import AbstractSDF
+from nndt.space2 import DEFAULT_SPACING_FOR_PLOT
 from nndt.space2.abstracts import AbstractBBoxNode, AbstractTreeElement
 from nndt.space2.filesource import FileSource
+from nndt.space2.implicit_representation import ImpRepr
 from nndt.space2.loader import MeshObjLoader, SDTLoader
 from nndt.space2.object3D import Object3D
 from nndt.space2.transformation import AbstractTransformation
@@ -38,11 +42,34 @@ def _plot_sdt(pl: Plotter, loader: SDTLoader, transform: Callable, color):
     _plot_pv_mesh(pl, verts, faces, transform, color)
 
 
+def _plot_impl(pl: Plotter, loader: AbstractSDF, transform: Callable, color):
+    bbox = loader.bbox
+    grid_xyz = grid_in_cube2(DEFAULT_SPACING_FOR_PLOT, bbox[0], bbox[1]).reshape(
+        (-1, 3)
+    )
+    grid_sdt = loader.vec_fun(grid_xyz[:, 0], grid_xyz[:, 1], grid_xyz[:, 2])
+    grid_sdt = grid_sdt.reshape(DEFAULT_SPACING_FOR_PLOT)
+    from nndt.space2.utils import array_to_vert_and_faces
+
+    verts, faces = array_to_vert_and_faces(grid_sdt, level=0.0, for_vtk_cell_array=True)
+    verts = verts / (onp.array(DEFAULT_SPACING_FOR_PLOT)) * (
+        onp.array(bbox[1]) - onp.array(bbox[0])
+    ) + onp.array(bbox[0])
+    _plot_pv_mesh(pl, verts, faces, transform, color)
+
+
 def _plot_filesource(pl, node: FileSource, transform: Callable, color):
     if isinstance(node._loader, MeshObjLoader):
         _plot_mesh(pl, node._loader, transform, color)
     elif isinstance(node._loader, SDTLoader):
         _plot_sdt(pl, node._loader, transform, color)
+    else:
+        warnings.warn(f"node._loader is None or unknown. Something goes wrong.")
+
+
+def _plot_implicit_representation(pl, node: ImpRepr, transform: Callable, color):
+    if isinstance(node._loader, AbstractSDF):
+        _plot_impl(pl, node._loader, transform, color)
     else:
         warnings.warn(f"node._loader is None or unknown. Something goes wrong.")
 
@@ -76,12 +103,12 @@ def _plot(
 
     # When .plot() is called from FileSource, it draws only one object without any transformation
     if isinstance(node, FileSource):
-        _plot_filesource(pl, node, default_transform)
-    # When .plot() is called from region or object, it iterates over all Object3D in tree
+        _plot_filesource(pl, node, default_transform, cmap(cmap_index % cmap.N))
+    # When .plot() is called from a region or object, it iterates over all Object3D in the tree
     elif isinstance(node, AbstractBBoxNode):
         for node_obj in PreOrderIter(node):
             if isinstance(node_obj, Object3D):
-                # Try to obtain ps2ns transformation
+                # Try to obtain transformation from physical space to normalized space
                 transform_list = [
                     child
                     for child in node_obj.children
@@ -92,11 +119,19 @@ def _plot(
                 else:
                     transform = default_transform
 
-                # Run over filesources
+                # Run over the filesources
                 for node_src in PostOrderIter(node_obj):
                     if isinstance(node_src, FileSource):
                         _plot_filesource(
                             pl, node_src, transform, cmap(cmap_index % cmap.N)
+                        )
+                        cmap_index += 1
+
+                # Run over primitives
+                for node_src in PostOrderIter(node_obj):
+                    if isinstance(node_src, ImpRepr):
+                        _plot_implicit_representation(
+                            pl, node_src, default_transform, cmap(cmap_index % cmap.N)
                         )
                         cmap_index += 1
 

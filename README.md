@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/nndt-team/nndt/branch/main/graph/badge.svg)](https://codecov.io/gh/nndt-team/nndt)
 [![CodeFactor](https://www.codefactor.io/repository/github/nndt-team/nndt/badge)](https://www.codefactor.io/repository/github/nndt-team/nndt)
 [![ci-build workflow](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml/badge.svg)](https://github.com/nndt-team/nndt/actions/workflows/ci-build.yml)
+[![Documentation Status](https://readthedocs.org/projects/nndt/badge/?version=latest)](https://nndt.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/github/license/nndt-team/nndt)](https://github.com/nndt-team/nndt/blob/main/LICENSE)
 [![Python version](python-badge.svg)](https://www.python.org/downloads/release/python-3110/)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/nndt-team/nndt)
@@ -41,6 +42,10 @@ NOTE! This project is in an early stage. API and examples are changed every day.
 Tutorials
 1. [Basics for space models](tutorials/tutorial1_space_model.ipynb)
 2. [Data visualization](tutorials/tutorial2_research_viz.ipynb)
+
+Examples for conference papers:
+1. [SDT2SDF conversion for the one object](examples/sdt2sdf_for_one_object.py)
+2. [Shape regression for two objects](examples/shape_regression.py)
 
 Tests for manual evaluation
 1. [Shape interpolation](tests_manual/sdf_multiple_files.py)

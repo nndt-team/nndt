@@ -1,4 +1,5 @@
 from anytree import PostOrderIter, PreOrderIter
+from tqdm import tqdm
 
 from nndt.space2.abstracts import DICT_NODETYPE_PRIORITY, AbstractBBoxNode
 from nndt.space2.filesource import FileSource
@@ -39,7 +40,7 @@ class DefaultPreloader:
         self.ps_padding = ps_padding
         self.ns_padding = ns_padding
 
-    def preload(self, space: Space):
+    def preload(self, space: Space, verbose=True):
 
         # Stage 1. Initialization of FileSources
         for node in PostOrderIter(space):
@@ -47,7 +48,12 @@ class DefaultPreloader:
                 self._init_FileSource(node)
 
         # Stage 2. Initialization of Object3D
-        for node in PostOrderIter(space):
+        if verbose:
+            iter_tmp = tqdm(PostOrderIter(space))
+        else:
+            iter_tmp = PostOrderIter(space)
+
+        for node in iter_tmp:
             if isinstance(node, Object3D):
                 self._init_Object3D(node)
 
