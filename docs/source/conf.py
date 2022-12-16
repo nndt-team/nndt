@@ -12,7 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../nndt'))
+
+sys.path.insert(0, os.path.abspath("../../nndt"))
 
 
 # -- Project information -----------------------------------------------------
