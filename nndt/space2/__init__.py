@@ -1,5 +1,6 @@
 from nndt.space2.group import Group
 from nndt.space2.simple_api import (
+    add_box,
     add_sphere,
     from_json,
     load_from_file_lists,
